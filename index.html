@@ -336,6 +336,7 @@ tbody tr:hover .ra{display:flex}
   <div class="modal" id="instructor-form" style="display:none" onclick="event.stopPropagation()">
     <div class="mh"><div class="mt" id="if-title">Add Instructor</div><button class="mc" onclick="closeOverlay()">✕</button></div>
     <div class="mb">
+      <input type="hidden" id="if-editing-idx">
       <div class="fr2"><label>Full Name</label><input id="if-name" placeholder="e.g. Felipe Tahara"></div>
       <div class="fg">
         <div class="fr2"><label>Primary Channel</label><input id="if-channel" placeholder="e.g. AMZ, Google"></div>
@@ -955,6 +956,7 @@ function openInstructorForm(idx){
   const resolvedIdx = (idx != null && idx !== 'null') ? Number(idx) : null;
   editInst = resolvedIdx;
   document.getElementById('if-title').textContent = resolvedIdx != null ? 'Edit Instructor' : 'Add Instructor';
+  document.getElementById('if-editing-idx').value = resolvedIdx != null ? resolvedIdx : '';
   const inst = resolvedIdx != null ? (EXTRA_INSTS[resolvedIdx] || {}) : {};
   document.getElementById('if-name').value = inst.name || '';
   document.getElementById('if-channel').value = inst.channel || '';
@@ -966,7 +968,8 @@ function openInstructorForm(idx){
 function saveInstructor(){
   const name=document.getElementById('if-name').value.trim();if(!name){alert('Name required');return;}
   const d={name,channel:document.getElementById('if-channel').value.trim(),role:document.getElementById('if-role').value.trim(),email:document.getElementById('if-email').value.trim(),bio:document.getElementById('if-bio').value.trim()};
-  const wasEditing=editInst;
+  const idxVal=document.getElementById('if-editing-idx').value;
+  const wasEditing=idxVal!==''?Number(idxVal):null;
   if(wasEditing!=null){EXTRA_INSTS[wasEditing]=d;toast('Updated');}else{EXTRA_INSTS.push(d);toast('Instructor added');}
   persist();
   closeOverlay();buildInstGrid();
@@ -1013,7 +1016,21 @@ function openInstructorDetail(name){
   document.getElementById('idd-email').style.display=d.extra.email?'block':'none';
   // Edit button wires to form
   const capturedEi=d.ei>=0?d.ei:null;
-  document.getElementById('idd-edit-btn').onclick=()=>{closeOverlay();setTimeout(()=>openInstructorForm(capturedEi),60)};
+  const capturedName=name;
+  document.getElementById('idd-edit-btn').onclick=()=>{
+    closeOverlay();
+    setTimeout(()=>{
+      if(capturedEi!=null){
+        openInstructorForm(capturedEi);
+      } else {
+        // Instructor exists only via modules — create a new EXTRA_INSTS entry pre-filled with their name
+        const newIdx=EXTRA_INSTS.length;
+        EXTRA_INSTS.push({name:capturedName,channel:[...d.channels].join(', '),role:'',email:'',bio:''});
+        persist();
+        openInstructorForm(newIdx);
+      }
+    },80);
+  };
   // KPIs
   const fmtScore=v=>v!=null?v+'/10':'—';
   const scoreBar=v=>v!=null?`<div style="height:3px;background:rgba(0,0,0,.08);border-radius:2px;overflow:hidden;margin-top:6px"><div style="height:100%;border-radius:2px;background:${scoreColor(v)};width:${Math.round(v/10*100)}%"></div></div>`:'';
