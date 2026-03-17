@@ -302,6 +302,7 @@ tbody tr:hover .ra{display:flex}
   <div class="modal" id="module-form" style="display:none" onclick="event.stopPropagation()">
     <div class="mh"><div class="mt" id="mf-title">Add Module</div><button class="mc" onclick="closeOverlay()">✕</button></div>
     <div class="mb">
+      <input type="hidden" id="mf-editing-id">
       <div class="fst">Identity</div>
       <div class="fg">
         <div class="fr2"><label>Module ID</label><input id="mf-id" placeholder="e.g. QA100"></div>
@@ -875,6 +876,7 @@ function editCurrent(){const id=curDetail;closeOverlay();setTimeout(()=>openModu
 function openModuleForm(id){
   editMod=id||null;
   document.getElementById('mf-title').textContent=id?'Edit Module':'Add Module';
+  document.getElementById('mf-editing-id').value=id||'';
   const m=id?MODULES.find(x=>x.id===id):{};
   document.getElementById('mf-id').value=m.id||'';
   document.getElementById('mf-id').disabled=!!id;
@@ -888,18 +890,18 @@ function openModuleForm(id){
   document.getElementById('mf-obj').value=m.obj||'';
   document.getElementById('mf-recording').value=m.recording||'';
   document.getElementById('mf-ppt').value=m.ppt||'';
-  document.getElementById('mf-toolkit').value=m.toolkit||'';
   document.getElementById('mf-date').value=m.date||'';
   document.getElementById('mf-notes').value=m.notes||'';
   showOverlay('module-form');
 }
 function saveModule(){
+  const editingId=document.getElementById('mf-editing-id').value||null;
   const id=document.getElementById('mf-id').value.trim();
   const name=document.getElementById('mf-name').value.trim();
   if(!id||!name){alert('ID and name are required');return;}
   const d={id,week:document.getElementById('mf-week').value,module:name,format:document.getElementById('mf-format').value,length:parseFloat(document.getElementById('mf-length').value)||1,channel:document.getElementById('mf-channel').value.trim(),status:document.getElementById('mf-status').value,instructor:document.getElementById('mf-instructor').value.trim()||'TBD',obj:document.getElementById('mf-obj').value.trim(),recording:document.getElementById('mf-recording').value.trim(),ppt:document.getElementById('mf-ppt').value.trim(),date:document.getElementById('mf-date').value,notes:document.getElementById('mf-notes').value.trim()};
-  if(editMod){
-    const i=MODULES.findIndex(m=>m.id===editMod);
+  if(editingId){
+    const i=MODULES.findIndex(m=>m.id===editingId);
     if(i>=0){const prev=MODULES[i];d.analyzed=prev.analyzed;MODULES[i]=d;}
     toast('Module updated');
   } else {
