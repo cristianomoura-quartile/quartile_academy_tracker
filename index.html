@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quartile Academy — Session Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-primary:#ffffff;--bg-secondary:#f5f5f4;--bg-tertiary:#f0efe9;
+  --text-primary:#1a1a18;--text-secondary:#6b6b67;--text-tertiary:#a0a09c;
+  --border-light:rgba(0,0,0,0.09);--border-mid:rgba(0,0,0,0.18);
+  --blue:#C85A00;--blue-bg:#FEF0E6;--blue-text:#C85A00;
+  --green-bg:#EAF3DE;--green-text:#3B6D11;
+  --teal-bg:#E1F5EE;--teal-text:#0F6E56;
+  --amber-bg:#FAEEDA;--amber-text:#854F0B;
+  --gray-bg:#F1EFE8;--gray-text:#5F5E5A;
+  --pink-bg:#FBEAF0;--pink-text:#993556;
+  --purple-bg:#EEEDFE;--purple-text:#534AB7;
+  --red-bg:#FCEBEB;--red-text:#A32D2D;
+  --radius-md:8px;--radius-lg:12px;--radius-xl:16px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text-primary);background:var(--bg-tertiary);min-height:100vh}
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:210px;flex-shrink:0;background:var(--bg-primary);border-right:0.5px solid var(--border-light);display:flex;flex-direction:column}
+.sidebar-logo{padding:20px 18px 16px;border-bottom:0.5px solid var(--border-light)}
+.brand{font-size:14px;font-weight:700;letter-spacing:-.02em}
+.sub-brand{font-size:11px;color:var(--text-tertiary);margin-top:3px}
+.nav-section{padding:10px 0;flex:1}
+.nav-label{font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;padding:6px 18px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 18px;cursor:pointer;font-size:13px;color:var(--text-secondary);border-left:2px solid transparent;transition:all .12s;user-select:none}
+.nav-item:hover{background:var(--bg-secondary);color:var(--text-primary)}
+.nav-item.active{color:var(--blue);font-weight:600;border-left:2px solid var(--blue);background:var(--blue-bg)}
+.ni{width:15px;height:15px;flex-shrink:0;opacity:.6}
+.nav-item.active .ni{opacity:1}
+.main{flex:1;overflow-y:auto}
+.pi{padding:28px 32px;max-width:1400px}
+.page{display:none}
+.page.active{display:block}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:16px}
+.ph-l .pt{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.ph-l .ps{font-size:13px;color:var(--text-secondary)}
+.btn{padding:7px 14px;border-radius:var(--radius-md);font-size:13px;font-weight:500;cursor:pointer;border:.5px solid var(--border-mid);background:var(--bg-primary);color:var(--text-primary);transition:all .12s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{background:var(--bg-secondary)}
+.btn-p{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-p:hover{background:#14508a;border-color:#14508a}
+.btn-d{background:var(--red-bg);color:var(--red-text);border-color:rgba(160,45,45,.2)}
+.btn-d:hover{background:#f5c1c1}
+.btn-sm{padding:4px 10px;font-size:12px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:var(--bg-primary);border:.5px solid var(--border-light);border-radius:var(--radius-lg);padding:16px 18px}
+.kl{font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;font-weight:700}
+.kv{font-size:26px;font-weight:700;letter-spacing:-.03em}
+.ks{font-size:11px;color:var(--text-tertiary);margin-top:4px}
+.wk-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:28px}
+.wk{background:var(--bg-primary);border:.5px solid var(--border-light);border-radius:var(--radius-md);padding:14px}
+.wkt{font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.wkn{font-size:22px;font-weight:700;letter-spacing:-.03em}
+.wkm{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.pb{height:3px;background:var(--bg-secondary);border-radius:2px;overflow:hidden;margin-top:10px}
+.pf{height:100%;background:#C85A00;border-radius:2px}
+.sl{font-size:11px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+.tc{background:var(--bg-primary);border:.5px solid var(--border-light);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:9px 14px;font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;border-bottom:.5px solid var(--border-light);background:var(--bg-secondary);white-space:nowrap}
+td{padding:10px 14px;border-bottom:.5px solid var(--border-light);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr{cursor:pointer;transition:background .1s}
+tbody tr:hover td{background:#f0f4fa}
+.mono{font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--text-tertiary)}
+.trunc{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{display:inline-flex;align-items:center;font-size:11px;padding:3px 8px;border-radius:5px;font-weight:600;white-space:nowrap}
+.bs{background:var(--blue-bg);color:var(--blue-text)}
+.bp{background:var(--green-bg);color:var(--green-text)}
+.bc{background:var(--teal-bg);color:var(--teal-text)}
+.br{background:var(--amber-bg);color:var(--amber-text)}
+.bt{background:var(--gray-bg);color:var(--gray-text)}
+.bl{background:var(--pink-bg);color:var(--pink-text)}
+.bo{background:var(--purple-bg);color:var(--purple-text)}
+.ba{background:var(--amber-bg);color:var(--amber-text)}
+.bpres{background:var(--green-bg);color:var(--green-text)}
+.toolbar{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.toolbar input,.toolbar select{padding:7px 11px;border:.5px solid var(--border-mid);border-radius:var(--radius-md);background:var(--bg-primary);color:var(--text-primary);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s}
+.toolbar input{flex:1;min-width:180px}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(24,95,165,.12)}
+.sr{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.sp{background:var(--bg-primary);border:.5px solid var(--border-light);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--text-secondary)}
+.sp strong{color:var(--text-primary);font-weight:600}
+.ig{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.ic{background:var(--bg-primary);border:.5px solid var(--border-light);border-radius:var(--radius-lg);padding:16px;transition:border-color .15s,box-shadow .15s;cursor:pointer;position:relative}
+.ic:hover{border-color:var(--blue);box-shadow:0 2px 12px rgba(24,95,165,.08)}
+.ca{position:absolute;top:10px;right:10px;display:none;gap:4px}
+.ic:hover .ca,.sc:hover .ca{display:flex}
+.ia{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-bottom:10px}
+.in{font-size:13px;font-weight:600;margin-bottom:2px}
+.ich{font-size:11px;color:var(--text-tertiary);margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ist{display:flex;gap:16px}
+.istt{font-size:12px;color:var(--text-secondary)}
+.istt strong{color:var(--text-primary);font-weight:600}
+.stg{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.sc{background:var(--bg-primary);border:.5px solid var(--border-light);border-radius:var(--radius-lg);padding:16px;cursor:pointer;transition:border-color .15s,box-shadow .15s;position:relative}
+.sc:hover{border-color:var(--blue);box-shadow:0 2px 12px rgba(24,95,165,.08)}
+.sn{font-size:14px;font-weight:600;margin-bottom:2px}
+.sr2{font-size:11px;color:var(--text-tertiary);margin-bottom:10px}
+.ss{display:flex;gap:12px;font-size:12px;color:var(--text-secondary);flex-wrap:wrap}
+.fr{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.fl{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600}
+.fl-r{background:var(--red-bg);color:var(--red-text)}
+.fl-a{background:var(--amber-bg);color:var(--amber-text)}
+.es{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:72px 40px;text-align:center}
+.es .iw{width:60px;height:60px;border-radius:50%;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.es h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.es p{font-size:13px;color:var(--text-secondary);max-width:380px;line-height:1.6;margin-bottom:20px}
+.editable{cursor:text;border-radius:4px;padding:1px 4px;margin:-1px -4px;transition:background .12s;display:inline-block}
+.editable:hover{background:rgba(24,95,165,.07)}
+.editable:focus{outline:none;background:rgba(24,95,165,.1);box-shadow:0 0 0 1.5px var(--blue)}
+.esel{border:none;background:transparent;font-size:inherit;font-family:inherit;color:inherit;cursor:pointer;padding:2px 5px;border-radius:5px;outline:none;font-weight:600}
+.esel:hover{background:rgba(24,95,165,.07)}
+.esel:focus{background:rgba(24,95,165,.1);box-shadow:0 0 0 1.5px var(--blue)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.overlay.open{display:flex}
+.modal{background:var(--bg-primary);border-radius:var(--radius-xl);width:560px;max-width:95vw;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 72px rgba(0,0,0,.2)}
+.mh{padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mt{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.mc{width:28px;height:28px;border-radius:6px;border:none;background:var(--bg-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text-secondary)}
+.mc:hover{background:var(--bg-tertiary)}
+.mb{padding:20px 24px;overflow-y:auto;flex:1}
+.mf{padding:16px 24px;border-top:.5px solid var(--border-light);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
+.fr2{margin-bottom:16px}
+.fr2 label{display:block;font-size:11px;font-weight:700;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.fr2 input,.fr2 select,.fr2 textarea{width:100%;padding:8px 12px;border:.5px solid var(--border-mid);border-radius:var(--radius-md);background:var(--bg-primary);color:var(--text-primary);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
+.fr2 input:focus,.fr2 select:focus,.fr2 textarea:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(24,95,165,.12)}
+.fr2 textarea{resize:vertical;min-height:72px;line-height:1.5}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fst{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin:18px 0 10px;padding-top:14px;border-top:.5px solid var(--border-light)}
+.fst:first-child{margin-top:0;padding-top:0;border-top:none}
+/* DETAIL MODAL */
+.dm{background:var(--bg-primary);border-radius:var(--radius-xl);width:760px;max-width:96vw;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 72px rgba(0,0,0,.22)}
+.dmh{padding:24px 28px 0;flex-shrink:0}
+.dmt{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.did{font-size:11px;font-family:'SF Mono',monospace;color:var(--text-tertiary);margin-bottom:4px;letter-spacing:.05em}
+.dn{font-size:19px;font-weight:700;letter-spacing:-.02em;line-height:1.3}
+.dbd{display:flex;gap:6px;flex-wrap:wrap;padding:12px 0;border-bottom:.5px solid var(--border-light)}
+.dha{display:flex;gap:6px;flex-shrink:0;margin-top:2px}
+.dmb{padding:24px 28px;overflow-y:auto;flex:1}
+/* detail tabs */
+.dtabs{display:flex;gap:0;border-bottom:.5px solid var(--border-light);margin-bottom:24px}
+.dtab{padding:9px 16px;font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s}
+.dtab:hover{color:var(--text-primary)}
+.dtab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+.dtab-panel{display:none}
+.dtab-panel.active{display:block}
+.dg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:22px}
+.dg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+.df{background:var(--bg-secondary);border-radius:var(--radius-md);padding:12px 14px}
+.dfl{font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.dfv{font-size:13px;font-weight:500;line-height:1.5}
+.dfv a{color:var(--blue);text-decoration:none}
+.dfv a:hover{text-decoration:underline}
+.dfv.na{color:var(--text-tertiary);font-style:italic;font-weight:400}
+.ds{margin-bottom:20px}
+.dst{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:10px}
+.dsb{font-size:13px;color:var(--text-secondary);line-height:1.7}
+.de{font-style:italic;color:var(--text-tertiary);font-size:13px}
+/* scores */
+.score-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.score-card{background:var(--bg-secondary);border-radius:var(--radius-md);padding:12px 14px}
+.score-label{font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.score-val{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.score-bar-wrap{height:5px;background:rgba(0,0,0,.08);border-radius:3px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:3px;background:#C85A00}
+.score-note{font-size:11px;color:var(--text-secondary);margin-top:6px;line-height:1.5}
+/* Q&A log */
+.qa-item{border:.5px solid var(--border-light);border-radius:var(--radius-md);padding:14px;margin-bottom:10px}
+.qa-q{font-size:13px;font-weight:600;margin-bottom:6px;line-height:1.5}
+.qa-meta{font-size:11px;color:var(--text-tertiary);margin-bottom:8px}
+.qa-a{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:6px}
+.qa-score{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px}
+.qa-correct{background:var(--teal-bg);color:var(--teal-text)}
+.qa-partial{background:var(--amber-bg);color:var(--amber-text)}
+/* student list in detail */
+.stu-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid var(--border-light)}
+.stu-row:last-child{border-bottom:none}
+.stu-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.stu-name{font-size:13px;font-weight:600;flex:1}
+.stu-meta{font-size:12px;color:var(--text-secondary)}
+.stu-score{font-size:13px;font-weight:700;color:#C85A00}
+/* topics */
+.topic-list{display:flex;gap:6px;flex-wrap:wrap}
+.topic-tag{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--blue-bg);color:var(--blue-text);font-weight:500}
+.topic-tag.missed{background:var(--red-bg);color:var(--red-text)}
+.topic-tag.added{background:var(--amber-bg);color:var(--amber-text)}
+/* follow-up */
+.fu-item{display:flex;gap:10px;padding:10px 0;border-bottom:.5px solid var(--border-light);font-size:13px}
+.fu-item:last-child{border-bottom:none}
+.fu-dot{width:6px;height:6px;border-radius:50%;background:var(--amber-text);margin-top:5px;flex-shrink:0}
+/* row actions */
+.ra{display:none;gap:4px}
+tbody tr:hover .ra{display:flex}
+.av0{background:var(--blue-bg);color:var(--blue-text)}
+.av1{background:var(--teal-bg);color:var(--teal-text)}
+.av2{background:var(--purple-bg);color:var(--purple-text)}
+.av3{background:var(--pink-bg);color:var(--pink-text)}
+.av4{background:var(--amber-bg);color:var(--amber-text)}
+.av5{background:var(--green-bg);color:var(--green-text)}
+.toast{position:fixed;bottom:24px;right:24px;background:#1a1a18;color:#fff;padding:10px 18px;border-radius:var(--radius-md);font-size:13px;font-weight:500;z-index:999;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+/* INSTRUCTOR DETAIL MODAL */
+.idm{background:var(--bg-primary);border-radius:var(--radius-xl);width:680px;max-width:96vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 72px rgba(0,0,0,.22)}
+.idm-header{padding:24px 28px 20px;border-bottom:.5px solid var(--border-light);flex-shrink:0}
+.idm-top{display:flex;align-items:flex-start;gap:16px;justify-content:space-between}
+.idm-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+.idm-name{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px}
+.idm-role{font-size:13px;color:var(--text-secondary)}
+.idm-email{font-size:12px;color:#C85A00;margin-top:2px}
+.idm-actions{display:flex;gap:6px;flex-shrink:0}
+.idm-body{padding:24px 28px;overflow-y:auto;flex:1}
+.idm-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.idm-kpi{background:var(--bg-secondary);border-radius:var(--radius-md);padding:12px 14px;text-align:center}
+.idm-kpi-label{font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.idm-kpi-val{font-size:22px;font-weight:700;letter-spacing:-.02em;color:#C85A00}
+.idm-kpi-sub{font-size:10px;color:var(--text-tertiary);margin-top:2px}
+.idm-section{margin-bottom:22px}
+.idm-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:10px}
+.ch-tags{display:flex;gap:6px;flex-wrap:wrap}
+.ch-tag{font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;background:var(--blue-bg);color:#C85A00;border:.5px solid rgba(200,90,0,.2)}
+.mod-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:.5px solid var(--border-light)}
+.mod-row:last-child{border-bottom:none}
+.mod-row-id{font-size:10px;font-family:'SF Mono',monospace;color:var(--text-tertiary);width:52px;flex-shrink:0}
+.mod-row-name{font-size:13px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mod-row-week{font-size:11px;color:var(--text-tertiary);width:50px;flex-shrink:0;text-align:right}
+.mod-row-status{flex-shrink:0}
+.mod-row-link{flex-shrink:0}
+.toolkit-link{font-size:11px;font-weight:600;color:#C85A00;text-decoration:none;padding:3px 8px;border:.5px solid rgba(200,90,0,.3);border-radius:5px;transition:all .12s}
+.toolkit-link:hover{background:var(--blue-bg)}
+.toolkit-na{font-size:11px;color:var(--text-tertiary);font-style:italic}
+.na-val{color:var(--text-tertiary);font-style:italic;font-weight:400;font-size:13px}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay">
+
+  <!-- INSTRUCTOR DETAIL -->
+  <div class="idm" id="instructor-detail" style="display:none" onclick="event.stopPropagation()">
+    <div class="idm-header">
+      <div class="idm-top">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex:1;min-width:0">
+          <div class="idm-avatar" id="idd-avatar"></div>
+          <div style="min-width:0">
+            <div class="idm-name" id="idd-name"></div>
+            <div class="idm-role" id="idd-role"></div>
+            <div class="idm-email" id="idd-email"></div>
+          </div>
+        </div>
+        <div class="idm-actions">
+          <button class="btn btn-sm" id="idd-edit-btn">Edit</button>
+          <button class="mc" onclick="closeOverlay()">✕</button>
+        </div>
+      </div>
+    </div>
+    <div class="idm-body">
+      <div class="idm-kpi-grid" id="idd-kpis"></div>
+      <div class="idm-section">
+        <div class="idm-section-title">Primary Channels</div>
+        <div class="ch-tags" id="idd-channels"></div>
+      </div>
+      <div class="idm-section">
+        <div class="idm-section-title">Modules Assigned</div>
+        <div id="idd-modules"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE DETAIL -->
+  <div class="dm" id="detail-modal" style="display:none" onclick="event.stopPropagation()">
+    <div class="dmh">
+      <div class="dmt">
+        <div style="flex:1;min-width:0">
+          <div class="did" id="d-id"></div>
+          <div class="dn" id="d-title"></div>
+        </div>
+        <div class="dha">
+          <button class="btn btn-sm" onclick="editCurrent()">Edit</button>
+          <button class="mc" onclick="closeOverlay()">✕</button>
+        </div>
+      </div>
+      <div class="dbd" id="d-badges"></div>
+    </div>
+    <div class="dmb">
+      <div class="dtabs" id="d-tabs"></div>
+      <div id="d-tab-identity" class="dtab-panel active"></div>
+      <div id="d-tab-content" class="dtab-panel"></div>
+      <div id="d-tab-delivery" class="dtab-panel"></div>
+      <div id="d-tab-students" class="dtab-panel"></div>
+      <div id="d-tab-qa" class="dtab-panel"></div>
+    </div>
+  </div>
+
+  <!-- MODULE FORM -->
+  <div class="modal" id="module-form" style="display:none" onclick="event.stopPropagation()">
+    <div class="mh"><div class="mt" id="mf-title">Add Module</div><button class="mc" onclick="closeOverlay()">✕</button></div>
+    <div class="mb">
+      <div class="fst">Identity</div>
+      <div class="fg">
+        <div class="fr2"><label>Module ID</label><input id="mf-id" placeholder="e.g. QA100"></div>
+        <div class="fr2"><label>Week</label><select id="mf-week"><option>Week 1</option><option>Week 2</option><option>Week 3</option><option>Week 4</option><option>Week 5</option><option>Week 6</option></select></div>
+      </div>
+      <div class="fr2"><label>Module Name</label><input id="mf-name" placeholder="e.g. Sponsored Products 101"></div>
+      <div class="fg">
+        <div class="fr2"><label>Format</label><select id="mf-format"><option>Live</option><option>OnDemand</option><option>Assessment</option></select></div>
+        <div class="fr2"><label>Length (hours)</label><input id="mf-length" type="number" step="0.5" min="0.5" placeholder="1.0"></div>
+      </div>
+      <div class="fg">
+        <div class="fr2"><label>Channel / Topic</label><input id="mf-channel" placeholder="e.g. AMZ, Google"></div>
+        <div class="fr2"><label>Status</label><select id="mf-status"><option>Scheduled</option><option>To Do</option><option>Presented</option><option>Needs Review</option><option>Completed</option></select></div>
+      </div>
+      <div class="fr2"><label>Instructor(s)</label><input id="mf-instructor" placeholder="e.g. Felipe Tahara"></div>
+      <div class="fr2"><label>Learning Objective</label><textarea id="mf-obj" placeholder="One-line learning objective"></textarea></div>
+      <div class="fst">Links & Details</div>
+      <div class="fr2"><label>Recording Link</label><input id="mf-recording" placeholder="https://..."></div>
+      <div class="fr2"><label>Slides / PPT Link</label><input id="mf-ppt" placeholder="https://..."></div>
+      <div class="fr2"><label>Toolkit / Content Doc Link</label><input id="mf-toolkit" placeholder="https://..."></div>
+      <div class="fr2"><label>Session Date</label><input id="mf-date" type="date"></div>
+      <div class="fr2"><label>Analysis Notes</label><textarea id="mf-notes" placeholder="Content match, delivery notes, follow-up items..."></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn" onclick="closeOverlay()">Cancel</button>
+      <button class="btn btn-p" onclick="saveModule()">Save Module</button>
+    </div>
+  </div>
+
+  <!-- INSTRUCTOR FORM -->
+  <div class="modal" id="instructor-form" style="display:none" onclick="event.stopPropagation()">
+    <div class="mh"><div class="mt" id="if-title">Add Instructor</div><button class="mc" onclick="closeOverlay()">✕</button></div>
+    <div class="mb">
+      <div class="fr2"><label>Full Name</label><input id="if-name" placeholder="e.g. Felipe Tahara"></div>
+      <div class="fg">
+        <div class="fr2"><label>Primary Channel</label><input id="if-channel" placeholder="e.g. AMZ, Google"></div>
+        <div class="fr2"><label>Role / Title</label><input id="if-role" placeholder="e.g. Senior CSM"></div>
+      </div>
+      <div class="fr2"><label>Email</label><input id="if-email" type="email" placeholder="name@quartile.com"></div>
+      <div class="fr2"><label>Bio / Notes</label><textarea id="if-bio" placeholder="Background, expertise, notes..."></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn" onclick="closeOverlay()">Cancel</button>
+      <button class="btn btn-p" onclick="saveInstructor()">Save Instructor</button>
+    </div>
+  </div>
+
+  <!-- STUDENT FORM -->
+  <div class="modal" id="student-form" style="display:none" onclick="event.stopPropagation()">
+    <div class="mh"><div class="mt" id="sf-title">Add Student</div><button class="mc" onclick="closeOverlay()">✕</button></div>
+    <div class="mb">
+      <div class="fr2"><label>Full Name</label><input id="sf-name" placeholder="e.g. Maria Santos"></div>
+      <div class="fg">
+        <div class="fr2"><label>Cohort</label><input id="sf-cohort" placeholder="Cohort 1"></div>
+        <div class="fr2"><label>Role</label><input id="sf-role" placeholder="e.g. Junior CSM"></div>
+      </div>
+      <div class="fr2"><label>Email</label><input id="sf-email" type="email" placeholder="name@quartile.com"></div>
+      <div class="fg">
+        <div class="fr2"><label>Primary Channel</label><input id="sf-channel" placeholder="e.g. AMZ"></div>
+        <div class="fr2"><label>Avg Participation Score</label><input id="sf-score" type="number" step="0.1" min="0" max="10" placeholder="TBD"></div>
+      </div>
+      <div class="fr2"><label>Background / Notes</label><textarea id="sf-bio" placeholder="Prior experience, notes..."></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn" onclick="closeOverlay()">Cancel</button>
+      <button class="btn btn-p" onclick="saveStudent()">Save Student</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">Quartile Academy</div>
+      <div class="sub-brand">Session Tracker · Cohort 1</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Workspace</div>
+      <div class="nav-item active" onclick="nav('overview',this)">
+        <svg class="ni" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>Overview
+      </div>
+      <div class="nav-item" onclick="nav('modules',this)">
+        <svg class="ni" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h8"/></svg>Modules
+      </div>
+      <div class="nav-item" onclick="nav('instructors',this)">
+        <svg class="ni" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>Instructors
+      </div>
+      <div class="nav-item" onclick="nav('students',this)">
+        <svg class="ni" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="2.5"/><circle cx="11" cy="5" r="2.5"/><path d="M1 14c0-2.2 1.8-4 4-4"/><path d="M15 14c0-2.2-1.8-4-4-4"/><path d="M5 14c0-2.2 1.3-4 3-4s3 1.8 3 4"/></svg>Students
+      </div>
+    </div>
+    <div style="padding:12px 18px;border-top:.5px solid var(--border-light)">
+      <button class="btn btn-sm" style="width:100%;justify-content:center;font-size:11px;color:var(--text-tertiary)" onclick="resetToSeed()">↺ Reset to defaults</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div id="page-overview" class="page active">
+      <div class="pi">
+        <div class="ph"><div class="ph-l"><div class="pt">Academy Overview</div><div class="ps">6-week program · Cohort 1</div></div></div>
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kl">Total Modules</div><div class="kv" id="kpi-total">—</div><div class="ks">across 6 weeks</div></div>
+          <div class="kpi"><div class="kl">Scheduled Hours</div><div class="kv" id="kpi-hours">—</div><div class="ks">total learning time</div></div>
+          <div class="kpi"><div class="kl">Instructors</div><div class="kv" id="kpi-inst">—</div><div class="ks">unique session leads</div></div>
+          <div class="kpi"><div class="kl">Sessions Analyzed</div><div class="kv" id="kpi-analyzed">1</div><div class="ks">with full transcript</div></div>
+        </div>
+        <div class="wk-grid" id="week-grid"></div>
+        <div class="sl">All Sessions</div>
+        <div class="tc"><table><thead><tr><th>ID</th><th>Module</th><th>Week</th><th>Format</th><th>Hrs</th><th>Instructor</th><th>Status</th></tr></thead><tbody id="ov-tbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <div id="page-modules" class="page">
+      <div class="pi">
+        <div class="ph">
+          <div class="ph-l"><div class="pt">Modules</div><div class="ps">Click any row for full details · Click a cell to edit inline</div></div>
+          <button class="btn btn-p" onclick="openModuleForm()">+ Add Module</button>
+        </div>
+        <div class="toolbar">
+          <input type="text" id="mod-q" placeholder="Search by name, instructor, channel…" oninput="filterMods()">
+          <select id="mod-w" onchange="filterMods()"><option value="">All weeks</option><option>Week 1</option><option>Week 2</option><option>Week 3</option><option>Week 4</option><option>Week 5</option><option>Week 6</option></select>
+          <select id="mod-f" onchange="filterMods()"><option value="">All formats</option><option>Live</option><option>OnDemand</option><option>Assessment</option></select>
+          <select id="mod-c" onchange="filterMods()"><option value="">All channels</option></select>
+          <select id="mod-s" onchange="filterMods()"><option value="">All statuses</option><option>Scheduled</option><option>To Do</option><option>Presented</option><option>Needs Review</option><option>Completed</option></select>
+        </div>
+        <div class="sr" id="mod-stats"></div>
+        <div class="tc"><table><thead><tr><th>ID</th><th>Module</th><th>Week</th><th>Channel</th><th>Format</th><th>Hrs</th><th>Instructor</th><th>Status</th><th style="width:60px"></th></tr></thead><tbody id="mod-tbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <div id="page-instructors" class="page">
+      <div class="pi">
+        <div class="ph">
+          <div class="ph-l"><div class="pt">Instructors</div><div class="ps">All session leads and their teaching load</div></div>
+          <button class="btn btn-p" onclick="openInstructorForm()">+ Add Instructor</button>
+        </div>
+        <div class="toolbar"><input type="text" id="inst-q" placeholder="Search instructors…" oninput="filterInst()"></div>
+        <div class="ig" id="inst-grid"></div>
+      </div>
+    </div>
+
+    <div id="page-students" class="page">
+      <div class="pi">
+        <div class="ph">
+          <div class="ph-l"><div class="pt">Students</div><div class="ps">Cohort participation and progress tracking</div></div>
+          <button class="btn btn-p" onclick="openStudentForm()">+ Add Student</button>
+        </div>
+        <div id="students-content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── QA006 FULL RECORD ───────────────────────────────────────────────────────
+const QA006_RECORD = {
+  id:"QA006",
+  status:"Presented",
+  week:"Week 1",
+  module:"Quartile Departments & Roles in Detail",
+  format:"OnDemand",
+  length:1.0,
+  actualRuntime:"1h 02m",
+  channel:"Quartile",
+  instructor:"Quartile Instructor",
+  instructorTitle:"Senior Analytics Consultant",
+  sessionCode:"W1.4",
+  sessionDate:"2026-01-15",
+  recordingPlatform:"Microsoft Teams",
+  obj:"Understand Quartile teams, responsibilities, and how functions connect in pods and client work.",
+  recording:"",
+  ppt:"",
+  notes:"Full transcript analyzed. Content Entry Doc (v2) and PPT (V1) reviewed. High content match. Instructor delivered all major sections; minor undercoverage on RevOps/BizOps and Marketing/Finance/People depth. Q&A was strong — students answered check questions correctly.",
+  isFirstTime: true,
+  contentMatchScore: 8,
+  contentMatchNotes: "All major departments covered with strong alignment to Content Entry Doc. Launch Pod, CS structure, Tech/Product/GGS sections delivered accurately. RevOps vs Finance distinction made clearly. Minor undercoverage: Marketing, Finance, People received lighter treatment in Q&A section. Off-script addition: Walmart channel mentioned as strategic priority — valuable, on-brand.",
+  topicsCovered: ["CS Org overview (Mid-Market, D2C, SMB)","Strategist partnership model","Customer Growth team","Prime team","Center of Excellence (3 pillars: Assurance, Enablement, Special Projects)","RevOps vs Finance distinction","BizOps","Launch Pod — Set Up, Scale, Stabilize","Launch Pod dual role (value demo + fit validation)","Tech team","Product team","Product Marketing","GGS / Strategic Partnerships","Marketing team","Finance team","People team","Salesforce as RevOps backbone"],
+  topicsMissed: ["Deep-dive on Marketing responsibilities — briefly mentioned, not reinforced in Q&A","Finance details — covered but no check question","People Team practical relevance for new hires — touched lightly"],
+  offScriptAdditions: [{text:"Walmart as an increasingly strategic channel for Quartile this year — GGS and Strategist groups mentioned. Students flagged for later module.", flag:"Valuable"}],
+  frameworkAdherence: "Strong. Instructor followed the documented structure: CS org → Launch Pod → Tech/Product → GGS → Support teams. Closing recap matched content doc sequence precisely.",
+  terminologyDrift: "None identified. All Quartile-specific terms (COE, GGS, RevOps, BizOps, Prime, Launch Pod, TAM) used correctly and consistently.",
+  factualCorrections: "None required. All content is accurate and consistent with Content Entry Doc v2.",
+  confidenceScore: 8,
+  confidenceNotes: "Instructor was clear, well-paced, and confident throughout. Strong use of analogies (CSM as conductor, Strategist as section leader). Comfortable fielding student questions with accurate, well-framed answers.",
+  pacingAssessment: "On Time",
+  pacingNotes: "62 minutes actual vs 30min scheduled (content doc is comprehensive — runtime reflects full delivery). Pacing was steady with no rushed sections.",
+  examplesUsed: "Hypotheticals (load balancer diagram example for Product feedback, enterprise D2C Shopify client for CS routing). No live account examples — appropriate for Week 1 orientation.",
+  checkForUnderstanding: "3 structured check questions at session close. All answered correctly by students. Quality: high — questions tested applied reasoning, not recall.",
+  keyTeachingMoments: ["CSM as conductor / Strategist as section leader analogy — highly effective","RevOps vs Finance distinction — proactively clarified before confusion arose","D2C vs Mid-Market differentiation: size ≠ team assignment; channel focus does — Student 1 internalized correctly","Launch Pod dual role (value demo + quality control) — framed memorably"],
+  confusionPoints: ["Initial RevOps vs Finance confusion from Student 1 (proactively addressed)","COE scope — Student 2 initially thought training-only (corrected with full 3-pillar breakdown)","Strategist direct client contact ambiguity — clarified by instructor"],
+  engagementLevel: "Medium",
+  classEngagementAvg: 6.7,
+  participantKnowledgeBaseline: "Low — cohort is new to Quartile structure. Student 1 and Student 2 demonstrated basic prior awareness. Student 3 was quieter but answered the closing check question correctly.",
+  mostEngaged: ["Student 1","Student 2"],
+  leastEngaged: ["Student 3"],
+  followUps: [
+    {item:"Walmart module — instructor flagged dedicated coverage coming. Ensure it is scheduled in Week 4.", owner:"Academy Program Lead", deadline:"TBD"},
+    {item:"Salesforce / tools session — instructor flagged Salesforce relevance for CSMs. Ensure System & Accesses module covers this.", owner:"Cris", deadline:"Week 1"},
+    {item:"Prime team agency name — withheld for confidentiality. Director to brief students post-placement.", owner:"Director (per team placement)", deadline:"Post-graduation"}
+  ],
+  correctionsForInstructor: "None required.",
+  technicalIssues: "None noted.",
+  students: [
+    {
+      name:"Student 1",
+      interactions: 6,
+      participationScore: 7,
+      engagementType: "Active",
+      questionsAsked: [
+        "I know there's a CSM team — they manage client relationships?",
+        "So if a client is big but their main business is on their own website, they'd be D2C not Mid-Market?",
+        "So if I notice something in the platform that's confusing for clients, I'd go to Product with that?",
+        "Just one — for the Prime team, who is the large agency partner they manage? Or is that something we'd find out later?"
+      ],
+      answersGiven: [
+        {question:"Which Quartile CS team manages a new enterprise client selling primarily through Shopify/Google?", answer:"D2C team.", accuracy:"Correct"},
+        {question:"Why not Mid-Market?", answer:"Because even though they're enterprise-size, their main channel isn't Amazon — it's their own website and Google. So the channel focus puts them in D2C.", accuracy:"Correct"}
+      ],
+      notableMoment: "Correctly articulated the D2C vs Mid-Market channel-focus logic unprompted in the closing Q&A. Demonstrates strong conceptual grasp.",
+      knowledgeStrengths: ["CS team routing logic (channel focus over size)","Product feedback loop awareness"],
+      knowledgeGaps: []
+    },
+    {
+      name:"Student 2",
+      interactions: 5,
+      participationScore: 7,
+      engagementType: "Active",
+      questionsAsked: [
+        "I've heard of the COE — Center of Excellence? I think they do training?",
+        "So the COE is kind of like internal consultants for the CS team?",
+        "How long does a typical client spend in Launch Pod before graduating?",
+        "Is there a difference between the People Team and whoever does the Quartile Academy? Or is that COE?"
+      ],
+      answersGiven: [
+        {question:"A client has completed 3 months in the Launch Pod. Performance stabilized. What happens next?", answer:"They graduate and transition to a long-term CSM in the appropriate CS team — Mid-Market, D2C, or SMB depending on their profile.", accuracy:"Correct"},
+        {question:"What's the other possible outcome at the end of the Launch Pod?", answer:"They exit — if the Launch Pod determines the partnership isn't a strong fit, Quartile communicates that and discontinues the engagement.", accuracy:"Correct"}
+      ],
+      notableMoment: "\"Internal consultants with a training mandate\" reframe of COE — instructor validated as accurate and insightful.",
+      knowledgeStrengths: ["COE structure and scope","Launch Pod graduation / exit logic"],
+      knowledgeGaps: ["Initially underestimated COE scope (training-only assumption) — corrected in session"]
+    },
+    {
+      name:"Student 3",
+      interactions: 3,
+      participationScore: 6,
+      engagementType: "Reactive",
+      questionsAsked: [
+        "So the Strategist doesn't talk to the client directly?",
+        "So GGS is why Quartile sometimes gets access to beta features before other agencies?"
+      ],
+      answersGiven: [
+        {question:"If a CSM identifies a reporting gap multiple clients are asking about — which team do they bring that to?", answer:"Product team. They'd evaluate it against other priorities on the roadmap, turn it into requirements, and work with Tech to build it.", accuracy:"Correct"}
+      ],
+      notableMoment: "Made the correct GGS → beta access connection proactively. Closed the check question correctly despite lower overall participation.",
+      knowledgeStrengths: ["GGS platform relationship value","Product/Tech workflow"],
+      knowledgeGaps: []
+    }
+  ],
+  qaLog: [
+    {q:"I know there's a CSM team — they manage client relationships?", askedBy:"Student 1", aGiven:"Exactly right. CSMs — Customer Success Managers — are the primary relationship owners for clients.", score:10, scoreNote:"Correct — full confirmation."},
+    {q:"I've heard of the COE — Center of Excellence? I think they do training?", askedBy:"Student 2", aGiven:"Yes, good. The COE does a lot more than training, but training is definitely part of it.", score:9, scoreNote:"Correct and appropriately qualified — led to fuller explanation later."},
+    {q:"So if a client is big but their main business is on their own website, they'd be D2C not Mid-Market?", askedBy:"Student 1", aGiven:"Exactly. Size alone doesn't determine which team. Channel focus is the differentiator. If they're Amazon-first, Mid-Market. If they're D2C-first — Google, Shopify, owned channels — then D2C.", score:10, scoreNote:"Correct. Precisely identified the most common confusion point."},
+    {q:"So the Strategist doesn't talk to the client directly?", askedBy:"Student 3", aGiven:"It depends. In some cases Strategists will join client calls, especially for technical discussions. But the CSM owns the relationship. The Strategist is not the primary point of contact.", score:10, scoreNote:"Correct and nuanced — avoided oversimplification."},
+    {q:"So the COE is kind of like internal consultants for the CS team?", askedBy:"Student 2", aGiven:"That's actually a really good way to put it. Internal consultants with a training mandate.", score:10, scoreNote:"Correct reframe, well validated by instructor."},
+    {q:"Is RevOps the same as the Finance team?", askedBy:"Student 1", aGiven:"No. RevOps sits within CS and is focused on how CS activity translates to revenue using Salesforce. Finance is a separate team that owns company-wide financial planning. Different scope, different tools, different mandate.", score:10, scoreNote:"Correct. Proactively clarified a common confusion point."},
+    {q:"What determines whether a client goes to Mid-Market vs SMB if they're Amazon-first?", askedBy:"Student 3", aGiven:"Primarily spend — the size of the advertising budget under management. But also complexity of account structure and number of services.", score:10, scoreNote:"Correct. Added nuance beyond budget-only."},
+    {q:"How long does a typical client spend in Launch Pod before graduating?", askedBy:"Student 2", aGiven:"The standard window is around three months. Some transition faster. Others take the full three months. Some don't graduate at all. The timeline is driven by results and readiness, not a fixed calendar date.", score:10, scoreNote:"Correct and well-qualified."},
+    {q:"So if I notice something in the platform that's confusing for clients, I'd go to Product with that?", askedBy:"Student 1", aGiven:"Yes — that's exactly the right channel. Product owns the roadmap and they depend on feedback from client-facing teams to prioritize correctly.", score:10, scoreNote:"Correct."},
+    {q:"So GGS is why Quartile sometimes gets access to beta features before other agencies?", askedBy:"Student 3", aGiven:"Exactly. That's a direct outcome of those platform relationships. If Amazon is launching a new campaign type, GGS is in those conversations early. And that early access can translate into a real advantage for clients.", score:10, scoreNote:"Correct and well-elaborated."},
+    {q:"Is there a difference between the People Team and whoever does the Quartile Academy? Or is that COE?", askedBy:"Student 2", aGiven:"The Quartile Academy sits within COE — specifically within the Enablement function. People Team handles broader HR responsibilities. Different functions, different mandates, and they work together.", score:10, scoreNote:"Correct and precise distinction."},
+    {q:"For the Prime team, who is the large agency partner they manage?", askedBy:"Student 1", aGiven:"That's something you'd learn through your director once placed. The details involve some confidentiality around the agency relationship. But structurally, Prime CSMs navigate an indirect client relationship with added communication complexity.", score:9, scoreNote:"Appropriately handled — confidentiality maintained, structural nuance preserved."}
+  ]
+};
+
+// ─── MODULE DATA ─────────────────────────────────────────────────────────────
+const SEED=[
+  {id:"QA001",status:"Scheduled",week:"Week 1",module:"Assignment",format:"Assessment",length:2.0,channel:"AMZ",instructor:"Brenda Mentz",obj:"SP/SB/SD Report Analysis Task.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA002",status:"Scheduled",week:"Week 1",module:"Leadership Fireside Chat",format:"Live",length:0.5,channel:"Quartile",instructor:"Chris Corbet",obj:"High Level conversation with Leadership.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA003",status:"Scheduled",week:"Week 1",module:"Recap Week's Learnings",format:"OnDemand",length:2.0,channel:"Study",instructor:"Cris",obj:"Consolidate key learnings.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA004",status:"Scheduled",week:"Week 1",module:"Introductions/Expectations",format:"Live",length:1.0,channel:"Quartile",instructor:"Cris",obj:"Align on Academy goals, structure, expectations, and success criteria.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA005",status:"Scheduled",week:"Week 1",module:"System & Accesses",format:"Live",length:0.5,channel:"Quartile",instructor:"Cris",obj:"Ensure new hires can access and navigate required tools and accounts.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA006",status:"Presented",week:"Week 1",module:"Quartile Departments & Roles in Detail",format:"OnDemand",length:1.0,channel:"Quartile",instructor:"Quartile Instructor",obj:"Understand Quartile teams, responsibilities, and how functions connect in pods and client work.",recording:"",ppt:"",date:"2026-01-15",notes:"Full transcript analyzed. Content Entry Doc (v2) and PPT (V1) reviewed. High content match. Instructor delivered all major sections accurately. Strong Q&A — all 3 check questions answered correctly.",analyzed:true},
+  {id:"QA007",status:"Scheduled",week:"Week 1",module:"AMZ Intro: ASIN Structure",format:"OnDemand",length:1.0,channel:"AMZ",instructor:"Brian",obj:"Explain ASIN structure.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA008",status:"Scheduled",week:"Week 1",module:"AMZ Intro: Buy Box/Retail Readiness",format:"OnDemand",length:0.5,channel:"AMZ",instructor:"Luciana",obj:"Assess Buy Box fundamentals.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA009",status:"Scheduled",week:"Week 1",module:"Branded Terms vs NB",format:"OnDemand",length:1.0,channel:"AMZ",instructor:"Ana L",obj:"Differentiate branded vs non-branded strategies.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA010",status:"Scheduled",week:"Week 1",module:"AMZ Intro: Sales Attribution",format:"OnDemand",length:0.5,channel:"AMZ",instructor:"Brian",obj:"Explain Amazon attribution basics.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA011",status:"Scheduled",week:"Week 1",module:"AMZ Intro: Placements (SD, SP, SB)",format:"OnDemand",length:1.0,channel:"AMZ",instructor:"Brian",obj:"Identify ad placements.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA012",status:"Scheduled",week:"Week 1",module:"AMZ Intro: ACOS/TACOS",format:"OnDemand",length:1.0,channel:"AMZ",instructor:"Brian",obj:"Calculate and interpret ACOS/TACOS.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA013",status:"Scheduled",week:"Week 1",module:"Campaign Behavior",format:"OnDemand",length:1.0,channel:"AMZ",instructor:"Thiago Castro",obj:"Understand campaign mechanics.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA014",status:"Scheduled",week:"Week 1",module:"Ecomm 101",format:"Live",length:1.0,channel:"Quartile",instructor:"Brian",obj:"Understand Quartile's eCommerce context.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA015",status:"Scheduled",week:"Week 1",module:"Naming Convention & Quartile System Logic",format:"OnDemand",length:1.0,channel:"AMZ",instructor:"Thiago Castro",obj:"Apply Quartile naming conventions.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA016",status:"Scheduled",week:"Week 1",module:"AMZ Intro: Vendor vs Seller",format:"Live",length:0.5,channel:"AMZ",instructor:"Tiago Fronza",obj:"Differentiate vendor vs seller models.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA017",status:"Scheduled",week:"Week 1",module:"Sponsored Products 101",format:"OnDemand",length:1.0,channel:"AMZ",instructor:"Felipe Tahara",obj:"Explain Sponsored Products basics.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA018",status:"Scheduled",week:"Week 1",module:"Sponsored Products - Advanced",format:"Live",length:3.0,channel:"AMZ",instructor:"Felipe Tahara",obj:"Apply advanced Sponsored Products strategies.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA019",status:"Scheduled",week:"Week 1",module:"ICP",format:"OnDemand",length:0.5,channel:"Quartile",instructor:"Fernando Gamba",obj:"Explain Quartile's ICP and client segmentation logic.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA020",status:"Scheduled",week:"Week 1",module:"Sponsored Brands 101",format:"Live",length:1.0,channel:"AMZ",instructor:"Fred",obj:"Explain Sponsored Brands basics.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA021",status:"Scheduled",week:"Week 1",module:"Sponsored Brands Advanced",format:"Live",length:3.0,channel:"AMZ",instructor:"Fred",obj:"Apply advanced Sponsored Brands strategies.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA022",status:"Scheduled",week:"Week 1",module:"DSP/SD 101",format:"OnDemand",length:1.0,channel:"AMZ",instructor:"Regina Reker",obj:"Understand DSP/SD fundamentals.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA023",status:"Scheduled",week:"Week 1",module:"Life as a CSM",format:"Live",length:1.0,channel:"Quartile",instructor:"Mari Chagas + Pedro Estrada",obj:"Give new-hires a broad understanding of the CSM role.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA024",status:"Scheduled",week:"Week 1",module:"Quartile Portal Overview",format:"Live",length:0.5,channel:"Quartile",instructor:"Victor Anger + Cris",obj:"Provide a high-level understanding of the Quartile Portal.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA025",status:"Scheduled",week:"Week 2",module:"Quartile Portal I - ACOS Hierarchy",format:"Live",length:2.0,channel:"Portal",instructor:"Thomas Shimidt",obj:"Navigate ACOS hierarchy.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA026",status:"Scheduled",week:"Week 2",module:"Quartile Portal II - Campaign Creation",format:"Live",length:2.0,channel:"Portal",instructor:"Thomas Shimidt",obj:"Navigate campaign creation, Research Tool, Negative List, and Portfolio.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA027",status:"Scheduled",week:"Week 2",module:"Quartile Portal III - Imported Campaigns",format:"Live",length:2.0,channel:"Portal",instructor:"Thomas Shimidt",obj:"Navigate imported campaigns, VAM baseline, and Quartile Factor.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA028",status:"Scheduled",week:"Week 2",module:"Pod / Buddy / Shadow Calls",format:"Live",length:4.0,channel:"AMZ",instructor:"TBD",obj:"Apply module concepts confidently.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA029",status:"Scheduled",week:"Week 2",module:"Quartile Portal IV - Reports",format:"Live",length:2.0,channel:"Portal",instructor:"Guilherme Decimo",obj:"A practical training on Quartile Portal Reports.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA030",status:"Scheduled",week:"Week 2",module:"Portal Q&A and Practical Exercises",format:"Live",length:2.0,channel:"Quartile",instructor:"Luis Saicali",obj:"Practice end-to-end Portal workflows.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA031",status:"Scheduled",week:"Week 2",module:"Objection Handling",format:"Live",length:1.0,channel:"Soft Skills",instructor:"Mari Chagas",obj:"Handle common client objections.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA032",status:"Scheduled",week:"Week 2",module:"Negotiation",format:"Live",length:1.0,channel:"Soft Skills",instructor:"Mari Chagas",obj:"Apply basic negotiation techniques.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA033",status:"Scheduled",week:"Week 2",module:"DSP Strategist",format:"Live",length:1.0,channel:"AMZ",instructor:"Regina Reker",obj:"Understand DSP strategy approach.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA034",status:"Scheduled",week:"Week 2",module:"DSP AMC Audiences + Reports",format:"Live",length:1.0,channel:"AMZ",instructor:"Victor Anger",obj:"Use AMC audiences and reporting concepts.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA035",status:"Scheduled",week:"Week 2",module:"DSP Situations & Funnel Approach",format:"Live",length:1.0,channel:"AMZ",instructor:"Victor Anger",obj:"Apply DSP funnel frameworks.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA036",status:"Scheduled",week:"Week 2",module:"Leadership Fireside Chat",format:"Live",length:0.5,channel:"Quartile",instructor:"Amanda / Phil / Roberto",obj:"High Level conversation with Leadership.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA037",status:"Scheduled",week:"Week 2",module:"Recap Week's Learnings",format:"OnDemand",length:1.0,channel:"Study",instructor:"Cris",obj:"Consolidate key learnings.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA038",status:"Scheduled",week:"Week 3",module:"DTC, Google vs Amazon + Omni-Channel Journey",format:"OnDemand",length:1.0,channel:"Google",instructor:"Carlos Braz",obj:"Explain DTC journey and Google vs Amazon.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA039",status:"Scheduled",week:"Week 3",module:"Merchant Center Overview",format:"OnDemand",length:0.5,channel:"Google",instructor:"Bruno Matumoto",obj:"Understand Merchant Center components.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA040",status:"Scheduled",week:"Week 3",module:"Feed Overview",format:"Live",length:0.5,channel:"Google Ads",instructor:"Frank Savena",obj:"Review feed structure.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA041",status:"Scheduled",week:"Week 3",module:"GA4 Overview + Insights",format:"Live",length:0.5,channel:"Google",instructor:"Pat Bradley",obj:"Use GA4 concepts for insights.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA042",status:"Scheduled",week:"Week 3",module:"Google Ads Overview - Campaign Types",format:"OnDemand",length:1.0,channel:"Google Ads",instructor:"Luisa Conti",obj:"Identify Google Ads campaign types.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA043",status:"Scheduled",week:"Week 3",module:"Paid Search",format:"Live",length:1.0,channel:"Google Ads",instructor:"Rebecca Rush",obj:"Understand paid search basics.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA044",status:"Scheduled",week:"Week 3",module:"PMAX",format:"Live",length:1.0,channel:"Google Ads",instructor:"Jose Adorno",obj:"Explain PMAX basics.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA045",status:"Scheduled",week:"Week 3",module:"Standard Shopping",format:"Live",length:1.0,channel:"Google Ads",instructor:"Jose Adorno",obj:"Understand Standard Shopping structure.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA046",status:"Scheduled",week:"Week 3",module:"PLA Segmentation Strategy",format:"Live",length:1.0,channel:"Google Ads",instructor:"Jake Damico",obj:"Apply PLA segmentation approaches.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA047",status:"Scheduled",week:"Week 3",module:"Quartile Tech (DTC)",format:"Live",length:0.5,channel:"Google Ads",instructor:"Jake Damico",obj:"Apply module concepts confidently.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA048",status:"Scheduled",week:"Week 3",module:"Dashboards",format:"Live",length:1.0,channel:"Google Ads",instructor:"Cris",obj:"Navigate dashboards and translate metrics.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA049",status:"Scheduled",week:"Week 3",module:"Bing Overview",format:"Live",length:1.0,channel:"Bing",instructor:"Carlos Braz",obj:"Understand Bing basics.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA050",status:"Scheduled",week:"Week 3",module:"Meta Overview",format:"Live",length:1.0,channel:"Meta",instructor:"Lucas Dias",obj:"Understand Meta paid social fundamentals.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA051",status:"Scheduled",week:"Week 3",module:"Pod / Buddy / Shadow Calls",format:"Live",length:4.0,channel:"Quartile",instructor:"TBD",obj:"Apply module concepts confidently.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA052",status:"Scheduled",week:"Week 3",module:"Health Checks",format:"Live",length:1.0,channel:"DTC",instructor:"Julia Baldo",obj:"Run a structured health check.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA053",status:"Scheduled",week:"Week 3",module:"Performance Calls",format:"Live",length:1.0,channel:"DTC",instructor:"Kerianne Kistner",obj:"Structure and deliver performance updates.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA054",status:"Scheduled",week:"Week 3",module:"Leadership Fireside Chat",format:"Live",length:0.5,channel:"Quartile",instructor:"Laurence",obj:"High Level conversation with Leadership.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA055",status:"Scheduled",week:"Week 3",module:"Closing the Week & Q&A",format:"Live",length:1.0,channel:"Quartile",instructor:"TBD",obj:"Practice end-to-end workflows.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA056",status:"Scheduled",week:"Week 3",module:"QRs - Survey, Audit, Internal, Presentation",format:"Live",length:1.0,channel:"Google",instructor:"Cris",obj:"Use Quartile QR frameworks.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA058",status:"Scheduled",week:"Week 4",module:"Walmart Overview",format:"Live",length:2.0,channel:"Walmart",instructor:"Luciano Ferrareze + Ana Maiczuk",obj:"Understand Walmart ads fundamentals.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA059",status:"Scheduled",week:"Week 4",module:"TikTok 101",format:"Live",length:1.0,channel:"TikTok",instructor:"Lucas Dias",obj:"Understand TikTok basics.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA060",status:"Scheduled",week:"Week 4",module:"Pro Suite Overview",format:"OnDemand",length:0.5,channel:"Tech",instructor:"Felipe Tahara",obj:"Understand Pro Suite purpose.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA061",status:"Scheduled",week:"Week 4",module:"Upsell Process, CG",format:"Live",length:1.0,channel:"Soft Skills",instructor:"Joao Victor/Julia Fortino",obj:"Apply upsell process concepts.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA062",status:"Scheduled",week:"Week 4",module:"Promo Management Overview",format:"OnDemand",length:1.0,channel:"Tech",instructor:"Matheus C.",obj:"Understand Promo Management basics.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA063",status:"Scheduled",week:"Week 4",module:"Sciene 101",format:"OnDemand",length:1.0,channel:"Sciene",instructor:"Ricardo Morandini",obj:"Understand Sciene fundamentals.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA064",status:"Scheduled",week:"Week 4",module:"ChatGPT in Practice",format:"Live",length:1.0,channel:"ChatGPT",instructor:"Camila Malacarne",obj:"Apply ChatGPT use cases safely.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA065",status:"Scheduled",week:"Week 4",module:"Sciene Companion in Practice",format:"Live",length:2.0,channel:"Sciene",instructor:"Camila Malacarne",obj:"Apply Sciene Companion in practice.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA066",status:"Scheduled",week:"Week 4",module:"Customer Journey at Quartile",format:"Live",length:1.0,channel:"Quartile",instructor:"Joao Victor/Julia Fortino",obj:"Understanding account milestones.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA068",status:"Scheduled",week:"Week 4",module:"Pod / Buddy / Shadow Calls",format:"Live",length:4.0,channel:"Quartile",instructor:"TBD",obj:"Apply module concepts confidently.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA069",status:"Scheduled",week:"Week 4",module:"Account Transition Process",format:"Live",length:1.0,channel:"Quartile",instructor:"Cris",obj:"Follow the account transition process.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA070",status:"Scheduled",week:"Week 4",module:"Leadership Fireside Chat",format:"Live",length:0.5,channel:"Quartile",instructor:"Sylvio",obj:"High Level conversation with Leadership.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA071",status:"Scheduled",week:"Week 4",module:"Reflect Week's Learnings",format:"OnDemand",length:1.0,channel:"Study",instructor:"TBD",obj:"Reflect on weekly learnings.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA072",status:"Scheduled",week:"Week 4",module:"Closing the Week & Q&A",format:"Live",length:1.0,channel:"Quartile",instructor:"TBD",obj:"Practice end-to-end workflows.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA073",status:"Scheduled",week:"Week 5",module:"Excel Basics",format:"OnDemand",length:1.0,channel:"Excel",instructor:"Alberto Romero",obj:"Use core Excel functions.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA074",status:"Scheduled",week:"Week 5",module:"Account Analysis 101 (AMZ)",format:"OnDemand",length:1.0,channel:"AMZ",instructor:"Luis Saicali",obj:"Perform structured account analysis.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA075",status:"Scheduled",week:"Week 5",module:"Account Analysis Advanced (AMZ)",format:"Live",length:3.0,channel:"AMZ",instructor:"Iago Gomes",obj:"Apply advanced diagnostics.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA076",status:"Scheduled",week:"Week 5",module:"Account Analysis 101 (DTC)",format:"OnDemand",length:1.0,channel:"DTC",instructor:"Emily Foster",obj:"Perform structured account analysis.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA077",status:"Scheduled",week:"Week 5",module:"Assignment: Account Analysis Task (AMZ)",format:"Assessment",length:2.0,channel:"AMZ",instructor:"Iago Gomes",obj:"Complete an applied analysis assignment.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA078",status:"Scheduled",week:"Week 5",module:"Account Analysis Advanced (DTC)",format:"Live",length:1.0,channel:"DTC",instructor:"Pat Bradley",obj:"Apply advanced diagnostics.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA079",status:"Scheduled",week:"Week 5",module:"Pod / Buddy / Shadow Calls",format:"Live",length:4.0,channel:"Quartile",instructor:"TBD",obj:"Apply module concepts confidently.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA080",status:"Scheduled",week:"Week 5",module:"Data into Insights",format:"Live",length:2.0,channel:"Soft Skills",instructor:"Felipe Tahara",obj:"Translate data into clear insights.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA081",status:"Scheduled",week:"Week 5",module:"AMC 101",format:"OnDemand",length:0.5,channel:"AMZ",instructor:"Mickaela Pulcherio",obj:"Understand AMC fundamentals.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA082",status:"Scheduled",week:"Week 5",module:"Assignment: Account Analysis Task (Google)",format:"Assessment",length:2.0,channel:"Google",instructor:"Pat Bradley",obj:"Complete an applied analysis assignment.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA083",status:"Scheduled",week:"Week 5",module:"Measurement Storytelling",format:"Live",length:2.0,channel:"Soft Skills",instructor:"Brian",obj:"Communicate performance through narrative.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA084",status:"Scheduled",week:"Week 5",module:"Assignment: Account Analysis Task (Multichannel)",format:"Assessment",length:2.0,channel:"Multichannel",instructor:"Iago Gomes",obj:"Complete an applied analysis assignment.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA085",status:"Scheduled",week:"Week 5",module:"Market Intelligence 101",format:"OnDemand",length:5.0,channel:"Quartile",instructor:"Suriane Silva",obj:"Explain key market intelligence concepts.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA086",status:"Scheduled",week:"Week 5",module:"Assignment: Account Analysis Task (Multichannel II)",format:"Assessment",length:1.0,channel:"Multichannel",instructor:"TBD",obj:"Complete an applied analysis assignment.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA087",status:"Scheduled",week:"Week 5",module:"Forecast 101",format:"OnDemand",length:0.5,channel:"Quartile",instructor:"Vitor Caires",obj:"Build and interpret basic forecasts.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA088",status:"Scheduled",week:"Week 5",module:"Leadership Fireside Chat",format:"Live",length:0.5,channel:"Quartile",instructor:"Ed",obj:"High Level conversation with Leadership.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA089",status:"Scheduled",week:"Week 5",module:"Closing the Week & Q&A",format:"Live",length:1.0,channel:"Quartile",instructor:"TBD",obj:"Practice end-to-end workflows.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA090",status:"Scheduled",week:"Week 5",module:"Reflect Week's Learnings",format:"OnDemand",length:2.0,channel:"Study",instructor:"TBD",obj:"Reflect on weekly learnings.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA091",status:"Scheduled",week:"Week 6",module:"Certifications (Google)",format:"OnDemand",length:2.0,channel:"Google",instructor:"TBD",obj:"Complete required platform certifications.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA092",status:"Scheduled",week:"Week 6",module:"Graduation & Exec Q&A",format:"Live",length:1.0,channel:"Quartile",instructor:"DK / Sylvio",obj:"Graduation event.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA093",status:"Scheduled",week:"Week 6",module:"Role Plays (DTC)",format:"Live",length:2.0,channel:"DTC",instructor:"TBD",obj:"Demonstrate readiness through role plays.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA094",status:"Scheduled",week:"Week 6",module:"Role Plays (AMZ)",format:"Live",length:2.0,channel:"AMZ",instructor:"Carolina Collares",obj:"Demonstrate readiness through role plays.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA095",status:"Scheduled",week:"Week 6",module:"Pod / Buddy / Shadow Calls",format:"Live",length:4.0,channel:"Quartile",instructor:"TBD",obj:"Apply module concepts confidently.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA096",status:"Scheduled",week:"Week 6",module:"Certifications (AMZ)",format:"OnDemand",length:2.0,channel:"AMZ",instructor:"TBD",obj:"Complete required platform certifications.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA097",status:"Scheduled",week:"Week 6",module:"Market Intelligence Advanced",format:"Live",length:1.0,channel:"Quartile",instructor:"Suriane Silva",obj:"Apply advanced market intelligence.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA098",status:"Scheduled",week:"Week 6",module:"GGS & Partners",format:"OnDemand",length:1.0,channel:"Quartile",instructor:"Daniela Caporali",obj:"Describe the GGS ecosystem.",recording:"",ppt:"",date:"",notes:""},
+  {id:"QA099",status:"Scheduled",week:"Week 6",module:"Leadership Fireside Chat",format:"Live",length:0.5,channel:"Quartile",instructor:"DK",obj:"High Level conversation with Leadership.",recording:"",ppt:"",date:"",notes:""}
+];
+
+// ─── STORAGE KEYS ────────────────────────────────────────────────────────────
+const LS_MODULES   = 'qa_modules_v1';
+const LS_INSTS     = 'qa_insts_v1';
+const LS_STUDENTS  = 'qa_students_v1';
+
+const SEED_STUDENTS = QA006_RECORD.students.map(s=>({
+  name:s.name, cohort:"Cohort 1", role:"New Hire CSM", email:"", channel:"", bio:"",
+  avgScore:s.participationScore,
+  sessions:[{moduleId:"QA006",score:s.participationScore,engagementType:s.engagementType,interactions:s.interactions}],
+  flags:[]
+}));
+
+function loadState(){
+  try {
+    const sm = localStorage.getItem(LS_MODULES);
+    MODULES    = sm ? JSON.parse(sm) : [...SEED];
+  } catch(err){ MODULES = [...SEED]; }
+  try {
+    const si = localStorage.getItem(LS_INSTS);
+    EXTRA_INSTS = si ? JSON.parse(si) : [];
+  } catch(err){ EXTRA_INSTS = []; }
+  try {
+    const ss = localStorage.getItem(LS_STUDENTS);
+    STUDENTS = ss ? JSON.parse(ss) : [...SEED_STUDENTS];
+  } catch(err){ STUDENTS = [...SEED_STUDENTS]; }
+}
+
+function persist(){
+  try {
+    localStorage.setItem(LS_MODULES,  JSON.stringify(MODULES));
+    localStorage.setItem(LS_INSTS,    JSON.stringify(EXTRA_INSTS));
+    localStorage.setItem(LS_STUDENTS, JSON.stringify(STUDENTS));
+  } catch(err){ console.warn('localStorage save failed', err); }
+}
+
+function resetToSeed(){
+  if(!confirm('Reset all data to defaults? This cannot be undone.')) return;
+  localStorage.removeItem(LS_MODULES);
+  localStorage.removeItem(LS_INSTS);
+  localStorage.removeItem(LS_STUDENTS);
+  MODULES = [...SEED];
+  EXTRA_INSTS = [];
+  STUDENTS = [...SEED_STUDENTS];
+  refreshAll();
+  toast('Data reset to defaults');
+}
+
+let MODULES=[], EXTRA_INSTS=[], STUDENTS=[];
+loadState();
+let editMod=null,editInst=null,editStu=null,curDetail=null;
+
+function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function avC(n){let h=0;for(let c of n)h=(h*31+c.charCodeAt(0))%6;return'av'+h}
+function ini(n){return n.split(/[\s\/+,-]+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase()||'?'}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+function lnk(u,l){return u?`<a href="${e(u)}" target="_blank">${l||u}</a>`:'<span class="na">—</span>'}
+function sBadge(s){return{Scheduled:'bs',Presented:'bpres',Completed:'bc','Needs Review':'br','To Do':'bt'}[s]||'bt'}
+function fBadge(f){return{Live:'bl',OnDemand:'bo',Assessment:'ba'}[f]||'bt'}
+function scoreColor(v){return v>=8?'var(--teal-text)':v>=6?'#C85A00':'var(--amber-text)'}
+function scoreBarWidth(v){return Math.round((v/10)*100)+'%'}
+
+// OVERLAY
+function showOverlay(id){
+  document.querySelectorAll('.overlay>div').forEach(d=>d.style.display='none');
+  document.getElementById(id).style.display='flex';
+  document.getElementById('overlay').classList.add('open');
+}
+function closeOverlay(){
+  document.getElementById('overlay').classList.remove('open');
+  setTimeout(()=>{editMod=null;editInst=null;editStu=null;curDetail=null;},80);
+}
+document.getElementById('overlay').addEventListener('click',function(ev){if(ev.target===this)closeOverlay();});
+
+// ─── DETAIL POPUP ────────────────────────────────────────────────────────────
+function switchTab(tabId){
+  document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.dtab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.dtab[data-tab="'+tabId+'"]').classList.add('active');
+  document.getElementById('d-tab-'+tabId).classList.add('active');
+}
+
+function openDetail(id){
+  const m=MODULES.find(x=>x.id===id);if(!m)return;
+  curDetail=id;
+  document.getElementById('d-id').textContent=m.id+' · '+m.sessionCode||m.id;
+  document.getElementById('d-title').textContent=m.module;
+  const r=m.analyzed?QA006_RECORD:null;
+  document.getElementById('d-badges').innerHTML=
+    `<span class="badge ${sBadge(m.status)}">${m.status}</span>`+
+    `<span class="badge ${fBadge(m.format)}">${m.format}</span>`+
+    `<span class="badge bt">${m.week}</span>`+
+    `<span class="badge bt">${m.channel}</span>`+
+    (m.analyzed?`<span class="badge bc">✓ Analyzed</span>`:'');
+
+  const tabs=m.analyzed
+    ?[['identity','Overview'],['content','Content Analysis'],['delivery','Delivery'],['students','Students'],['qa','Q&A Log']]
+    :[['identity','Overview']];
+  document.getElementById('d-tabs').innerHTML=tabs.map((t,i)=>
+    `<div class="dtab${i===0?' active':''}" data-tab="${t[0]}" onclick="switchTab('${t[0]}')">${t[1]}</div>`
+  ).join('');
+  document.querySelectorAll('.dtab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('d-tab-identity').classList.add('active');
+
+  // IDENTITY TAB
+  document.getElementById('d-tab-identity').innerHTML=`
+    <div class="dg">
+      <div class="df"><div class="dfl">Instructor</div><div class="dfv">${e(m.instructor)}${r&&r.instructorTitle?`<br><span style="font-size:11px;color:var(--text-tertiary);font-weight:400">${e(r.instructorTitle)}</span>`:''}</div></div>
+      <div class="df"><div class="dfl">Session Date</div><div class="dfv">${m.date||'<span class="na">TBD</span>'}</div></div>
+      <div class="df"><div class="dfl">Length</div><div class="dfv">${m.length}h scheduled${r&&r.actualRuntime?` · <span style="color:var(--text-secondary)">${r.actualRuntime} actual</span>`:''}</div></div>
+      <div class="df"><div class="dfl">Recording</div><div class="dfv">${lnk(m.recording,'Watch recording')}</div></div>
+      <div class="df"><div class="dfl">Slides</div><div class="dfv">${lnk(m.ppt,'View slides')}</div></div>
+      <div class="df"><div class="dfl">Platform</div><div class="dfv">${r?e(r.recordingPlatform):'<span class="na">—</span>'}</div></div>
+    </div>
+    <div class="ds"><div class="dst">Learning Objective</div><div class="dsb">${e(m.obj)}</div></div>
+    ${m.notes?`<div class="ds"><div class="dst">Notes</div><div class="dsb">${e(m.notes)}</div></div>`:''}
+    ${r?`<div class="ds"><div class="dst">Follow-up Items</div>${r.followUps.map(f=>`<div class="fu-item"><div class="fu-dot"></div><div><div style="font-size:13px;margin-bottom:2px">${e(f.item)}</div><div style="font-size:11px;color:var(--text-tertiary)">Owner: ${e(f.owner)} · Deadline: ${e(f.deadline)}</div></div></div>`).join('')}</div>`:''}
+  `;
+
+  if(r){
+    // CONTENT TAB
+    document.getElementById('d-tab-content').innerHTML=`
+      <div class="score-row">
+        <div class="score-card"><div class="score-label">Content Match Score</div><div class="score-val" style="color:${scoreColor(r.contentMatchScore)}">${r.contentMatchScore}/10</div><div class="score-bar-wrap"><div class="score-bar-fill" style="width:${scoreBarWidth(r.contentMatchScore)}"></div></div><div class="score-note">${e(r.contentMatchNotes)}</div></div>
+        <div class="score-card"><div class="score-label">Framework Adherence</div><div class="dfv" style="margin-top:4px;font-size:13px;line-height:1.6">${e(r.frameworkAdherence)}</div></div>
+      </div>
+      <div class="ds"><div class="dst">Topics Covered</div><div class="topic-list">${r.topicsCovered.map(t=>`<span class="topic-tag">${e(t)}</span>`).join('')}</div></div>
+      <div class="ds" style="margin-top:16px"><div class="dst">Topics Missed / Undercovered</div><div class="topic-list">${r.topicsMissed.map(t=>`<span class="topic-tag missed">${e(t)}</span>`).join('')}</div></div>
+      <div class="ds" style="margin-top:16px"><div class="dst">Off-Script Additions</div>${r.offScriptAdditions.map(a=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:.5px solid var(--border-light)"><span class="badge bc" style="flex-shrink:0">${e(a.flag)}</span><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">${e(a.text)}</div></div>`).join('')}</div>
+      <div class="ds" style="margin-top:16px">
+        <div class="dg2">
+          <div class="df"><div class="dfl">Terminology Drift</div><div class="dfv" style="font-size:13px;line-height:1.6">${e(r.terminologyDrift)}</div></div>
+          <div class="df"><div class="dfl">Factual Corrections Needed</div><div class="dfv" style="font-size:13px;line-height:1.6">${e(r.factualCorrections)}</div></div>
+        </div>
+      </div>
+    `;
+
+    // DELIVERY TAB
+    document.getElementById('d-tab-delivery').innerHTML=`
+      <div class="score-row">
+        <div class="score-card"><div class="score-label">Instructor Confidence</div><div class="score-val" style="color:${scoreColor(r.confidenceScore)}">${r.confidenceScore}/10</div><div class="score-bar-wrap"><div class="score-bar-fill" style="width:${scoreBarWidth(r.confidenceScore)}"></div></div><div class="score-note">${e(r.confidenceNotes)}</div></div>
+        <div class="score-card"><div class="score-label">Class Engagement Avg</div><div class="score-val" style="color:${scoreColor(r.classEngagementAvg)}">${r.classEngagementAvg.toFixed(1)}/10</div><div class="score-bar-wrap"><div class="score-bar-fill" style="width:${scoreBarWidth(r.classEngagementAvg)}"></div></div><div class="score-note">Audience engagement: ${e(r.engagementLevel)}</div></div>
+      </div>
+      <div class="dg2" style="margin-bottom:20px">
+        <div class="df"><div class="dfl">Pacing</div><div class="dfv">${e(r.pacingAssessment)}<br><span style="font-size:12px;color:var(--text-secondary);font-weight:400">${e(r.pacingNotes)}</span></div></div>
+        <div class="df"><div class="dfl">Check for Understanding</div><div class="dfv" style="font-size:13px;line-height:1.6">${e(r.checkForUnderstanding)}</div></div>
+        <div class="df"><div class="dfl">Examples Used</div><div class="dfv" style="font-size:13px;line-height:1.6">${e(r.examplesUsed)}</div></div>
+        <div class="df"><div class="dfl">Technical Issues</div><div class="dfv" style="font-size:13px">${e(r.technicalIssues)}</div></div>
+      </div>
+      <div class="ds"><div class="dst">Key Teaching Moments</div>${r.keyTeachingMoments.map(t=>`<div class="fu-item"><div class="fu-dot" style="background:var(--teal-text)"></div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">${e(t)}</div></div>`).join('')}</div>
+      <div class="ds" style="margin-top:16px"><div class="dst">Recurring Confusion Points</div>${r.confusionPoints.map(t=>`<div class="fu-item"><div class="fu-dot" style="background:var(--amber-text)"></div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">${e(t)}</div></div>`).join('')}</div>
+      <div class="ds" style="margin-top:16px"><div class="df"><div class="dfl">Corrections for Instructor</div><div class="dfv" style="font-size:13px;line-height:1.6">${e(r.correctionsForInstructor)}</div></div></div>
+    `;
+
+    // STUDENTS TAB
+    document.getElementById('d-tab-students').innerHTML=`
+      <div style="margin-bottom:16px">
+        <div class="dg" style="margin-bottom:16px">
+          <div class="df"><div class="dfl">Participant Baseline</div><div class="dfv" style="font-size:13px;line-height:1.6">${e(r.participantKnowledgeBaseline)}</div></div>
+          <div class="df"><div class="dfl">Most Engaged</div><div class="dfv">${r.mostEngaged.join(', ')}</div></div>
+          <div class="df"><div class="dfl">Least Engaged</div><div class="dfv">${r.leastEngaged.join(', ')}</div></div>
+        </div>
+      </div>
+      ${r.students.map(s=>`<div class="stu-row">
+        <div class="stu-av ${avC(s.name)}">${ini(s.name)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+            <div class="stu-name">${e(s.name)}</div>
+            <span class="badge bt" style="font-size:10px">${e(s.engagementType)}</span>
+          </div>
+          <div class="stu-meta">${s.interactions} interactions · ${s.questionsAsked.length} questions · ${s.answersGiven.length} answers</div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;line-height:1.5">${e(s.notableMoment)}</div>
+          ${s.knowledgeGaps.length?`<div style="margin-top:6px"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--amber-text)">Gap: </span><span style="font-size:12px;color:var(--text-secondary)">${s.knowledgeGaps.join(' · ')}</span></div>`:''}
+        </div>
+        <div class="stu-score">${s.participationScore}/10</div>
+      </div>`).join('')}
+    `;
+
+    // Q&A TAB
+    document.getElementById('d-tab-qa').innerHTML=r.qaLog.map((q,i)=>`
+      <div class="qa-item">
+        <div class="qa-q">"${e(q.q)}"</div>
+        <div class="qa-meta">Asked by ${e(q.askedBy)}</div>
+        <div class="qa-a">${e(q.aGiven)}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="qa-score qa-correct">${q.score}/10</span>
+          <span style="font-size:11px;color:var(--text-secondary)">${e(q.scoreNote)}</span>
+        </div>
+      </div>`).join('');
+  }
+  showOverlay('detail-modal');
+}
+function editCurrent(){const id=curDetail;closeOverlay();setTimeout(()=>openModuleForm(id),60)}
+
+// MODULE FORM
+function openModuleForm(id){
+  editMod=id||null;
+  document.getElementById('mf-title').textContent=id?'Edit Module':'Add Module';
+  const m=id?MODULES.find(x=>x.id===id):{};
+  document.getElementById('mf-id').value=m.id||'';
+  document.getElementById('mf-id').disabled=!!id;
+  document.getElementById('mf-week').value=m.week||'Week 1';
+  document.getElementById('mf-name').value=m.module||'';
+  document.getElementById('mf-format').value=m.format||'Live';
+  document.getElementById('mf-length').value=m.length||'';
+  document.getElementById('mf-channel').value=m.channel||'';
+  document.getElementById('mf-status').value=m.status||'Scheduled';
+  document.getElementById('mf-instructor').value=m.instructor||'';
+  document.getElementById('mf-obj').value=m.obj||'';
+  document.getElementById('mf-recording').value=m.recording||'';
+  document.getElementById('mf-ppt').value=m.ppt||'';
+  document.getElementById('mf-toolkit').value=m.toolkit||'';
+  document.getElementById('mf-date').value=m.date||'';
+  document.getElementById('mf-notes').value=m.notes||'';
+  showOverlay('module-form');
+}
+function saveModule(){
+  const id=document.getElementById('mf-id').value.trim();
+  const name=document.getElementById('mf-name').value.trim();
+  if(!id||!name){alert('ID and name are required');return;}
+  const d={id,week:document.getElementById('mf-week').value,module:name,format:document.getElementById('mf-format').value,length:parseFloat(document.getElementById('mf-length').value)||1,channel:document.getElementById('mf-channel').value.trim(),status:document.getElementById('mf-status').value,instructor:document.getElementById('mf-instructor').value.trim()||'TBD',obj:document.getElementById('mf-obj').value.trim(),recording:document.getElementById('mf-recording').value.trim(),ppt:document.getElementById('mf-ppt').value.trim(),toolkit:document.getElementById('mf-toolkit').value.trim(),date:document.getElementById('mf-date').value,notes:document.getElementById('mf-notes').value.trim()};
+  if(editMod){const i=MODULES.findIndex(m=>m.id===editMod);if(i>=0){const prev=MODULES[i];d.analyzed=prev.analyzed;MODULES[i]=d;}toast('Module updated');}
+  else{if(MODULES.find(m=>m.id===id)){alert('ID already exists');return;}MODULES.push(d);toast('Module added');}
+  persist();
+  closeOverlay();refreshAll();
+}
+function delModule(id,ev){ev.stopPropagation();if(!confirm('Delete module '+id+'?'))return;MODULES=MODULES.filter(m=>m.id!==id);persist();toast('Deleted');refreshAll();}
+
+// INLINE EDIT
+const S_OPTS=['Scheduled','To Do','Presented','Needs Review','Completed'];
+const F_OPTS=['Live','OnDemand','Assessment'];
+const W_OPTS=['Week 1','Week 2','Week 3','Week 4','Week 5','Week 6'];
+function iSel(val,opts,cls,field,id){return`<select class="esel badge ${cls}" onchange="iUpd('${id}','${field}',this.value)" onclick="event.stopPropagation()">${opts.map(o=>`<option${o===val?' selected':''}>${o}</option>`).join('')}</select>`}
+function iTxt(val,field,id,mw){return`<span class="editable trunc" style="max-width:${mw||'180px'}" contenteditable="true" onclick="event.stopPropagation()" onblur="iUpd('${id}','${field}',this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${e(val)}</span>`}
+function iUpd(id,field,val){const m=MODULES.find(x=>x.id===id);if(!m)return;m[field]=field==='length'?parseFloat(val)||m.length:val;persist();toast('Saved');initKPIs();initWeekGrid();initOvTable();buildInstGrid();}
+
+function filterMods(){
+  const q=(document.getElementById('mod-q').value||'').toLowerCase();
+  const w=document.getElementById('mod-w').value,f=document.getElementById('mod-f').value,c=document.getElementById('mod-c').value,s=document.getElementById('mod-s').value;
+  const fi=MODULES.filter(m=>(!q||m.module.toLowerCase().includes(q)||m.instructor.toLowerCase().includes(q)||m.channel.toLowerCase().includes(q))&&(!w||m.week===w)&&(!f||m.format===f)&&(!c||m.channel===c)&&(!s||m.status===s));
+  document.getElementById('mod-stats').innerHTML=`<div class="sp"><strong>${fi.length}</strong> modules</div><div class="sp"><strong>${fi.reduce((a,m)=>a+m.length,0).toFixed(1)}h</strong> total</div>`;
+  document.getElementById('mod-tbody').innerHTML=fi.length?fi.map(m=>`<tr onclick="openDetail('${m.id}')">
+    <td class="mono">${e(m.id)}${m.analyzed?'<span style="color:var(--teal-text);margin-left:4px">●</span>':''}</td>
+    <td>${iTxt(m.module,'module',m.id,'200px')}</td>
+    <td>${iSel(m.week,W_OPTS,'bt','week',m.id)}</td>
+    <td style="font-size:12px;color:var(--text-secondary)">${e(m.channel)}</td>
+    <td>${iSel(m.format,F_OPTS,fBadge(m.format),'format',m.id)}</td>
+    <td>${iTxt(m.length,'length',m.id,'36px')}</td>
+    <td>${iTxt(m.instructor,'instructor',m.id,'150px')}</td>
+    <td>${iSel(m.status,S_OPTS,sBadge(m.status),'status',m.id)}</td>
+    <td onclick="event.stopPropagation()"><div class="ra">
+      <button class="btn btn-sm" onclick="openModuleForm('${m.id}')">Edit</button>
+      <button class="btn btn-sm btn-d" onclick="delModule('${m.id}',event)">✕</button>
+    </div></td>
+  </tr>`).join(''):`<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text-tertiary)">No modules match your filters</td></tr>`;
+}
+function initModFilters(){
+  const channels=[...new Set(MODULES.map(m=>m.channel))].sort();
+  const sel=document.getElementById('mod-c');
+  sel.innerHTML='<option value="">All channels</option>';
+  channels.forEach(c=>{const o=document.createElement('option');o.textContent=c;sel.appendChild(o);});
+  filterMods();
+}
+
+// INSTRUCTORS
+function openInstructorForm(idx){
+  const resolvedIdx = (idx != null && idx !== 'null') ? Number(idx) : null;
+  editInst = resolvedIdx;
+  document.getElementById('if-title').textContent = resolvedIdx != null ? 'Edit Instructor' : 'Add Instructor';
+  const inst = resolvedIdx != null ? (EXTRA_INSTS[resolvedIdx] || {}) : {};
+  document.getElementById('if-name').value = inst.name || '';
+  document.getElementById('if-channel').value = inst.channel || '';
+  document.getElementById('if-role').value = inst.role || '';
+  document.getElementById('if-email').value = inst.email || '';
+  document.getElementById('if-bio').value = inst.bio || '';
+  showOverlay('instructor-form');
+}
+function saveInstructor(){
+  const name=document.getElementById('if-name').value.trim();if(!name){alert('Name required');return;}
+  const d={name,channel:document.getElementById('if-channel').value.trim(),role:document.getElementById('if-role').value.trim(),email:document.getElementById('if-email').value.trim(),bio:document.getElementById('if-bio').value.trim()};
+  const wasEditing=editInst;
+  if(wasEditing!=null){EXTRA_INSTS[wasEditing]=d;toast('Updated');}else{EXTRA_INSTS.push(d);toast('Instructor added');}
+  persist();
+  closeOverlay();buildInstGrid();
+  if(wasEditing!=null) setTimeout(()=>openInstructorDetail(d.name),80);
+}
+
+// Central registry of all analyzed module records — keyed by module ID
+// As new transcripts are analyzed, push their records here
+const ANALYZED_RECORDS={
+  'QA006': QA006_RECORD
+};
+
+function getInstructorData(name){
+  // All modules this instructor is on
+  const mods=MODULES.filter(m=>m.instructor.split(/[\/+,]/).map(s=>s.trim()).includes(name));
+  // Channels from modules
+  const chSet=new Set(mods.map(m=>m.channel));
+  // Scores from all analyzed modules
+  const scores={contentMatch:[],confidence:[],engagement:[]};
+  mods.forEach(m=>{
+    if(m.analyzed && ANALYZED_RECORDS[m.id]){
+      const r=ANALYZED_RECORDS[m.id];
+      if(r.contentMatchScore!=null) scores.contentMatch.push(r.contentMatchScore);
+      if(r.confidenceScore!=null)   scores.confidence.push(r.confidenceScore);
+      if(r.classEngagementAvg!=null) scores.engagement.push(r.classEngagementAvg);
+    }
+  });
+  const avg=arr=>arr.length?+(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1):null;
+  // Extra info
+  const ei=EXTRA_INSTS.findIndex(x=>x.name===name);
+  const extra=ei>=0?EXTRA_INSTS[ei]:{};
+  // Merge channels: from modules + manually entered
+  if(extra.channel)extra.channel.split(/[,\/]/).map(s=>s.trim()).filter(Boolean).forEach(c=>chSet.add(c));
+  return{name,mods,channels:[...chSet],extra,ei,scores,avgContent:avg(scores.contentMatch),avgConf:avg(scores.confidence),avgEng:avg(scores.engagement)};
+}
+
+function openInstructorDetail(name){
+  const d=getInstructorData(name);
+  const av=document.getElementById('idd-avatar');
+  av.textContent=ini(name);av.className='idm-avatar '+avC(name);
+  document.getElementById('idd-name').textContent=name;
+  document.getElementById('idd-role').textContent=d.extra.role||'—';
+  document.getElementById('idd-email').textContent=d.extra.email||'';
+  document.getElementById('idd-email').style.display=d.extra.email?'block':'none';
+  // Edit button wires to form
+  const capturedEi=d.ei>=0?d.ei:null;
+  document.getElementById('idd-edit-btn').onclick=()=>{closeOverlay();setTimeout(()=>openInstructorForm(capturedEi),60)};
+  // KPIs
+  const fmtScore=v=>v!=null?v+'/10':'—';
+  const scoreBar=v=>v!=null?`<div style="height:3px;background:rgba(0,0,0,.08);border-radius:2px;overflow:hidden;margin-top:6px"><div style="height:100%;border-radius:2px;background:${scoreColor(v)};width:${Math.round(v/10*100)}%"></div></div>`:'';
+  const analyzedCount=d.mods.filter(m=>m.analyzed).length;
+  document.getElementById('idd-kpis').innerHTML=`
+    <div class="idm-kpi">
+      <div class="idm-kpi-label">Total Modules</div>
+      <div class="idm-kpi-val" style="color:var(--text-primary)">${d.mods.length}</div>
+      <div class="idm-kpi-sub">${d.mods.reduce((a,m)=>a+m.length,0).toFixed(1)}h · ${analyzedCount} analyzed</div>
+    </div>
+    <div class="idm-kpi">
+      <div class="idm-kpi-label">Content Match</div>
+      <div class="idm-kpi-val" style="color:${d.avgContent!=null?scoreColor(d.avgContent):'var(--text-tertiary)'}">${fmtScore(d.avgContent)}</div>
+      ${scoreBar(d.avgContent)}
+      <div class="idm-kpi-sub">${d.scores.contentMatch.length?`avg of ${d.scores.contentMatch.length} session${d.scores.contentMatch.length>1?'s':''}` :'No data yet'}</div>
+    </div>
+    <div class="idm-kpi">
+      <div class="idm-kpi-label">Confidence</div>
+      <div class="idm-kpi-val" style="color:${d.avgConf!=null?scoreColor(d.avgConf):'var(--text-tertiary)'}">${fmtScore(d.avgConf)}</div>
+      ${scoreBar(d.avgConf)}
+      <div class="idm-kpi-sub">${d.scores.confidence.length?`avg of ${d.scores.confidence.length} session${d.scores.confidence.length>1?'s':''}` :'No data yet'}</div>
+    </div>
+    <div class="idm-kpi">
+      <div class="idm-kpi-label">Engagement</div>
+      <div class="idm-kpi-val" style="color:${d.avgEng!=null?scoreColor(d.avgEng):'var(--text-tertiary)'}">${fmtScore(d.avgEng)}</div>
+      ${scoreBar(d.avgEng)}
+      <div class="idm-kpi-sub">${d.scores.engagement.length?`avg of ${d.scores.engagement.length} session${d.scores.engagement.length>1?'s':''}` :'No data yet'}</div>
+    </div>
+  `;
+  // Channels
+  document.getElementById('idd-channels').innerHTML=d.channels.length
+    ?d.channels.map(c=>`<span class="ch-tag">${e(c)}</span>`).join('')
+    :`<span class="na-val">No channels assigned</span>`;
+  // Modules list
+  document.getElementById('idd-modules').innerHTML=d.mods.length
+    ?d.mods.map(m=>{
+        const tkUrl=m.toolkit||m.ppt||m.recording||'';
+        return`<div class="mod-row">
+          <div class="mod-row-id">${e(m.id)}</div>
+          <div class="mod-row-name" title="${e(m.module)}">${e(m.module)}</div>
+          <div class="mod-row-week">${m.week.replace('Week ','W')}</div>
+          <div class="mod-row-status"><span class="badge ${sBadge(m.status)}">${m.status}</span></div>
+          <div class="mod-row-link">${tkUrl?`<a class="toolkit-link" href="${e(tkUrl)}" target="_blank">Toolkit ↗</a>`:`<span class="toolkit-na">No link</span>`}</div>
+        </div>`;
+      }).join('')
+    :`<div class="na-val" style="padding:12px 0">No modules assigned</div>`;
+  showOverlay('instructor-detail');
+}
+
+function buildInstGrid(q=''){
+  const M={};
+  MODULES.forEach(m=>{m.instructor.split(/[\/+,]/).map(s=>s.trim()).filter(s=>s&&s!=='TBD').forEach(n=>{if(!M[n])M[n]={name:n,mods:0,hrs:0,ch:new Set(),ei:null};M[n].mods++;M[n].hrs+=m.length;M[n].ch.add(m.channel);});});
+  EXTRA_INSTS.forEach((ie,i)=>{if(!M[ie.name])M[ie.name]={name:ie.name,mods:0,hrs:0,ch:new Set(),ei:null};M[ie.name].ei=i;if(ie.channel)M[ie.name].ch.add(ie.channel);});
+  const list=Object.values(M).filter(i=>!q||i.name.toLowerCase().includes(q.toLowerCase())).sort((a,b)=>b.mods-a.mods);
+  document.getElementById('inst-grid').innerHTML=list.map(i=>{
+    const ex=i.ei!=null?EXTRA_INSTS[i.ei]:{};
+    const ch=[...i.ch].slice(0,3).join(', ')+(i.ch.size>3?` +${i.ch.size-3}`:'');
+    const analyzed=MODULES.filter(m=>m.instructor.split(/[\/+,]/).map(s=>s.trim()).includes(i.name)&&m.analyzed).length;
+    return`<div class="ic" onclick="openInstructorDetail('${i.name.replace(/'/g,"\\'")}')">
+      <div class="ca" onclick="event.stopPropagation()"><button class="btn btn-sm" onclick="openInstructorForm(${i.ei!=null?i.ei:'null'})">Edit</button></div>
+      <div class="ia ${avC(i.name)}">${ini(i.name)}</div>
+      <div class="in">${e(i.name)}</div>
+      ${ex.role?`<div style="font-size:11px;color:var(--text-secondary);margin-bottom:2px">${e(ex.role)}</div>`:''}
+      <div class="ich">${ch||'—'}</div>
+      ${ex.email?`<div style="font-size:11px;color:#C85A00;margin-bottom:8px">${e(ex.email)}</div>`:''}
+      <div class="ist">
+        <div class="istt"><strong>${i.mods}</strong> module${i.mods!==1?'s':''}</div>
+        <div class="istt"><strong>${i.hrs.toFixed(1)}</strong>h</div>
+        ${analyzed?`<div class="istt"><span style="color:var(--teal-text);font-size:10px;font-weight:700">● ${analyzed} analyzed</span></div>`:''}
+      </div>
+    </div>`;
+  }).join('')||'<p style="color:var(--text-tertiary);font-size:13px;padding:20px">No instructors found</p>';
+}
+function filterInst(){buildInstGrid(document.getElementById('inst-q').value)}
+
+// STUDENTS
+function openStudentForm(idx){
+  const resolvedIdx = (idx != null && idx !== 'null') ? Number(idx) : null;
+  editStu = resolvedIdx;
+  document.getElementById('sf-title').textContent = resolvedIdx != null ? 'Edit Student' : 'Add Student';
+  const s = resolvedIdx != null ? (STUDENTS[resolvedIdx] || {}) : {};
+  document.getElementById('sf-name').value = s.name || '';
+  document.getElementById('sf-cohort').value = s.cohort || 'Cohort 1';
+  document.getElementById('sf-role').value = s.role || '';
+  document.getElementById('sf-email').value = s.email || '';
+  document.getElementById('sf-channel').value = s.channel || '';
+  document.getElementById('sf-score').value = s.avgScore || '';
+  document.getElementById('sf-bio').value = s.bio || '';
+  showOverlay('student-form');
+}
+function saveStudent(){
+  const name=document.getElementById('sf-name').value.trim();if(!name){alert('Name required');return;}
+  const d={name,cohort:document.getElementById('sf-cohort').value.trim(),role:document.getElementById('sf-role').value.trim(),email:document.getElementById('sf-email').value.trim(),channel:document.getElementById('sf-channel').value.trim(),avgScore:document.getElementById('sf-score').value||null,bio:document.getElementById('sf-bio').value.trim(),sessions:[],flags:[]};
+  const wasEditing=editStu;
+  if(wasEditing!=null){const p=STUDENTS[wasEditing];d.sessions=p.sessions||[];d.flags=p.flags||[];STUDENTS[wasEditing]=d;toast('Updated');}
+  else{STUDENTS.push(d);toast('Student added');}
+  persist();
+  closeOverlay();renderStudents();document.getElementById('kpi-analyzed').textContent=MODULES.filter(m=>m.analyzed).length;
+}
+function delStudent(idx,ev){ev.stopPropagation();if(!confirm('Delete '+STUDENTS[idx].name+'?'))return;STUDENTS.splice(idx,1);persist();toast('Deleted');renderStudents();}
+function renderStudents(){
+  const c=document.getElementById('students-content');
+  if(!STUDENTS.length){c.innerHTML=`<div class="tc es"><div class="iw"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a0a09c" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3>No student profiles yet</h3><p>Upload a session transcript to auto-extract student profiles, or add manually above.</p></div>`;return;}
+  c.innerHTML=`<div class="stg">${STUDENTS.map((s,i)=>`<div class="sc"><div class="ca"><button class="btn btn-sm" onclick="openStudentForm(${i})">Edit</button><button class="btn btn-sm btn-d" onclick="delStudent(${i},event)">✕</button></div>
+    <div class="ia ${avC(s.name)}" style="width:40px;height:40px;font-size:14px">${ini(s.name)}</div>
+    <div class="sn">${e(s.name)}</div>
+    <div class="sr2">${e(s.cohort||'')}${s.role?' · '+e(s.role):''}</div>
+    <div class="ss"><span><strong>${s.avgScore||'TBD'}</strong> avg score</span><span><strong>${s.sessions.length}</strong> session${s.sessions.length!==1?'s':''}</span></div>
+    ${s.flags.length?`<div class="fr">${s.flags.map(f=>`<span class="fl ${f.type==='red'?'fl-r':'fl-a'}">${e(f.label)}</span>`).join('')}</div>`:''}
+  </div>`).join('')}</div>`;
+}
+
+// KPIs / WEEK / OVERVIEW
+function initKPIs(){
+  document.getElementById('kpi-total').textContent=MODULES.length;
+  document.getElementById('kpi-hours').textContent=MODULES.reduce((a,m)=>a+m.length,0).toFixed(0);
+  const inst=new Set();MODULES.forEach(m=>m.instructor.split(/[\/+,]/).map(s=>s.trim()).filter(s=>s&&s!=='TBD').forEach(i=>inst.add(i)));
+  document.getElementById('kpi-inst').textContent=inst.size;
+  document.getElementById('kpi-analyzed').textContent=MODULES.filter(m=>m.analyzed).length;
+}
+function initWeekGrid(){
+  const wks=['Week 1','Week 2','Week 3','Week 4','Week 5','Week 6'];
+  const PRESENTED=['Presented','Completed'];
+  document.getElementById('week-grid').innerHTML=wks.map(w=>{
+    const ms=MODULES.filter(m=>m.week===w);
+    const totalHrs=ms.reduce((a,m)=>a+m.length,0);
+    const presentedHrs=ms.filter(m=>PRESENTED.includes(m.status)).reduce((a,m)=>a+m.length,0);
+    const pct=totalHrs>0?Math.round((presentedHrs/totalHrs)*100):0;
+    const subLabel=presentedHrs>0?`${presentedHrs}h / ${totalHrs}h presented`:`${totalHrs}h scheduled`;
+    return`<div class="wk"><div class="wkt">${w}</div><div class="wkn">${ms.length}</div><div class="wkm">${subLabel}</div><div class="pb" title="${pct}% presented"><div class="pf" style="width:${pct}%"></div></div></div>`;
+  }).join('');
+}
+function initOvTable(){
+  document.getElementById('ov-tbody').innerHTML=MODULES.map(m=>`<tr onclick="openDetail('${m.id}')">
+    <td class="mono">${e(m.id)}${m.analyzed?'<span style="color:var(--teal-text);margin-left:3px">●</span>':''}</td>
+    <td class="trunc" style="max-width:260px">${e(m.module)}</td>
+    <td style="font-size:12px;color:var(--text-secondary)">${m.week}</td>
+    <td><span class="badge ${fBadge(m.format)}">${m.format}</span></td>
+    <td style="color:var(--text-secondary);font-size:12px">${m.length}h</td>
+    <td style="font-size:12px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e(m.instructor)}</td>
+    <td><span class="badge ${sBadge(m.status)}">${m.status}</span></td>
+  </tr>`).join('');
+}
+
+function nav(page,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  el.classList.add('active');
+}
+function refreshAll(){initKPIs();initWeekGrid();initOvTable();initModFilters();buildInstGrid();renderStudents();}
+refreshAll();
+</script>
+</body>
+</html>
