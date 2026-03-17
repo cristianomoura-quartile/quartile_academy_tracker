@@ -235,7 +235,40 @@ tbody tr:hover .ra{display:flex}
 .toolkit-link:hover{background:var(--blue-bg)}
 .toolkit-na{font-size:11px;color:var(--text-tertiary);font-style:italic}
 .na-val{color:var(--text-tertiary);font-style:italic;font-weight:400;font-size:13px}
-/* CALENDAR */
+/* STUDENT DETAIL MODAL */
+.sdm{background:var(--bg-primary);border-radius:var(--radius-xl);width:680px;max-width:96vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 72px rgba(0,0,0,.22)}
+.sdm-header{padding:24px 28px 0;flex-shrink:0}
+.sdm-top{display:flex;align-items:flex-start;gap:16px;justify-content:space-between;margin-bottom:14px}
+.sdm-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+.sdm-name{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px}
+.sdm-sub{font-size:13px;color:var(--text-secondary)}
+.sdm-email{font-size:12px;color:#C85A00;margin-top:2px}
+.sdm-actions{display:flex;gap:6px;flex-shrink:0}
+.sdm-tabs{display:flex;gap:0;border-bottom:.5px solid var(--border-light);margin-bottom:0;flex-shrink:0}
+.sdm-tab{padding:9px 16px;font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s}
+.sdm-tab:hover{color:var(--text-primary)}
+.sdm-tab.active{color:#C85A00;border-bottom-color:#C85A00;font-weight:600}
+.sdm-tab-panel{display:none}
+.sdm-tab-panel.active{display:block}
+.sdm-body{padding:24px 28px;overflow-y:auto;flex:1}
+.sdm-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
+.sdm-kpi{background:var(--bg-secondary);border-radius:var(--radius-md);padding:12px 14px;text-align:center}
+.sdm-kpi-label{font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.sdm-kpi-val{font-size:22px;font-weight:700;letter-spacing:-.02em;color:#C85A00}
+.sdm-kpi-sub{font-size:10px;color:var(--text-tertiary);margin-top:2px}
+.sdm-section{margin-bottom:20px}
+.sdm-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:10px}
+.sdm-flag-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.ses-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:.5px solid var(--border-light)}
+.ses-row:last-child{border-bottom:none}
+.ses-id{font-size:10px;font-family:'SF Mono',monospace;color:var(--text-tertiary);width:52px;flex-shrink:0}
+.ses-name{font-size:13px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ses-score{font-size:14px;font-weight:700;color:#C85A00;width:40px;text-align:right;flex-shrink:0}
+.ses-eng{flex-shrink:0}
+.qa-item-s{border:.5px solid var(--border-light);border-radius:var(--radius-md);padding:12px;margin-bottom:8px}
+.qa-item-s:last-child{margin-bottom:0}
+.strength-tag{font-size:11px;padding:3px 10px;border-radius:20px;background:var(--teal-bg);color:var(--teal-text);font-weight:500}
+.gap-tag{font-size:11px;padding:3px 10px;border-radius:20px;background:var(--amber-bg);color:var(--amber-text);font-weight:500}
 .cal-week-tab{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:.5px solid var(--border-mid);background:var(--bg-primary);color:var(--text-secondary);transition:all .12s}
 .cal-week-tab:hover{background:var(--bg-secondary);color:var(--text-primary)}
 .cal-week-tab.active{background:#C85A00;color:#fff;border-color:#C85A00}
@@ -266,6 +299,36 @@ tbody tr:hover .ra{display:flex}
 <div class="toast" id="toast"></div>
 
 <div class="overlay" id="overlay">
+
+  <!-- STUDENT DETAIL -->
+  <div class="sdm" id="student-detail" style="display:none" onclick="event.stopPropagation()">
+    <div class="sdm-header">
+      <div class="sdm-top">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex:1;min-width:0">
+          <div class="sdm-avatar" id="sdd-avatar"></div>
+          <div style="min-width:0">
+            <div class="sdm-name" id="sdd-name"></div>
+            <div class="sdm-sub" id="sdd-sub"></div>
+            <div class="sdm-email" id="sdd-email"></div>
+          </div>
+        </div>
+        <div class="sdm-actions">
+          <button class="btn btn-sm" id="sdd-edit-btn">Edit</button>
+          <button class="mc" onclick="closeOverlay()">✕</button>
+        </div>
+      </div>
+      <div class="sdm-tabs" id="sdd-tabs">
+        <div class="sdm-tab active" data-stab="profile" onclick="switchStudentTab('profile')">Profile</div>
+        <div class="sdm-tab" data-stab="sessions" onclick="switchStudentTab('sessions')">Sessions</div>
+        <div class="sdm-tab" data-stab="insights" onclick="switchStudentTab('insights')">Insights</div>
+      </div>
+    </div>
+    <div class="sdm-body">
+      <div id="sdd-tab-profile" class="sdm-tab-panel active"></div>
+      <div id="sdd-tab-sessions" class="sdm-tab-panel"></div>
+      <div id="sdd-tab-insights" class="sdm-tab-panel"></div>
+    </div>
+  </div>
 
   <!-- INSTRUCTOR DETAIL -->
   <div class="idm" id="instructor-detail" style="display:none" onclick="event.stopPropagation()">
@@ -1150,7 +1213,94 @@ function buildInstGrid(q=''){
 function filterInst(){buildInstGrid(document.getElementById('inst-q').value)}
 
 // STUDENTS
-function openStudentForm(idx){
+function switchStudentTab(tab){
+  document.querySelectorAll('.sdm-tab').forEach(t=>t.classList.toggle('active',t.dataset.stab===tab));
+  document.querySelectorAll('.sdm-tab-panel').forEach(p=>p.classList.toggle('active',p.id==='sdd-tab-'+tab));
+}
+
+function openStudentDetail(idx){
+  const s=STUDENTS[idx];
+  if(!s) return;
+
+  // Header
+  const av=document.getElementById('sdd-avatar');
+  av.textContent=ini(s.name); av.className='sdm-avatar '+avC(s.name);
+  document.getElementById('sdd-name').textContent=s.name;
+  document.getElementById('sdd-sub').textContent=[s.cohort,s.role].filter(Boolean).join(' · ')||'—';
+  const emailEl=document.getElementById('sdd-email');
+  emailEl.textContent=s.email||''; emailEl.style.display=s.email?'block':'none';
+
+  // Edit button
+  document.getElementById('sdd-edit-btn').onclick=()=>{closeOverlay();setTimeout(()=>openStudentForm(idx),80);};
+
+  // Pull rich data from analyzed sessions
+  const analyzed=s.sessions.map(ss=>{
+    const mod=MODULES.find(m=>m.id===ss.moduleId);
+    const rich=ss.moduleId===QA006_RECORD.id ? QA006_RECORD.students.find(st=>st.name===s.name) : null;
+    return{...ss, mod, rich};
+  }).filter(ss=>ss.mod);
+
+  const avgScore=s.avgScore||'TBD';
+  const trend=analyzed.length<2?'Insufficient Data':s.participationTrend||'Insufficient Data';
+  const engType=analyzed.length?analyzed[analyzed.length-1].engagementType||'—':'—';
+
+  // ── PROFILE TAB ──
+  document.getElementById('sdd-tab-profile').innerHTML=`
+    <div class="sdm-kpi-grid">
+      <div class="sdm-kpi"><div class="sdm-kpi-label">Avg Score</div><div class="sdm-kpi-val" style="color:${avgScore!=='TBD'?scoreColor(avgScore):'var(--text-tertiary)'}">${avgScore!=='TBD'?avgScore+'/10':avgScore}</div><div class="sdm-kpi-sub">${s.sessions.length} session${s.sessions.length!==1?'s':''}</div></div>
+      <div class="sdm-kpi"><div class="sdm-kpi-label">Sessions</div><div class="sdm-kpi-val">${s.sessions.length}</div><div class="sdm-kpi-sub">attended</div></div>
+      <div class="sdm-kpi"><div class="sdm-kpi-label">Engagement</div><div class="sdm-kpi-val" style="font-size:14px;padding-top:4px">${engType}</div><div class="sdm-kpi-sub">latest session</div></div>
+      <div class="sdm-kpi"><div class="sdm-kpi-label">Trend</div><div class="sdm-kpi-val" style="font-size:14px;padding-top:4px">${trend}</div><div class="sdm-kpi-sub">participation</div></div>
+    </div>
+    ${s.flags&&s.flags.length?`<div class="sdm-section"><div class="sdm-section-title">Flags</div><div class="sdm-flag-row">${s.flags.map(f=>`<span class="fl ${f.type==='red'?'fl-r':'fl-a'}">${e(f.label)}</span>`).join('')}</div></div>`:''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+      <div class="df"><div class="dfl">Cohort</div><div class="dfv">${e(s.cohort||'—')}</div></div>
+      <div class="df"><div class="dfl">Role</div><div class="dfv">${e(s.role||'—')}</div></div>
+      <div class="df"><div class="dfl">Primary Channel</div><div class="dfv">${e(s.channel||'—')}</div></div>
+      <div class="df"><div class="dfl">Email</div><div class="dfv" style="color:#C85A00">${s.email?`<a href="mailto:${e(s.email)}" style="color:#C85A00">${e(s.email)}</a>`:'—'}</div></div>
+    </div>
+    ${s.bio?`<div class="sdm-section"><div class="sdm-section-title">Background / Notes</div><div class="dsb">${e(s.bio)}</div></div>`:''}
+  `;
+
+  // ── SESSIONS TAB ──
+  if(!s.sessions.length){
+    document.getElementById('sdd-tab-sessions').innerHTML=`<div style="padding:32px 0;text-align:center;color:var(--text-tertiary);font-size:13px;font-style:italic">No sessions recorded yet. Upload a transcript to populate session history.</div>`;
+  } else {
+    document.getElementById('sdd-tab-sessions').innerHTML=`
+      <div>${analyzed.map(ss=>{
+        const r=ss.rich;
+        return`<div class="ses-row" style="cursor:pointer" onclick="openDetail('${ss.moduleId}')">
+          <div class="ses-id">${e(ss.moduleId)}</div>
+          <div style="flex:1;min-width:0">
+            <div class="ses-name">${e(ss.mod?ss.mod.module:'Unknown module')}</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">${ss.mod?ss.mod.week:''} · ${ss.interactions||0} interactions · <span style="font-weight:600">${ss.engagementType||'—'}</span></div>
+            ${r&&r.notableMoment?`<div style="font-size:11px;color:var(--text-secondary);margin-top:3px;line-height:1.5;font-style:italic">"${e(r.notableMoment)}"</div>`:''}
+          </div>
+          <div class="ses-score">${ss.score}/10</div>
+        </div>`;
+      }).join('')}</div>
+    `;
+  }
+
+  // ── INSIGHTS TAB ──
+  const allStrengths=[...new Set(analyzed.flatMap(ss=>ss.rich?ss.rich.knowledgeStrengths:[]))];
+  const allGaps=[...new Set(analyzed.flatMap(ss=>ss.rich?ss.rich.knowledgeGaps:[]))];
+  const allQs=analyzed.flatMap(ss=>ss.rich?ss.rich.questionsAsked.map(q=>({q,mod:ss.mod})):[]);
+  const allAnswers=analyzed.flatMap(ss=>ss.rich?ss.rich.answersGiven.map(a=>({...a,mod:ss.mod})):[]);
+
+  document.getElementById('sdd-tab-insights').innerHTML=`
+    ${allStrengths.length?`<div class="sdm-section"><div class="sdm-section-title">Knowledge Strengths</div><div style="display:flex;gap:6px;flex-wrap:wrap">${allStrengths.map(s=>`<span class="strength-tag">${e(s)}</span>`).join('')}</div></div>`:''}
+    ${allGaps.length?`<div class="sdm-section" style="margin-top:${allStrengths.length?16:0}px"><div class="sdm-section-title">Knowledge Gaps</div><div style="display:flex;gap:6px;flex-wrap:wrap">${allGaps.map(g=>`<span class="gap-tag">${e(g)}</span>`).join('')}</div></div>`:''}
+    ${allQs.length?`<div class="sdm-section" style="margin-top:16px"><div class="sdm-section-title">Questions Asked (${allQs.length})</div>${allQs.map(({q,mod})=>`<div class="qa-item-s"><div style="font-size:13px;line-height:1.5">"${e(q)}"</div><div style="font-size:11px;color:var(--text-tertiary);margin-top:4px">${mod?e(mod.module):''}</div></div>`).join('')}</div>`:''}
+    ${allAnswers.length?`<div class="sdm-section" style="margin-top:16px"><div class="sdm-section-title">Check Questions Answered (${allAnswers.length})</div>${allAnswers.map(a=>`<div class="qa-item-s"><div style="font-size:12px;color:var(--text-tertiary);margin-bottom:4px">${e(a.question)}</div><div style="font-size:13px;line-height:1.5">"${e(a.answer)}"</div><div style="margin-top:6px"><span class="qa-score qa-correct">${e(a.accuracy)}</span></div></div>`).join('')}</div>`:''}
+    ${!allStrengths.length&&!allGaps.length&&!allQs.length&&!allAnswers.length?`<div style="padding:32px 0;text-align:center;color:var(--text-tertiary);font-size:13px;font-style:italic">Insights are extracted from analyzed session transcripts. Upload more transcripts to populate this section.</div>`:''}
+  `;
+
+  switchStudentTab('profile');
+  showOverlay('student-detail');
+}
+
+
   const resolvedIdx = (idx != null && idx !== 'null') ? Number(idx) : null;
   editStu = resolvedIdx;
   document.getElementById('sf-title').textContent = resolvedIdx != null ? 'Edit Student' : 'Add Student';
@@ -1177,7 +1327,7 @@ function delStudent(idx,ev){ev.stopPropagation();if(!confirm('Delete '+STUDENTS[
 function renderStudents(){
   const c=document.getElementById('students-content');
   if(!STUDENTS.length){c.innerHTML=`<div class="tc es"><div class="iw"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a0a09c" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3>No student profiles yet</h3><p>Upload a session transcript to auto-extract student profiles, or add manually above.</p></div>`;return;}
-  c.innerHTML=`<div class="stg">${STUDENTS.map((s,i)=>`<div class="sc"><div class="ca"><button class="btn btn-sm" onclick="openStudentForm(${i})">Edit</button><button class="btn btn-sm btn-d" onclick="delStudent(${i},event)">✕</button></div>
+  c.innerHTML=`<div class="stg">${STUDENTS.map((s,i)=>`<div class="sc" onclick="openStudentDetail(${i})"><div class="ca" onclick="event.stopPropagation()"><button class="btn btn-sm" onclick="openStudentForm(${i})">Edit</button><button class="btn btn-sm btn-d" onclick="delStudent(${i},event)">✕</button></div>
     <div class="ia ${avC(s.name)}" style="width:40px;height:40px;font-size:14px">${ini(s.name)}</div>
     <div class="sn">${e(s.name)}</div>
     <div class="sr2">${e(s.cohort||'')}${s.role?' · '+e(s.role):''}</div>
