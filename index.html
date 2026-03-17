@@ -897,9 +897,16 @@ function saveModule(){
   const id=document.getElementById('mf-id').value.trim();
   const name=document.getElementById('mf-name').value.trim();
   if(!id||!name){alert('ID and name are required');return;}
-  const d={id,week:document.getElementById('mf-week').value,module:name,format:document.getElementById('mf-format').value,length:parseFloat(document.getElementById('mf-length').value)||1,channel:document.getElementById('mf-channel').value.trim(),status:document.getElementById('mf-status').value,instructor:document.getElementById('mf-instructor').value.trim()||'TBD',obj:document.getElementById('mf-obj').value.trim(),recording:document.getElementById('mf-recording').value.trim(),ppt:document.getElementById('mf-ppt').value.trim(),toolkit:document.getElementById('mf-toolkit').value.trim(),date:document.getElementById('mf-date').value,notes:document.getElementById('mf-notes').value.trim()};
-  if(editMod){const i=MODULES.findIndex(m=>m.id===editMod);if(i>=0){const prev=MODULES[i];d.analyzed=prev.analyzed;MODULES[i]=d;}toast('Module updated');}
-  else{if(MODULES.find(m=>m.id===id)){alert('ID already exists');return;}MODULES.push(d);toast('Module added');}
+  const d={id,week:document.getElementById('mf-week').value,module:name,format:document.getElementById('mf-format').value,length:parseFloat(document.getElementById('mf-length').value)||1,channel:document.getElementById('mf-channel').value.trim(),status:document.getElementById('mf-status').value,instructor:document.getElementById('mf-instructor').value.trim()||'TBD',obj:document.getElementById('mf-obj').value.trim(),recording:document.getElementById('mf-recording').value.trim(),ppt:document.getElementById('mf-ppt').value.trim(),date:document.getElementById('mf-date').value,notes:document.getElementById('mf-notes').value.trim()};
+  if(editMod){
+    const i=MODULES.findIndex(m=>m.id===editMod);
+    if(i>=0){const prev=MODULES[i];d.analyzed=prev.analyzed;MODULES[i]=d;}
+    toast('Module updated');
+  } else {
+    if(MODULES.find(m=>m.id===id)){alert('ID already exists');return;}
+    MODULES.push(d);
+    toast('Module added');
+  }
   persist();
   closeOverlay();refreshAll();
 }
