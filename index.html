@@ -296,7 +296,10 @@ tbody tr:hover .ra{display:flex}
 .cal-session.is-dragging{opacity:0.35;pointer-events:none}
 .cal-session-name{font-size:11px;font-weight:600;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:14px}
 .cal-session-time{font-size:10px;opacity:0.75;margin-top:1px}
-.cal-ch-tag{font-size:10px;font-weight:600;padding:1px 5px;border-radius:8px;display:inline-block;margin-top:2px}
+.cal-status-tag{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;white-space:nowrap;line-height:1.5;display:inline-block}
+.cal-session-presented{border-left-color:var(--teal-text) !important;opacity:0.8}
+.cal-session-review{border-left-color:var(--amber-text) !important}
+.cal-session-unpositioned{border-style:dashed;border-left-style:solid}
 .cal-drag-handle{position:absolute;top:4px;right:4px;opacity:0;color:rgba(0,0,0,0.35);font-size:11px;cursor:grab;line-height:1;padding:1px 2px}
 .cal-session:hover .cal-drag-handle{opacity:1}
 /* GHOST */
@@ -1065,8 +1068,10 @@ function saveModule(){
   }
   persist();
   closeOverlay();refreshAll();
+  const calPage=document.getElementById('page-calendar');
+  if(calPage&&calPage.classList.contains('active')) renderCalendar();
 }
-function delModule(id,ev){ev.stopPropagation();if(!confirm('Delete module '+id+'?'))return;MODULES=MODULES.filter(m=>m.id!==id);persist();toast('Deleted');refreshAll();}
+function delModule(id,ev){ev.stopPropagation();if(!confirm('Delete module '+id+'?'))return;MODULES=MODULES.filter(m=>m.id!==id);persist();toast('Deleted');refreshAll();const calPage=document.getElementById('page-calendar');if(calPage&&calPage.classList.contains('active'))renderCalendar();}
 
 // INLINE EDIT
 const S_OPTS=['Scheduled','To Do','Presented','Needs Review','Completed'];
@@ -1074,7 +1079,15 @@ const F_OPTS=['Live','OnDemand','Assessment'];
 const W_OPTS=['Week 1','Week 2','Week 3','Week 4','Week 5','Week 6'];
 function iSel(val,opts,cls,field,id){return`<select class="esel badge ${cls}" onchange="iUpd('${id}','${field}',this.value)" onclick="event.stopPropagation()">${opts.map(o=>`<option${o===val?' selected':''}>${o}</option>`).join('')}</select>`}
 function iTxt(val,field,id,mw){return`<span class="editable trunc" style="max-width:${mw||'180px'}" contenteditable="true" onclick="event.stopPropagation()" onblur="iUpd('${id}','${field}',this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${e(val)}</span>`}
-function iUpd(id,field,val){const m=MODULES.find(x=>x.id===id);if(!m)return;m[field]=field==='length'?parseFloat(val)||m.length:val;persist();toast('Saved');initKPIs();initWeekGrid();initOvTable();buildInstGrid();}
+function iUpd(id,field,val){
+  const m=MODULES.find(x=>x.id===id);if(!m)return;
+  m[field]=field==='length'?parseFloat(val)||m.length:val;
+  persist();toast('Saved');
+  initKPIs();initWeekGrid();initOvTable();buildInstGrid();
+  // re-render calendar if it's visible and the changed field affects it
+  const calPage=document.getElementById('page-calendar');
+  if(calPage&&calPage.classList.contains('active')) renderCalendar();
+}
 
 function filterMods(){
   const q=(document.getElementById('mod-q').value||'').toLowerCase();
@@ -1522,24 +1535,47 @@ function renderCalendar(){
 
     // Build session blocks
     let blocks='';
+    let stackTop=8; // px from top for unstacked modules
     mods.forEach(m=>{
       const startMin=timeToMin(m.startTime);
       const endMin=timeToMin(m.endTime);
-      if(startMin===null) return;
-      const dur=endMin&&endMin>startMin?endMin-startMin:Math.max(m.length*60,30);
-      const top=minToY(startMin);
-      const height=Math.max(dur*TG_PX_PER_MIN,24);
+      const dur=endMin&&startMin&&endMin>startMin?endMin-startMin:Math.max(m.length*60,30);
+      const height=Math.max(dur*TG_PX_PER_MIN,28);
       const color=chColor(m.channel);
       const bgColor=chColorLight(m.channel);
       const isPresented=['Presented','Completed'].includes(m.status);
-      blocks+=`<div class="cal-session${isPresented?' cal-session-presented':''}"
-        style="top:${top}px;height:${height}px;background:${bgColor};border-left-color:${color}"
+      const isNeedsReview=m.status==='Needs Review';
+
+      // status badge config
+      const statusCfg={
+        'Scheduled':{bg:'var(--blue-bg)',col:'var(--blue-text)',label:'Scheduled'},
+        'Presented':{bg:'var(--green-bg)',col:'var(--green-text)',label:'✓ Presented'},
+        'Completed':{bg:'var(--teal-bg)',col:'var(--teal-text)',label:'✓ Done'},
+        'Needs Review':{bg:'var(--amber-bg)',col:'var(--amber-text)',label:'Review'},
+        'To Do':{bg:'var(--gray-bg)',col:'var(--gray-text)',label:'To Do'},
+      }[m.status]||{bg:'var(--gray-bg)',col:'var(--gray-text)',label:m.status};
+
+      let top,positioned;
+      if(startMin!==null){
+        top=minToY(startMin);
+        positioned=true;
+      } else {
+        // no time — stack at top
+        top=stackTop;
+        stackTop+=height+4;
+        positioned=false;
+      }
+
+      blocks+=`<div class="cal-session${isPresented?' cal-session-presented':''}${isNeedsReview?' cal-session-review':''}${!positioned?' cal-session-unpositioned':''}"
+        style="top:${top}px;height:${height}px;background:${bgColor};border-left-color:${color}${isPresented?';opacity:0.75':''}"
         data-id="${m.id}"
         onclick="calCardClick(event,'${m.id}')">
         <div class="cal-drag-handle" onmousedown="calMouseDown(event,'${m.id}')">⠿</div>
         <div class="cal-session-name" title="${e(m.module)}">${e(m.module)}</div>
-        ${height>36?`<div class="cal-session-time" style="color:${color}">${e(m.startTime||'')}${m.endTime?' – '+e(m.endTime):''}</div>`:''}
-        ${height>52?`<span class="cal-ch-tag" style="background:${color}22;color:${color}">${e(m.channel)}</span>`:''}
+        ${height>36?`<div style="display:flex;align-items:center;gap:4px;margin-top:2px;flex-wrap:wrap">
+          <span class="cal-status-tag" style="background:${statusCfg.bg};color:${statusCfg.col}">${statusCfg.label}</span>
+          ${m.startTime?`<span class="cal-session-time" style="color:${color}">${e(m.startTime)}${m.endTime?' – '+e(m.endTime):''}</span>`:''}
+        </div>`:''}
       </div>`;
     });
 
