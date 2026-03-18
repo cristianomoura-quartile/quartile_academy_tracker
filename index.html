@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Quartile Academy — Session Tracker</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -854,7 +857,24 @@ function resetToSeed(){
 }
 
 let MODULES=[], EXTRA_INSTS=[], STUDENTS=[];
+
+// Clear any stale keys from previous versions
+['v1','v2'].forEach(v=>{
+  ['qa_modules_','qa_insts_','qa_students_'].forEach(k=>{
+    try{localStorage.removeItem(k+v);}catch(e){}
+  });
+});
+
 loadState();
+
+// Safety net: if still empty after loadState, force SEED and persist
+if(!MODULES || MODULES.length === 0){
+  MODULES = [...SEED];
+  STUDENTS = [...SEED_STUDENTS];
+  EXTRA_INSTS = [];
+  persist();
+}
+
 let editMod=null,editInst=null,editStu=null,curDetail=null;
 
 function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
