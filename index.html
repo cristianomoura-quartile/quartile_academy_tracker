@@ -1432,38 +1432,68 @@ function renderCalendar(){
   document.getElementById('cal-next').disabled = calWeekIdx===5;
 
   const weekMods = MODULES.filter(m => m.week === week);
-
-  // Separate modules with a date from those without
   const withDate  = weekMods.filter(m => m.date);
   const noDate    = weekMods.filter(m => !m.date);
 
-  // Build day → modules map from dated modules
-  const dayMap = {};
+  // Parse date string to local date safely (avoids UTC shift)
+  function parseLocalDate(str){
+    const [y,mo,d] = str.split('-').map(Number);
+    return new Date(y, mo-1, d); // local time, no UTC conversion
+  }
+  const DOW = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  // Build dateStr → {dayName, label} map
+  const dateInfoMap = {};
   withDate.forEach(m => {
-    const d = new Date(m.date);
-    const dayName = d.toLocaleDateString('en-US',{weekday:'long'});
-    if(!dayMap[dayName]) dayMap[dayName] = [];
-    dayMap[dayName].push(m);
+    if(!dateInfoMap[m.date]){
+      const dt = parseLocalDate(m.date);
+      dateInfoMap[m.date] = {
+        dayName: DOW[dt.getDay()],
+        label: dt.toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'})
+          .replace(/(\w+) (\d+)/, '$1 $2') // keep "Apr 20" format
+      };
+    }
   });
 
-  // If no modules have dates, show a 5-column Mon–Fri grid and distribute by order
-  const hasDates = withDate.length > 0;
+  // Build dayName → sorted modules map
+  const dayMap = {};
+  withDate.forEach(m => {
+    const info = dateInfoMap[m.date];
+    if(!info) return;
+    if(!dayMap[info.dayName]) dayMap[info.dayName] = [];
+    dayMap[info.dayName].push(m);
+  });
 
+  // Sort each day's modules by startTime
+  function timeToMin(t){
+    if(!t) return 9999;
+    const m = t.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if(!m) return 9999;
+    let h = parseInt(m[1]), mn = parseInt(m[2]);
+    if(m[3].toUpperCase()==='PM' && h!==12) h+=12;
+    if(m[3].toUpperCase()==='AM' && h===12) h=0;
+    return h*60+mn;
+  }
+  Object.values(dayMap).forEach(arr => arr.sort((a,b)=>timeToMin(a.startTime)-timeToMin(b.startTime)));
+
+  // Build date label per weekday column
+  const dayDateLabel = {};
+  withDate.forEach(m => {
+    const info = dateInfoMap[m.date];
+    if(info && DAYS.includes(info.dayName)) dayDateLabel[info.dayName] = info.label;
+  });
+
+  const hasDates = withDate.length > 0;
   let html = `<div class="cal-grid">`;
 
   if(hasDates){
-    // Show only days that have modules, plus all 5 weekdays as columns
-    DAYS.forEach((day, di) => {
+    DAYS.forEach(day => {
       const mods = dayMap[day] || [];
-      const dateStr = withDate.find(m=>{
-        const d=new Date(m.date);
-        return d.toLocaleDateString('en-US',{weekday:'long'})===day;
-      });
-      const dateLabel = dateStr ? new Date(dateStr.date).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+      const label = dayDateLabel[day] || '--';
       html += `<div class="cal-day">
         <div class="cal-day-header">
           <div class="cal-day-name">${day}</div>
-          <div class="cal-day-date" style="color:${dateLabel?'var(--text-primary)':'var(--text-tertiary)'}">${dateLabel||'--'}</div>
+          <div class="cal-day-date" style="color:${label!=='--'?'var(--text-primary)':'var(--text-tertiary)'}">${label}</div>
         </div>
         <div class="cal-day-body">
           ${mods.length ? mods.map(m=>calSessionCard(m)).join('') : '<div class="cal-empty">No sessions</div>'}
@@ -1471,7 +1501,6 @@ function renderCalendar(){
       </div>`;
     });
   } else {
-    // No dates set -- show 5 day columns distributing sessions evenly
     const perDay = Math.ceil(weekMods.length / 5) || 1;
     DAYS.forEach((day, di) => {
       const mods = weekMods.slice(di * perDay, (di+1) * perDay);
@@ -1489,16 +1518,11 @@ function renderCalendar(){
 
   html += `</div>`;
 
-  // Unscheduled / no-date section (only when some have dates)
   if(hasDates && noDate.length){
-    html += `<div style="margin-top:16px">
-      <div class="cal-no-date">
-        <div class="cal-no-date-title">No date assigned (${noDate.length} session${noDate.length!==1?'s':''})</div>
-        <div class="cal-unscheduled-list">
-          ${noDate.map(m=>`<div class="cal-session" style="min-width:200px;max-width:260px" onclick="openDetail('${m.id}')">${calSessionCard(m)}</div>`).join('')}
-        </div>
-      </div>
-    </div>`;
+    html += `<div style="margin-top:16px"><div class="cal-no-date">
+      <div class="cal-no-date-title">No date assigned (${noDate.length} session${noDate.length!==1?'s':''})</div>
+      <div class="cal-unscheduled-list">${noDate.map(m=>`<div class="cal-session" style="min-width:200px;max-width:260px" onclick="openDetail('${m.id}')">${calSessionCard(m)}</div>`).join('')}</div>
+    </div></div>`;
   }
 
   document.getElementById('cal-grid').innerHTML = html;
