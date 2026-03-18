@@ -294,14 +294,13 @@ tbody tr:hover .ra{display:flex}
 .cal-session-presented{border-left-color:var(--teal-text)}
 .cal-session-presented .cal-session-name{color:var(--teal-text)}
 /* DRAG AND DROP */
-.cal-session[draggable]{cursor:grab}
-.cal-session[draggable]:active{cursor:grabbing}
-.cal-session.dragging{opacity:0.3;transform:scale(0.97);pointer-events:none}
+.cal-session[draggable]{cursor:grab;user-select:none}
+.cal-session.dragging{opacity:0.4;box-shadow:none}
 .cal-day-body.drag-over{background:rgba(200,90,0,0.06);border-radius:var(--radius-md);outline:2px dashed #C85A00;outline-offset:-3px}
 .cal-day-body.drag-over .cal-empty{color:#C85A00}
 .cal-insert-line{height:3px;background:#C85A00;border-radius:2px;margin:2px 0;display:none}
 .cal-insert-line.visible{display:block}
-.week-drop-zone{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px dashed var(--border-mid);background:var(--bg-primary);color:var(--text-secondary);cursor:pointer;transition:all .15s}
+.week-drop-zone{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px dashed var(--border-mid);background:var(--bg-primary);color:var(--text-secondary);transition:all .15s}
 .week-drop-zone.drag-over-week{border-color:#C85A00;background:var(--blue-bg);color:#C85A00}
 .cal-no-date{background:var(--bg-primary);border:.5px dashed var(--border-light);border-radius:var(--radius-lg);padding:16px;grid-column:1/-1}
 .cal-no-date-title{font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px}
@@ -1572,7 +1571,7 @@ function calSessionCard(m){
     data-id="${m.id}"
     onclick="openDetail('${m.id}')"
     ondragstart="calDragStart(event,'${m.id}')"
-    ondragend="calDragEnd(event)">
+    ondragend="calDragEnd()">
     <div class="cal-session-name" title="${e(m.module)}">${e(m.module)}</div>
     <div class="cal-session-meta">
       <span class="cal-ch-tag" style="background:${color}18;color:${color}">${e(m.channel)}</span>
@@ -1587,71 +1586,58 @@ function calSessionCard(m){
 
 // ─── DRAG AND DROP ENGINE ─────────────────────────────────────────────────────
 let dragModuleId = null;
+let dragInsertBeforeId = null;
 
 function calDragStart(ev, id){
   dragModuleId = id;
   ev.dataTransfer.effectAllowed = 'move';
   ev.dataTransfer.setData('text/plain', id);
-  setTimeout(()=>{
+  // Fade the card being dragged — use requestAnimationFrame so ghost image captures first
+  requestAnimationFrame(()=>{
     document.querySelectorAll(`.cal-session[data-id="${id}"]`).forEach(el=>el.classList.add('dragging'));
-  }, 0);
+  });
   // Show week drop row
-  renderWeekDropRow(true);
-}
-
-function calDragEnd(ev){
-  dragModuleId = null;
-  document.querySelectorAll('.cal-session.dragging').forEach(el=>el.classList.remove('dragging'));
-  document.querySelectorAll('.cal-day-body.drag-over').forEach(el=>el.classList.remove('drag-over'));
-  document.querySelectorAll('.cal-insert-line.visible').forEach(el=>el.classList.remove('visible'));
-  document.querySelectorAll('.week-drop-zone.drag-over-week').forEach(el=>el.classList.remove('drag-over-week'));
-  renderWeekDropRow(false);
-}
-
-function renderWeekDropRow(show){
   const row = document.getElementById('cal-week-drop-row');
-  if(!show){ row.style.display='none'; return; }
-  row.style.display='flex';
+  row.style.display = 'flex';
   row.innerHTML = WEEKS.map((w,i)=>
-    `<div class="week-drop-zone${i===calWeekIdx?' week-drop-zone-current':''}"
-      data-week="${w}"
-      ondragover="weekDropOver(event)"
-      ondragleave="weekDropLeave(event)"
+    `<div class="week-drop-zone"
+      ondragover="ev.preventDefault();ev.dataTransfer.dropEffect='move';this.classList.add('drag-over-week')"
+      ondragleave="this.classList.remove('drag-over-week')"
       ondrop="weekDrop(event,'${w}',${i})"
     >${w}</div>`
   ).join('');
 }
 
-function weekDropOver(ev){
-  ev.preventDefault();
-  ev.dataTransfer.dropEffect='move';
-  ev.currentTarget.classList.add('drag-over-week');
+function calDragEnd(){
+  dragModuleId = null;
+  dragInsertBeforeId = null;
+  document.querySelectorAll('.cal-session.dragging').forEach(el=>el.classList.remove('dragging'));
+  document.querySelectorAll('.cal-day-body.drag-over').forEach(el=>el.classList.remove('drag-over'));
+  document.querySelectorAll('.cal-insert-line.visible').forEach(el=>el.classList.remove('visible'));
+  document.querySelectorAll('.week-drop-zone.drag-over-week').forEach(el=>el.classList.remove('drag-over-week'));
+  const row = document.getElementById('cal-week-drop-row');
+  if(row) row.style.display='none';
 }
-function weekDropLeave(ev){
-  ev.currentTarget.classList.remove('drag-over-week');
-}
+
 function weekDrop(ev, weekName, weekIdx){
   ev.preventDefault();
+  ev.stopPropagation();
   ev.currentTarget.classList.remove('drag-over-week');
-  const id = ev.dataTransfer.getData('text/plain') || dragModuleId;
+  const id = dragModuleId || ev.dataTransfer.getData('text/plain');
   if(!id) return;
   const m = MODULES.find(x=>x.id===id);
   if(!m) return;
-  const oldWeek = m.week;
-  const oldDate = m.date;
-  if(oldWeek === weekName){ // just switch view to that week
-    calWeekIdx = weekIdx;
-    renderCalendar();
-    return;
-  }
+  const oldWeek=m.week, oldDate=m.date, oldStart=m.startTime, oldEnd=m.endTime;
   m.week = weekName;
   m.date = '';
   m.startTime = '';
   m.endTime = '';
   persist();
   calWeekIdx = weekIdx;
-  toastWithUndo(`Moved to ${weekName} — drag to a day to set date`, ()=>{
-    m.week=oldWeek; m.date=oldDate; persist(); renderCalendar(); initOvTable(); initWeekGrid(); initKPIs();
+  calDragEnd();
+  toastWithUndo(`Moved to ${weekName} — drag to a day to assign date`, ()=>{
+    m.week=oldWeek; m.date=oldDate; m.startTime=oldStart; m.endTime=oldEnd;
+    persist(); renderCalendar(); initOvTable(); initWeekGrid(); initKPIs();
   });
   renderCalendar();
   initOvTable(); initWeekGrid(); initKPIs();
@@ -1662,81 +1648,66 @@ function calDragOver(ev, dateStr, dayName){
   ev.dataTransfer.dropEffect = 'move';
   const body = ev.currentTarget;
   body.classList.add('drag-over');
-  // Find insertion position
-  const cards = [...body.querySelectorAll('.cal-session:not(.dragging)')];
-  const lines = [...body.querySelectorAll('.cal-insert-line')];
-  lines.forEach(l=>l.classList.remove('visible'));
-  if(cards.length === 0){
-    const l = body.querySelector('.cal-insert-line');
-    if(l) l.classList.add('visible');
-    return;
-  }
-  let inserted = false;
+  // Compute insert position
+  const cards = [...body.querySelectorAll('.cal-session')].filter(c=>c.dataset.id !== dragModuleId);
+  body.querySelectorAll('.cal-insert-line').forEach(l=>l.classList.remove('visible'));
+  dragInsertBeforeId = null;
+  let placed = false;
   for(let i=0; i<cards.length; i++){
     const rect = cards[i].getBoundingClientRect();
-    const mid = rect.top + rect.height/2;
-    if(ev.clientY < mid){
-      // insert before card i
+    if(ev.clientY < rect.top + rect.height * 0.5){
+      // Show line before this card
       const line = cards[i].previousElementSibling;
       if(line && line.classList.contains('cal-insert-line')) line.classList.add('visible');
-      inserted = true;
+      dragInsertBeforeId = cards[i].dataset.id;
+      placed = true;
       break;
     }
   }
-  if(!inserted){
-    // insert after last card
-    const lastLine = cards[cards.length-1].nextElementSibling;
-    if(lastLine && lastLine.classList.contains('cal-insert-line')) lastLine.classList.add('visible');
+  if(!placed){
+    // Show line after last card
+    const allLines = [...body.querySelectorAll('.cal-insert-line')];
+    if(allLines.length) allLines[allLines.length-1].classList.add('visible');
   }
 }
 
 function calDragLeave(ev){
-  // Only clear if leaving the body itself (not entering a child)
-  if(!ev.currentTarget.contains(ev.relatedTarget)){
-    ev.currentTarget.classList.remove('drag-over');
-    ev.currentTarget.querySelectorAll('.cal-insert-line.visible').forEach(l=>l.classList.remove('visible'));
-  }
+  if(ev.relatedTarget && ev.currentTarget.contains(ev.relatedTarget)) return;
+  ev.currentTarget.classList.remove('drag-over');
+  ev.currentTarget.querySelectorAll('.cal-insert-line.visible').forEach(l=>l.classList.remove('visible'));
+  dragInsertBeforeId = null;
 }
 
 function calDrop(ev, dateStr, weekName, dayName){
   ev.preventDefault();
+  ev.stopPropagation();
   const body = ev.currentTarget;
   body.classList.remove('drag-over');
-  const id = ev.dataTransfer.getData('text/plain') || dragModuleId;
+  body.querySelectorAll('.cal-insert-line.visible').forEach(l=>l.classList.remove('visible'));
+  const id = dragModuleId || ev.dataTransfer.getData('text/plain');
   if(!id) return;
   const m = MODULES.find(x=>x.id===id);
   if(!m) return;
-
-  // Find insertion index using visible insert line
-  const visibleLine = body.querySelector('.cal-insert-line.visible');
-  let insertBefore = null;
-  if(visibleLine){
-    const nextCard = visibleLine.nextElementSibling;
-    if(nextCard && nextCard.dataset.id) insertBefore = nextCard.dataset.id;
-  }
-
-  const oldDate = m.date;
-  const oldWeek = m.week;
-  const oldStartTime = m.startTime;
-  const oldEndTime = m.endTime;
-
+  const insertBefore = dragInsertBeforeId;
+  const oldDate=m.date, oldWeek=m.week, oldStart=m.startTime, oldEnd=m.endTime;
   m.date = dateStr;
   m.week = weekName;
   if(dateStr !== oldDate){ m.startTime=''; m.endTime=''; }
-
-  // Reorder MODULES array to respect position
+  // Reorder in MODULES array
+  const fromIdx = MODULES.findIndex(x=>x.id===id);
+  if(fromIdx>=0) MODULES.splice(fromIdx,1);
   if(insertBefore){
-    const idx = MODULES.findIndex(x=>x.id===id);
-    if(idx>=0) MODULES.splice(idx,1);
-    const targetIdx = MODULES.findIndex(x=>x.id===insertBefore);
-    if(targetIdx>=0) MODULES.splice(targetIdx,0,m);
+    const toIdx = MODULES.findIndex(x=>x.id===insertBefore);
+    if(toIdx>=0) MODULES.splice(toIdx,0,m);
     else MODULES.push(m);
+  } else {
+    MODULES.push(m);
   }
-
   persist();
-  const label = dateStr ? `${dayName} ${dateStr}` : weekName;
+  calDragEnd();
+  const label = dateStr ? `${dayName} · ${dateStr}` : weekName;
   toastWithUndo(`Moved to ${label}`, ()=>{
-    m.date=oldDate; m.week=oldWeek; m.startTime=oldStartTime; m.endTime=oldEndTime;
+    m.date=oldDate; m.week=oldWeek; m.startTime=oldStart; m.endTime=oldEnd;
     persist(); renderCalendar(); initOvTable(); initWeekGrid(); initKPIs();
   });
   renderCalendar();
@@ -1745,7 +1716,8 @@ function calDrop(ev, dateStr, weekName, dayName){
 
 function toastWithUndo(msg, undoFn){
   const t = document.getElementById('toast');
-  t.innerHTML = `${e(msg)} <span onclick="(${undoFn.toString()})();this.parentElement.classList.remove('show')" style="margin-left:10px;text-decoration:underline;cursor:pointer;font-weight:700">Undo</span>`;
+  const safe = msg.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  t.innerHTML = `${safe} <span onclick="(${undoFn.toString()})();this.parentElement.classList.remove('show')" style="margin-left:10px;text-decoration:underline;cursor:pointer;font-weight:700">Undo</span>`;
   t.classList.add('show');
   clearTimeout(window._toastTimer);
   window._toastTimer = setTimeout(()=>t.classList.remove('show'), 4000);
