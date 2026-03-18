@@ -800,9 +800,9 @@ const SEED=[
 ];
 
 // ─── STORAGE KEYS ────────────────────────────────────────────────────────────
-const LS_MODULES   = 'qa_modules_v2';
-const LS_INSTS     = 'qa_insts_v2';
-const LS_STUDENTS  = 'qa_students_v2';
+const LS_MODULES   = 'qa_modules_v3';
+const LS_INSTS     = 'qa_insts_v3';
+const LS_STUDENTS  = 'qa_students_v3';
 
 const SEED_STUDENTS = QA006_RECORD.students.map(s=>({
   name:s.name, cohort:"Academy 10", role:"New Hire CSM", email:"", channel:"", bio:"",
@@ -814,7 +814,8 @@ const SEED_STUDENTS = QA006_RECORD.students.map(s=>({
 function loadState(){
   try {
     const sm = localStorage.getItem(LS_MODULES);
-    MODULES    = sm ? JSON.parse(sm) : [...SEED];
+    const parsed = sm ? JSON.parse(sm) : null;
+    MODULES = (parsed && parsed.length > 0) ? parsed : [...SEED];
   } catch(err){ MODULES = [...SEED]; }
   try {
     const si = localStorage.getItem(LS_INSTS);
@@ -822,8 +823,14 @@ function loadState(){
   } catch(err){ EXTRA_INSTS = []; }
   try {
     const ss = localStorage.getItem(LS_STUDENTS);
-    STUDENTS = ss ? JSON.parse(ss) : [...SEED_STUDENTS];
+    const parsedS = ss ? JSON.parse(ss) : null;
+    STUDENTS = (parsedS && parsedS.length > 0) ? parsedS : [...SEED_STUDENTS];
   } catch(err){ STUDENTS = [...SEED_STUDENTS]; }
+  // If MODULES loaded from storage but is missing the new fields, backfill from SEED
+  if(MODULES.length > 0 && !MODULES[0].hasOwnProperty('startTime')){
+    const seedMap = Object.fromEntries(SEED.map(m=>[m.id,m]));
+    MODULES = MODULES.map(m => seedMap[m.id] ? {...seedMap[m.id], ...m} : m);
+  }
 }
 
 function persist(){
