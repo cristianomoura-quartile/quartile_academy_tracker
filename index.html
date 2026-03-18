@@ -283,7 +283,7 @@ tbody tr:hover .ra{display:flex}
 .cal-day-date{font-size:15px;font-weight:700;letter-spacing:-.01em;margin-top:1px}
 .cal-day-body{padding:8px}
 .cal-empty{display:flex;align-items:center;justify-content:center;height:60px;font-size:12px;color:var(--text-tertiary);font-style:italic}
-.cal-session{background:var(--bg-secondary);border-radius:var(--radius-md);padding:8px 10px 8px 10px;margin-bottom:0;border-left:3px solid #C85A00;position:relative}
+.cal-session{background:var(--bg-secondary);border-radius:var(--radius-md);padding:8px 10px;margin-bottom:0;border-left:3px solid #C85A00;position:relative;cursor:pointer}
 .cal-session:hover{background:#eae8df}
 .cal-session:last-child{margin-bottom:0}
 .cal-session-name{font-size:12px;font-weight:600;margin-bottom:4px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:18px}
@@ -293,18 +293,18 @@ tbody tr:hover .ra{display:flex}
 .cal-ch-tag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--blue-bg);color:#C85A00;white-space:nowrap}
 .cal-session-presented{border-left-color:var(--teal-text)}
 .cal-session-presented .cal-session-name{color:var(--teal-text)}
-.cal-drag-handle{position:absolute;top:7px;right:6px;opacity:0;color:var(--text-tertiary);font-size:11px;line-height:1;cursor:grab;padding:1px 2px;transition:opacity .12s}
+/* DRAG HANDLE */
+.cal-drag-handle{position:absolute;top:7px;right:6px;opacity:0;color:var(--text-tertiary);font-size:13px;line-height:1;cursor:grab;padding:2px 3px;border-radius:3px;transition:opacity .12s}
 .cal-session:hover .cal-drag-handle{opacity:1}
-/* DRAG AND DROP */
-.cal-session[draggable]{-webkit-user-drag:element;user-select:none}
-.cal-session[draggable]:active .cal-drag-handle{cursor:grabbing}
-.cal-session.dragging{opacity:0.35}
-.cal-day-body.drag-over{background:rgba(200,90,0,0.06);border-radius:var(--radius-md);outline:2px dashed #C85A00;outline-offset:-3px}
-.cal-day-body.drag-over .cal-empty{color:#C85A00}
+.cal-drag-handle:hover{background:rgba(0,0,0,0.06)}
+/* MOUSE-DND */
+.cal-ghost{position:fixed;z-index:9999;pointer-events:none;opacity:0.85;box-shadow:0 8px 24px rgba(0,0,0,0.18);border-radius:var(--radius-md);background:var(--bg-primary);padding:8px 10px;border-left:3px solid #C85A00;font-size:12px;font-weight:600;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-session.is-dragging{opacity:0.3}
+.cal-day-body.drop-target{background:rgba(200,90,0,0.07);outline:2px dashed #C85A00;outline-offset:-3px;border-radius:var(--radius-md)}
 .cal-insert-line{height:3px;background:#C85A00;border-radius:2px;margin:2px 0;display:none}
 .cal-insert-line.visible{display:block}
-.week-drop-zone{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px dashed var(--border-mid);background:var(--bg-primary);color:var(--text-secondary);transition:all .15s}
-.week-drop-zone.drag-over-week{border-color:#C85A00;background:var(--blue-bg);color:#C85A00}
+.week-drop-zone{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px dashed var(--border-mid);background:var(--bg-primary);color:var(--text-secondary);transition:all .12s;cursor:default}
+.week-drop-zone.wdz-hover{border-color:#C85A00;background:var(--blue-bg);color:#C85A00}
 .cal-no-date{background:var(--bg-primary);border:.5px dashed var(--border-light);border-radius:var(--radius-lg);padding:16px;grid-column:1/-1}
 .cal-no-date-title{font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px}
 .cal-unscheduled-list{display:flex;flex-wrap:wrap;gap:6px}
@@ -1505,8 +1505,6 @@ function renderCalendar(){
       const label = dayDateLabel[day] || '--';
       const dateEntry = withDate.find(m => dateInfoMap[m.date] && dateInfoMap[m.date].dayName === day);
       const colDateStr = dateEntry ? dateEntry.date : '';
-      const safeDay = day.replace(/'/g,"\\'");
-      // Build body content with insert lines between cards
       let bodyContent = `<div class="cal-insert-line"></div>`;
       if(mods.length){
         mods.forEach(m=>{ bodyContent += calSessionCard(m)+`<div class="cal-insert-line"></div>`; });
@@ -1518,10 +1516,7 @@ function renderCalendar(){
           <div class="cal-day-name">${day}</div>
           <div class="cal-day-date" style="color:${label!=='--'?'var(--text-primary)':'var(--text-tertiary)'}">${label}</div>
         </div>
-        <div class="cal-day-body"
-          ondragover="calDragOver(event,'${colDateStr}','${safeDay}')"
-          ondragleave="calDragLeave(event)"
-          ondrop="calDrop(event,'${colDateStr}','${week}','${safeDay}')">
+        <div class="cal-day-body" data-date="${colDateStr}" data-week="${week}" data-day="${day}">
           ${bodyContent}
         </div>
       </div>`;
@@ -1530,7 +1525,6 @@ function renderCalendar(){
     const perDay = Math.ceil(weekMods.length / 5) || 1;
     DAYS.forEach((day, di) => {
       const mods = weekMods.slice(di * perDay, (di+1) * perDay);
-      const safeDay = day.replace(/'/g,"\\'");
       let bodyContent = `<div class="cal-insert-line"></div>`;
       if(mods.length){
         mods.forEach(m=>{ bodyContent += calSessionCard(m)+`<div class="cal-insert-line"></div>`; });
@@ -1542,10 +1536,7 @@ function renderCalendar(){
           <div class="cal-day-name">${day}</div>
           <div class="cal-day-date" style="color:var(--text-tertiary)">No date set</div>
         </div>
-        <div class="cal-day-body"
-          ondragover="calDragOver(event,'','${safeDay}')"
-          ondragleave="calDragLeave(event)"
-          ondrop="calDrop(event,'','${week}','${safeDay}')">
+        <div class="cal-day-body" data-date="" data-week="${week}" data-day="${day}">
           ${bodyContent}
         </div>
       </div>`;
@@ -1569,13 +1560,10 @@ function calSessionCard(m){
   const timeStr = m.startTime || (m.length ? `${m.length}h` : '');
   const color = chColor(m.channel);
   return `<div class="cal-session${isPresented?' cal-session-presented':''}"
-    style="border-left-color:${color};cursor:pointer"
-    draggable="true"
+    style="border-left-color:${color}"
     data-id="${m.id}"
-    onclick="if(!window._calDragMoved)openDetail('${m.id}');window._calDragMoved=false;"
-    ondragstart="window._calDragMoved=true;calDragStart(event,'${m.id}')"
-    ondragend="calDragEnd()">
-    <div class="cal-drag-handle" title="Drag to move">⠿</div>
+    onclick="calCardClick(event,'${m.id}')">
+    <div class="cal-drag-handle" title="Drag to move" onmousedown="calMouseDown(event,'${m.id}')">⠿</div>
     <div class="cal-session-name" title="${e(m.module)}">${e(m.module)}</div>
     <div class="cal-session-meta">
       <span class="cal-ch-tag" style="background:${color}18;color:${color}">${e(m.channel)}</span>
@@ -1588,136 +1576,176 @@ function calSessionCard(m){
   </div>`;
 }
 
-// ─── DRAG AND DROP ENGINE ─────────────────────────────────────────────────────
-let dragModuleId = null;
-let dragInsertBeforeId = null;
+// ─── MOUSE-BASED DRAG AND DROP ────────────────────────────────────────────────
+const DND = {
+  active: false,
+  id: null,
+  ghost: null,
+  sourceEl: null,
+  startX: 0, startY: 0,
+  moved: false,
+  currentBody: null,
+  currentDateStr: null,
+  currentWeek: null,
+  currentDay: null,
+  insertBeforeId: null
+};
 
-function calDragStart(ev, id){
-  dragModuleId = id;
-  ev.dataTransfer.effectAllowed = 'move';
-  ev.dataTransfer.setData('text/plain', id);
-  // Fade the card being dragged — use requestAnimationFrame so ghost image captures first
-  requestAnimationFrame(()=>{
-    document.querySelectorAll(`.cal-session[data-id="${id}"]`).forEach(el=>el.classList.add('dragging'));
-  });
-  // Show week drop row
-  const row = document.getElementById('cal-week-drop-row');
-  row.style.display = 'flex';
-  row.innerHTML = WEEKS.map((w,i)=>
-    `<div class="week-drop-zone"
-      ondragover="ev.preventDefault();ev.dataTransfer.dropEffect='move';this.classList.add('drag-over-week')"
-      ondragleave="this.classList.remove('drag-over-week')"
-      ondrop="weekDrop(event,'${w}',${i})"
-    >${w}</div>`
-  ).join('');
+function calCardClick(ev, id){
+  if(DND.moved) return; // was a drag, not a click
+  openDetail(id);
 }
 
-function calDragEnd(){
-  dragModuleId = null;
-  dragInsertBeforeId = null;
-  document.querySelectorAll('.cal-session.dragging').forEach(el=>el.classList.remove('dragging'));
-  document.querySelectorAll('.cal-day-body.drag-over').forEach(el=>el.classList.remove('drag-over'));
-  document.querySelectorAll('.cal-insert-line.visible').forEach(el=>el.classList.remove('visible'));
-  document.querySelectorAll('.week-drop-zone.drag-over-week').forEach(el=>el.classList.remove('drag-over-week'));
-  const row = document.getElementById('cal-week-drop-row');
-  if(row) row.style.display='none';
-}
-
-function weekDrop(ev, weekName, weekIdx){
+function calMouseDown(ev, id){
   ev.preventDefault();
   ev.stopPropagation();
-  ev.currentTarget.classList.remove('drag-over-week');
-  const id = dragModuleId || ev.dataTransfer.getData('text/plain');
-  if(!id) return;
-  const m = MODULES.find(x=>x.id===id);
-  if(!m) return;
-  const oldWeek=m.week, oldDate=m.date, oldStart=m.startTime, oldEnd=m.endTime;
-  m.week = weekName;
-  m.date = '';
-  m.startTime = '';
-  m.endTime = '';
-  persist();
-  calWeekIdx = weekIdx;
-  calDragEnd();
-  toastWithUndo(`Moved to ${weekName} — drag to a day to assign date`, ()=>{
-    m.week=oldWeek; m.date=oldDate; m.startTime=oldStart; m.endTime=oldEnd;
-    persist(); renderCalendar(); initOvTable(); initWeekGrid(); initKPIs();
-  });
-  renderCalendar();
-  initOvTable(); initWeekGrid(); initKPIs();
-}
+  DND.id = id;
+  DND.startX = ev.clientX;
+  DND.startY = ev.clientY;
+  DND.moved = false;
+  DND.active = false;
+  DND.sourceEl = ev.target.closest('.cal-session');
 
-function calDragOver(ev, dateStr, dayName){
-  ev.preventDefault();
-  ev.dataTransfer.dropEffect = 'move';
-  const body = ev.currentTarget;
-  body.classList.add('drag-over');
-  // Compute insert position
-  const cards = [...body.querySelectorAll('.cal-session')].filter(c=>c.dataset.id !== dragModuleId);
-  body.querySelectorAll('.cal-insert-line').forEach(l=>l.classList.remove('visible'));
-  dragInsertBeforeId = null;
-  let placed = false;
-  for(let i=0; i<cards.length; i++){
-    const rect = cards[i].getBoundingClientRect();
-    if(ev.clientY < rect.top + rect.height * 0.5){
-      // Show line before this card
-      const line = cards[i].previousElementSibling;
-      if(line && line.classList.contains('cal-insert-line')) line.classList.add('visible');
-      dragInsertBeforeId = cards[i].dataset.id;
-      placed = true;
-      break;
+  function onMove(e){
+    const dx = e.clientX - DND.startX, dy = e.clientY - DND.startY;
+    if(!DND.active && Math.sqrt(dx*dx+dy*dy) > 6){
+      // start drag
+      DND.active = true;
+      DND.moved = true;
+      if(DND.sourceEl) DND.sourceEl.classList.add('is-dragging');
+      // create ghost
+      const ghost = document.createElement('div');
+      ghost.className = 'cal-ghost';
+      const m = MODULES.find(x=>x.id===id);
+      ghost.textContent = m ? m.module : id;
+      document.body.appendChild(ghost);
+      DND.ghost = ghost;
+      // show week drop row
+      const row = document.getElementById('cal-week-drop-row');
+      row.style.display = 'flex';
+      row.innerHTML = WEEKS.map((w,i)=>
+        `<span class="week-drop-zone" data-week="${w}" data-idx="${i}">${w}</span>`
+      ).join('');
     }
+    if(!DND.active) return;
+    // move ghost
+    DND.ghost.style.left = (e.clientX + 14) + 'px';
+    DND.ghost.style.top  = (e.clientY - 10) + 'px';
+    // hit-test week zones
+    document.querySelectorAll('.week-drop-zone').forEach(wz=>{
+      const r = wz.getBoundingClientRect();
+      if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){
+        wz.classList.add('wdz-hover');
+      } else {
+        wz.classList.remove('wdz-hover');
+      }
+    });
+    // hit-test day bodies
+    DND.currentBody = null;
+    DND.currentDateStr = null;
+    DND.currentWeek = null;
+    DND.currentDay = null;
+    document.querySelectorAll('.cal-day-body').forEach(body=>{
+      const r = body.getBoundingClientRect();
+      if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){
+        body.classList.add('drop-target');
+        DND.currentBody = body;
+        DND.currentDateStr = body.dataset.date||'';
+        DND.currentWeek   = body.dataset.week||'';
+        DND.currentDay    = body.dataset.day||'';
+        // insert line
+        body.querySelectorAll('.cal-insert-line').forEach(l=>l.classList.remove('visible'));
+        DND.insertBeforeId = null;
+        const cards = [...body.querySelectorAll('.cal-session')].filter(c=>c.dataset.id!==id);
+        let placed=false;
+        for(let i=0;i<cards.length;i++){
+          const cr=cards[i].getBoundingClientRect();
+          if(e.clientY < cr.top+cr.height*0.5){
+            const line=cards[i].previousElementSibling;
+            if(line&&line.classList.contains('cal-insert-line')) line.classList.add('visible');
+            DND.insertBeforeId=cards[i].dataset.id;
+            placed=true; break;
+          }
+        }
+        if(!placed){
+          const lines=[...body.querySelectorAll('.cal-insert-line')];
+          if(lines.length) lines[lines.length-1].classList.add('visible');
+        }
+      } else {
+        body.classList.remove('drop-target');
+        body.querySelectorAll('.cal-insert-line').forEach(l=>l.classList.remove('visible'));
+      }
+    });
   }
-  if(!placed){
-    // Show line after last card
-    const allLines = [...body.querySelectorAll('.cal-insert-line')];
-    if(allLines.length) allLines[allLines.length-1].classList.add('visible');
+
+  function onUp(e){
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    if(!DND.active){ DND.moved=false; return; }
+    // cleanup
+    if(DND.ghost){ DND.ghost.remove(); DND.ghost=null; }
+    if(DND.sourceEl) DND.sourceEl.classList.remove('is-dragging');
+    document.querySelectorAll('.cal-day-body.drop-target').forEach(b=>b.classList.remove('drop-target'));
+    document.querySelectorAll('.cal-insert-line.visible').forEach(l=>l.classList.remove('visible'));
+    document.querySelectorAll('.week-drop-zone.wdz-hover').forEach(w=>w.classList.remove('wdz-hover'));
+    // check week drop
+    let droppedWeek=null, droppedWeekIdx=-1;
+    document.querySelectorAll('.week-drop-zone').forEach(wz=>{
+      const r=wz.getBoundingClientRect();
+      if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){
+        droppedWeek=wz.dataset.week;
+        droppedWeekIdx=parseInt(wz.dataset.idx);
+      }
+    });
+    const row=document.getElementById('cal-week-drop-row');
+    if(row) row.style.display='none';
+    DND.active=false;
+    const m=MODULES.find(x=>x.id===DND.id);
+    if(!m) return;
+    const oldDate=m.date,oldWeek=m.week,oldStart=m.startTime,oldEnd=m.endTime;
+    if(droppedWeek && droppedWeek!==m.week){
+      // cross-week drop
+      m.week=droppedWeek; m.date=''; m.startTime=''; m.endTime='';
+      persist(); calWeekIdx=droppedWeekIdx;
+      toastWithUndo(`Moved to ${droppedWeek}`, ()=>{
+        m.week=oldWeek;m.date=oldDate;m.startTime=oldStart;m.endTime=oldEnd;
+        persist();renderCalendar();initOvTable();initWeekGrid();initKPIs();
+      });
+      renderCalendar();initOvTable();initWeekGrid();initKPIs();
+    } else if(DND.currentBody){
+      // day drop
+      const insertBefore=DND.insertBeforeId;
+      m.date=DND.currentDateStr; m.week=DND.currentWeek;
+      if(DND.currentDateStr!==oldDate){m.startTime='';m.endTime='';}
+      const fromIdx=MODULES.findIndex(x=>x.id===DND.id);
+      if(fromIdx>=0) MODULES.splice(fromIdx,1);
+      if(insertBefore){
+        const toIdx=MODULES.findIndex(x=>x.id===insertBefore);
+        if(toIdx>=0) MODULES.splice(toIdx,0,m); else MODULES.push(m);
+      } else MODULES.push(m);
+      persist();
+      const label=DND.currentDateStr?`${DND.currentDay} · ${DND.currentDateStr}`:DND.currentWeek;
+      toastWithUndo(`Moved to ${label}`, ()=>{
+        m.date=oldDate;m.week=oldWeek;m.startTime=oldStart;m.endTime=oldEnd;
+        persist();renderCalendar();initOvTable();initWeekGrid();initKPIs();
+      });
+      renderCalendar();initOvTable();initWeekGrid();initKPIs();
+    }
+    setTimeout(()=>{DND.moved=false;},50);
   }
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
 }
 
-function calDragLeave(ev){
-  if(ev.relatedTarget && ev.currentTarget.contains(ev.relatedTarget)) return;
-  ev.currentTarget.classList.remove('drag-over');
-  ev.currentTarget.querySelectorAll('.cal-insert-line.visible').forEach(l=>l.classList.remove('visible'));
-  dragInsertBeforeId = null;
+function toastWithUndo(msg, undoFn){
+  const t = document.getElementById('toast');
+  const safe = msg.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  t.innerHTML = `${safe} <span onclick="(${undoFn.toString()})();this.parentElement.classList.remove('show')" style="margin-left:10px;text-decoration:underline;cursor:pointer;font-weight:700">Undo</span>`;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 4000);
 }
-
-function calDrop(ev, dateStr, weekName, dayName){
-  ev.preventDefault();
-  ev.stopPropagation();
-  const body = ev.currentTarget;
-  body.classList.remove('drag-over');
-  body.querySelectorAll('.cal-insert-line.visible').forEach(l=>l.classList.remove('visible'));
-  const id = dragModuleId || ev.dataTransfer.getData('text/plain');
-  if(!id) return;
-  const m = MODULES.find(x=>x.id===id);
-  if(!m) return;
-  const insertBefore = dragInsertBeforeId;
-  const oldDate=m.date, oldWeek=m.week, oldStart=m.startTime, oldEnd=m.endTime;
-  m.date = dateStr;
-  m.week = weekName;
-  if(dateStr !== oldDate){ m.startTime=''; m.endTime=''; }
-  // Reorder in MODULES array
-  const fromIdx = MODULES.findIndex(x=>x.id===id);
-  if(fromIdx>=0) MODULES.splice(fromIdx,1);
-  if(insertBefore){
-    const toIdx = MODULES.findIndex(x=>x.id===insertBefore);
-    if(toIdx>=0) MODULES.splice(toIdx,0,m);
-    else MODULES.push(m);
-  } else {
-    MODULES.push(m);
-  }
-  persist();
-  calDragEnd();
-  const label = dateStr ? `${dayName} · ${dateStr}` : weekName;
-  toastWithUndo(`Moved to ${label}`, ()=>{
-    m.date=oldDate; m.week=oldWeek; m.startTime=oldStart; m.endTime=oldEnd;
-    persist(); renderCalendar(); initOvTable(); initWeekGrid(); initKPIs();
-  });
-  renderCalendar();
-  initOvTable(); initWeekGrid(); initKPIs();
-}
-
 function toastWithUndo(msg, undoFn){
   const t = document.getElementById('toast');
   const safe = msg.replace(/</g,'&lt;').replace(/>/g,'&gt;');
