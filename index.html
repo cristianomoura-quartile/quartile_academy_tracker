@@ -1068,10 +1068,8 @@ function saveModule(){
   }
   persist();
   closeOverlay();refreshAll();
-  const calPage=document.getElementById('page-calendar');
-  if(calPage&&calPage.classList.contains('active')) renderCalendar();
 }
-function delModule(id,ev){ev.stopPropagation();if(!confirm('Delete module '+id+'?'))return;MODULES=MODULES.filter(m=>m.id!==id);persist();toast('Deleted');refreshAll();const calPage=document.getElementById('page-calendar');if(calPage&&calPage.classList.contains('active'))renderCalendar();}
+function delModule(id,ev){ev.stopPropagation();if(!confirm('Delete module '+id+'?'))return;MODULES=MODULES.filter(m=>m.id!==id);persist();toast('Deleted');refreshAll();}
 
 // INLINE EDIT
 const S_OPTS=['Scheduled','To Do','Presented','Needs Review','Completed'];
@@ -1083,10 +1081,20 @@ function iUpd(id,field,val){
   const m=MODULES.find(x=>x.id===id);if(!m)return;
   m[field]=field==='length'?parseFloat(val)||m.length:val;
   persist();toast('Saved');
-  initKPIs();initWeekGrid();initOvTable();buildInstGrid();
-  // re-render calendar if it's visible and the changed field affects it
-  const calPage=document.getElementById('page-calendar');
-  if(calPage&&calPage.classList.contains('active')) renderCalendar();
+  syncAll();
+}
+
+function syncAll(){
+  initKPIs();
+  initWeekGrid();
+  initOvTable();
+  filterMods();
+  buildInstGrid();
+  renderStudents();
+  // always re-render calendar so it stays in sync regardless of active page
+  if(typeof renderCalendar==='function'){
+    try{ renderCalendar(); }catch(e){}
+  }
 }
 
 function filterMods(){
@@ -1138,7 +1146,7 @@ function saveInstructor(){
   const wasEditing=idxVal!==''?Number(idxVal):null;
   if(wasEditing!=null){EXTRA_INSTS[wasEditing]=d;toast('Updated');}else{EXTRA_INSTS.push(d);toast('Instructor added');}
   persist();
-  closeOverlay();buildInstGrid();
+  closeOverlay();syncAll();buildInstGrid();
   if(wasEditing!=null) setTimeout(()=>openInstructorDetail(d.name),80);
 }
 
@@ -1381,9 +1389,9 @@ function saveStudent(){
   if(wasEditing!=null){const p=STUDENTS[wasEditing];d.sessions=p.sessions||[];d.flags=p.flags||[];STUDENTS[wasEditing]=d;toast('Updated');}
   else{STUDENTS.push(d);toast('Student added');}
   persist();
-  closeOverlay();renderStudents();document.getElementById('kpi-analyzed').textContent=MODULES.filter(m=>m.analyzed).length;
+  closeOverlay();syncAll();
 }
-function delStudent(idx,ev){ev.stopPropagation();if(!confirm('Delete '+STUDENTS[idx].name+'?'))return;STUDENTS.splice(idx,1);persist();toast('Deleted');renderStudents();}
+function delStudent(idx,ev){ev.stopPropagation();if(!confirm('Delete '+STUDENTS[idx].name+'?'))return;STUDENTS.splice(idx,1);persist();toast('Deleted');syncAll();}
 function renderStudents(){
   const c=document.getElementById('students-content');
   if(!STUDENTS.length){c.innerHTML=`<div class="tc es"><div class="iw"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a0a09c" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3>No student profiles yet</h3><p>Upload a session transcript to auto-extract student profiles, or add manually above.</p></div>`;return;}
@@ -1715,8 +1723,8 @@ function calMouseDown(ev,id){
     if(droppedWeek&&droppedWeek!==m.week){
       m.week=droppedWeek; m.date=''; m.startTime=''; m.endTime='';
       persist(); calWeekIdx=droppedWeekIdx;
-      toastWithUndo(`Moved to ${droppedWeek}`,()=>{m.week=oldWeek;m.date=oldDate;m.startTime=oldStart;m.endTime=oldEnd;persist();renderCalendar();initOvTable();initWeekGrid();initKPIs();});
-      renderCalendar();initOvTable();initWeekGrid();initKPIs();
+      toastWithUndo(`Moved to ${droppedWeek}`,()=>{m.week=oldWeek;m.date=oldDate;m.startTime=oldStart;m.endTime=oldEnd;persist();syncAll();});
+      syncAll();
     } else if(DND.targetCol&&DND.snapMin!==null){
       const newDate=DND.targetCol.dataset.date;
       const newWeek=DND.targetCol.dataset.week;
@@ -1726,8 +1734,8 @@ function calMouseDown(ev,id){
       m.date=newDate; m.week=newWeek; m.startTime=newStart; m.endTime=newEnd;
       persist();
       const label=`${DND.targetCol.dataset.day} ${newStart}`;
-      toastWithUndo(`Moved to ${label}`,()=>{m.date=oldDate;m.week=oldWeek;m.startTime=oldStart;m.endTime=oldEnd;persist();renderCalendar();initOvTable();initWeekGrid();initKPIs();});
-      renderCalendar();initOvTable();initWeekGrid();initKPIs();
+      toastWithUndo(`Moved to ${label}`,()=>{m.date=oldDate;m.week=oldWeek;m.startTime=oldStart;m.endTime=oldEnd;persist();syncAll();});
+      syncAll();
     }
     setTimeout(()=>{DND.moved=false;},50);
   }
@@ -1750,7 +1758,10 @@ function nav(page,el){
   el.classList.add('active');
   if(page==='calendar') renderCalendar();
 }
-function refreshAll(){initKPIs();initWeekGrid();initOvTable();initModFilters();buildInstGrid();renderStudents();}
+function refreshAll(){
+  initModFilters(); // rebuilds channel dropdown — needed on first load and after module add/delete
+  syncAll();
+}
 refreshAll();
 </script>
 </body>
