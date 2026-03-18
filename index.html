@@ -283,19 +283,22 @@ tbody tr:hover .ra{display:flex}
 .cal-day-date{font-size:15px;font-weight:700;letter-spacing:-.01em;margin-top:1px}
 .cal-day-body{padding:8px}
 .cal-empty{display:flex;align-items:center;justify-content:center;height:60px;font-size:12px;color:var(--text-tertiary);font-style:italic}
-.cal-session{background:var(--bg-secondary);border-radius:var(--radius-md);padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:all .12s;border-left:3px solid #C85A00}
-.cal-session:hover{background:var(--blue-bg);border-left-color:#C85A00}
+.cal-session{background:var(--bg-secondary);border-radius:var(--radius-md);padding:8px 10px 8px 10px;margin-bottom:0;border-left:3px solid #C85A00;position:relative}
+.cal-session:hover{background:#eae8df}
 .cal-session:last-child{margin-bottom:0}
-.cal-session-name{font-size:12px;font-weight:600;margin-bottom:4px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-session-name{font-size:12px;font-weight:600;margin-bottom:4px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:18px}
 .cal-session-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .cal-session-time{font-size:10px;color:var(--text-tertiary);font-weight:500}
 .cal-session-instructor{font-size:10px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px}
 .cal-ch-tag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--blue-bg);color:#C85A00;white-space:nowrap}
 .cal-session-presented{border-left-color:var(--teal-text)}
 .cal-session-presented .cal-session-name{color:var(--teal-text)}
+.cal-drag-handle{position:absolute;top:7px;right:6px;opacity:0;color:var(--text-tertiary);font-size:11px;line-height:1;cursor:grab;padding:1px 2px;transition:opacity .12s}
+.cal-session:hover .cal-drag-handle{opacity:1}
 /* DRAG AND DROP */
-.cal-session[draggable]{cursor:grab;user-select:none}
-.cal-session.dragging{opacity:0.4;box-shadow:none}
+.cal-session[draggable]{-webkit-user-drag:element;user-select:none}
+.cal-session[draggable]:active .cal-drag-handle{cursor:grabbing}
+.cal-session.dragging{opacity:0.35}
 .cal-day-body.drag-over{background:rgba(200,90,0,0.06);border-radius:var(--radius-md);outline:2px dashed #C85A00;outline-offset:-3px}
 .cal-day-body.drag-over .cal-empty{color:#C85A00}
 .cal-insert-line{height:3px;background:#C85A00;border-radius:2px;margin:2px 0;display:none}
@@ -1566,12 +1569,13 @@ function calSessionCard(m){
   const timeStr = m.startTime || (m.length ? `${m.length}h` : '');
   const color = chColor(m.channel);
   return `<div class="cal-session${isPresented?' cal-session-presented':''}"
-    style="border-left-color:${color}"
+    style="border-left-color:${color};cursor:pointer"
     draggable="true"
     data-id="${m.id}"
-    onclick="openDetail('${m.id}')"
-    ondragstart="calDragStart(event,'${m.id}')"
+    onclick="if(!window._calDragMoved)openDetail('${m.id}');window._calDragMoved=false;"
+    ondragstart="window._calDragMoved=true;calDragStart(event,'${m.id}')"
     ondragend="calDragEnd()">
+    <div class="cal-drag-handle" title="Drag to move">⠿</div>
     <div class="cal-session-name" title="${e(m.module)}">${e(m.module)}</div>
     <div class="cal-session-meta">
       <span class="cal-ch-tag" style="background:${color}18;color:${color}">${e(m.channel)}</span>
