@@ -275,43 +275,48 @@ tbody tr:hover .ra{display:flex}
 .cal-week-tab{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:.5px solid var(--border-mid);background:var(--bg-primary);color:var(--text-secondary);transition:all .12s}
 .cal-week-tab:hover{background:var(--bg-secondary);color:var(--text-primary)}
 .cal-week-tab.active{background:#C85A00;color:#fff;border-color:#C85A00}
-.cal-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
-@media(max-width:900px){.cal-grid{grid-template-columns:repeat(3,1fr)}}
-.cal-day{background:var(--bg-primary);border:.5px solid var(--border-light);border-radius:var(--radius-lg);overflow:hidden;min-height:120px}
-.cal-day-header{padding:10px 14px 8px;border-bottom:.5px solid var(--border-light);background:var(--bg-secondary)}
-.cal-day-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary)}
-.cal-day-date{font-size:15px;font-weight:700;letter-spacing:-.01em;margin-top:1px}
-.cal-day-body{padding:8px}
-.cal-empty{display:flex;align-items:center;justify-content:center;height:60px;font-size:12px;color:var(--text-tertiary);font-style:italic}
-.cal-session{background:var(--bg-secondary);border-radius:var(--radius-md);padding:8px 10px;margin-bottom:0;border-left:3px solid #C85A00;position:relative;cursor:pointer}
-.cal-session:hover{background:#eae8df}
-.cal-session:last-child{margin-bottom:0}
-.cal-session-name{font-size:12px;font-weight:600;margin-bottom:4px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:18px}
-.cal-session-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.cal-session-time{font-size:10px;color:var(--text-tertiary);font-weight:500}
-.cal-session-instructor{font-size:10px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px}
-.cal-ch-tag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--blue-bg);color:#C85A00;white-space:nowrap}
-.cal-session-presented{border-left-color:var(--teal-text)}
-.cal-session-presented .cal-session-name{color:var(--teal-text)}
-/* DRAG HANDLE */
-.cal-drag-handle{position:absolute;top:7px;right:6px;opacity:0;color:var(--text-tertiary);font-size:13px;line-height:1;cursor:grab;padding:2px 3px;border-radius:3px;transition:opacity .12s}
+/* TIME-GRID CALENDAR */
+.cal-week-header{display:grid;gap:0;margin-bottom:0}
+.cal-tg-wrap{display:flex;overflow-y:auto;max-height:calc(100vh - 260px);border:.5px solid var(--border-light);border-radius:var(--radius-lg);background:var(--bg-primary)}
+.cal-time-col{width:52px;flex-shrink:0;border-right:.5px solid var(--border-light);position:relative}
+.cal-time-label{position:absolute;right:8px;font-size:10px;color:var(--text-tertiary);font-weight:500;transform:translateY(-50%);white-space:nowrap}
+.cal-days-area{flex:1;display:grid;min-width:0}
+.cal-day-col{border-right:.5px solid var(--border-light);position:relative}
+.cal-day-col:last-child{border-right:none}
+.cal-day-col-header{padding:8px 10px 6px;border-bottom:.5px solid var(--border-light);background:var(--bg-secondary);position:sticky;top:0;z-index:2;text-align:center}
+.cal-day-col-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary)}
+.cal-day-col-date{font-size:15px;font-weight:700;letter-spacing:-.01em;margin-top:1px}
+.cal-tg-body{position:relative}
+.cal-hour-line{position:absolute;left:0;right:0;border-top:.5px solid var(--border-light);pointer-events:none}
+.cal-hour-line.half{border-top:.5px dashed rgba(0,0,0,0.06)}
+.cal-snap-highlight{position:absolute;left:2px;right:2px;background:rgba(200,90,0,0.12);border-radius:4px;pointer-events:none;display:none}
+/* SESSION BLOCKS */
+.cal-session{position:absolute;left:3px;right:3px;border-radius:5px;padding:4px 7px 4px 8px;border-left:3px solid #C85A00;cursor:pointer;overflow:hidden;box-sizing:border-box}
+.cal-session:hover{filter:brightness(0.95)}
+.cal-session.is-dragging{opacity:0.35;pointer-events:none}
+.cal-session-name{font-size:11px;font-weight:600;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:14px}
+.cal-session-time{font-size:10px;opacity:0.75;margin-top:1px}
+.cal-ch-tag{font-size:10px;font-weight:600;padding:1px 5px;border-radius:8px;display:inline-block;margin-top:2px}
+.cal-drag-handle{position:absolute;top:4px;right:4px;opacity:0;color:rgba(0,0,0,0.35);font-size:11px;cursor:grab;line-height:1;padding:1px 2px}
 .cal-session:hover .cal-drag-handle{opacity:1}
-.cal-drag-handle:hover{background:rgba(0,0,0,0.06)}
-/* MOUSE-DND */
-.cal-ghost{position:fixed;z-index:9999;pointer-events:none;opacity:0.85;box-shadow:0 8px 24px rgba(0,0,0,0.18);border-radius:var(--radius-md);background:var(--bg-primary);padding:8px 10px;border-left:3px solid #C85A00;font-size:12px;font-weight:600;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cal-session.is-dragging{opacity:0.3}
-.cal-day-body.drop-target{background:rgba(200,90,0,0.07);outline:2px dashed #C85A00;outline-offset:-3px;border-radius:var(--radius-md)}
-.cal-insert-line{height:3px;background:#C85A00;border-radius:2px;margin:2px 0;display:none}
-.cal-insert-line.visible{display:block}
+/* GHOST */
+.cal-ghost{position:fixed;z-index:9999;pointer-events:none;opacity:0.9;box-shadow:0 6px 20px rgba(0,0,0,0.2);border-radius:5px;padding:4px 8px;border-left:3px solid #C85A00;background:var(--bg-primary);font-size:11px;font-weight:600;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* SNAP TOOLTIP */
+.cal-snap-tip{position:fixed;z-index:10000;pointer-events:none;background:#1a1a18;color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:5px;display:none}
+/* WEEK DROP ZONES */
 .week-drop-zone{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px dashed var(--border-mid);background:var(--bg-primary);color:var(--text-secondary);transition:all .12s;cursor:default}
 .week-drop-zone.wdz-hover{border-color:#C85A00;background:var(--blue-bg);color:#C85A00}
-.cal-no-date{background:var(--bg-primary);border:.5px dashed var(--border-light);border-radius:var(--radius-lg);padding:16px;grid-column:1/-1}
-.cal-no-date-title{font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px}
+/* UNSCHEDULED */
+.cal-no-date{background:var(--bg-primary);border:.5px dashed var(--border-light);border-radius:var(--radius-lg);padding:14px;margin-top:14px}
+.cal-no-date-title{font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
 .cal-unscheduled-list{display:flex;flex-wrap:wrap;gap:6px}
+.cal-unsched-pill{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;background:var(--bg-secondary);border:.5px solid var(--border-light);cursor:pointer;white-space:nowrap}
+.cal-unsched-pill:hover{background:#eae8df}
 </style>
 </head>
 <body>
 <div class="toast" id="toast"></div>
+<div class="cal-snap-tip" id="cal-snap-tip"></div>
 
 <div class="overlay" id="overlay">
 
@@ -1437,322 +1442,270 @@ function renderCalWeekTabs(){
   ).join('');
 }
 
+// ─── TIME-GRID CALENDAR ───────────────────────────────────────────────────────
+const TG_START = 8;    // 8:00 AM
+const TG_END   = 20;   // 8:00 PM
+const TG_SNAP  = 10;   // 10-minute snap
+const TG_PX_PER_MIN = 2; // 2px per minute → 1 hour = 120px
+
+function timeToMin(t){
+  if(!t) return null;
+  const m=t.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if(!m) return null;
+  let h=parseInt(m[1]),mn=parseInt(m[2]);
+  if(m[3].toUpperCase()==='PM'&&h!==12) h+=12;
+  if(m[3].toUpperCase()==='AM'&&h===12) h=0;
+  return h*60+mn;
+}
+function minToTime(min){
+  const h=Math.floor(min/60), m=min%60;
+  const ampm=h<12||h===0?'AM':'PM';
+  const hh=h===0?12:h>12?h-12:h;
+  return `${hh}:${m.toString().padStart(2,'0')} ${ampm}`;
+}
+function snapMin(min){ return Math.round(min/TG_SNAP)*TG_SNAP; }
+function minToY(min){ return (min - TG_START*60)*TG_PX_PER_MIN; }
+function yToMin(y){ return snapMin(TG_START*60 + y/TG_PX_PER_MIN); }
+const TOTAL_MINS = (TG_END-TG_START)*60;
+const GRID_H = TOTAL_MINS*TG_PX_PER_MIN;
+const DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function chColorLight(ch){
+  const map={'AMZ':'#FEF0E6','Google':'#E6F1FB','Google Ads':'#E6F1FB','Portal':'#EEEDFE',
+    'Soft Skills':'#FBEAF0','DTC':'#E1F5EE','Quartile':'#EAF3DE','Study':'#F1EFE8',
+    'Sciene':'#FAEEDA','Tech':'#FAEEDA','Meta':'#E6F1FB','Bing':'#F1EFE8',
+    'Walmart':'#E1F5EE','TikTok':'#FBEAF0','Excel':'#EAF3DE','ChatGPT':'#EEEDFE',
+    'Multichannel':'#FEF0E6','Task':'#FAEEDA','Google/AMZ':'#FEF0E6'};
+  return map[ch]||'#FEF0E6';
+}
+
 function renderCalendar(){
   renderCalWeekTabs();
-  const week = WEEKS[calWeekIdx];
-  document.getElementById('cal-week-label').textContent = week;
-  document.getElementById('cal-prev').disabled = calWeekIdx===0;
-  document.getElementById('cal-next').disabled = calWeekIdx===5;
+  const week=WEEKS[calWeekIdx];
+  document.getElementById('cal-week-label').textContent=week;
+  document.getElementById('cal-prev').disabled=calWeekIdx===0;
+  document.getElementById('cal-next').disabled=calWeekIdx===5;
 
-  const weekMods = MODULES.filter(m => m.week === week);
-  const withDate  = weekMods.filter(m => m.date);
-  const noDate    = weekMods.filter(m => !m.date);
+  const weekMods=MODULES.filter(m=>m.week===week);
+  const withDate=weekMods.filter(m=>m.date);
+  const noDate=weekMods.filter(m=>!m.date);
 
-  // Parse date string to local date safely (avoids UTC shift)
-  function parseLocalDate(str){
-    const [y,mo,d] = str.split('-').map(Number);
-    return new Date(y, mo-1, d); // local time, no UTC conversion
-  }
-  const DOW = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-
-  // Build dateStr → {dayName, label} map
-  const dateInfoMap = {};
-  withDate.forEach(m => {
+  function parseLocalDate(str){const[y,mo,d]=str.split('-').map(Number);return new Date(y,mo-1,d);}
+  const dateInfoMap={};
+  withDate.forEach(m=>{
     if(!dateInfoMap[m.date]){
-      const dt = parseLocalDate(m.date);
-      dateInfoMap[m.date] = {
-        dayName: DOW[dt.getDay()],
-        label: dt.toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'})
-          .replace(/(\w+) (\d+)/, '$1 $2') // keep "Apr 20" format
-      };
+      const dt=parseLocalDate(m.date);
+      const label=dt.toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'});
+      dateInfoMap[m.date]={dayName:DOW[dt.getDay()],label};
     }
   });
-
-  // Build dayName → sorted modules map
-  const dayMap = {};
-  withDate.forEach(m => {
-    const info = dateInfoMap[m.date];
-    if(!info) return;
-    if(!dayMap[info.dayName]) dayMap[info.dayName] = [];
-    dayMap[info.dayName].push(m);
+  const dayDateStr={};
+  withDate.forEach(m=>{
+    const info=dateInfoMap[m.date];
+    if(info&&DAYS.includes(info.dayName)) dayDateStr[info.dayName]=m.date;
   });
 
-  // Sort each day's modules by startTime
-  function timeToMin(t){
-    if(!t) return 9999;
-    const m = t.match(/(\d+):(\d+)\s*(AM|PM)/i);
-    if(!m) return 9999;
-    let h = parseInt(m[1]), mn = parseInt(m[2]);
-    if(m[3].toUpperCase()==='PM' && h!==12) h+=12;
-    if(m[3].toUpperCase()==='AM' && h===12) h=0;
-    return h*60+mn;
+  // Build time ruler (left col)
+  let timeRuler='';
+  for(let h=TG_START;h<=TG_END;h++){
+    const y=minToY(h*60);
+    const label=h===12?'12 PM':h<12?`${h} AM`:h===24?'12 AM':`${h-12} PM`;
+    timeRuler+=`<div class="cal-time-label" style="top:${y}px">${label}</div>`;
   }
-  Object.values(dayMap).forEach(arr => arr.sort((a,b)=>timeToMin(a.startTime)-timeToMin(b.startTime)));
 
-  // Build date label per weekday column
-  const dayDateLabel = {};
-  withDate.forEach(m => {
-    const info = dateInfoMap[m.date];
-    if(info && DAYS.includes(info.dayName)) dayDateLabel[info.dayName] = info.label;
+  // Build day columns
+  let dayCols='';
+  DAYS.forEach(day=>{
+    const dateStr=dayDateStr[day]||'';
+    const info=dateInfoMap[dateStr]||{};
+    const mods=withDate.filter(m=>dateInfoMap[m.date]&&dateInfoMap[m.date].dayName===day);
+
+    // Build session blocks
+    let blocks='';
+    mods.forEach(m=>{
+      const startMin=timeToMin(m.startTime);
+      const endMin=timeToMin(m.endTime);
+      if(startMin===null) return;
+      const dur=endMin&&endMin>startMin?endMin-startMin:Math.max(m.length*60,30);
+      const top=minToY(startMin);
+      const height=Math.max(dur*TG_PX_PER_MIN,24);
+      const color=chColor(m.channel);
+      const bgColor=chColorLight(m.channel);
+      const isPresented=['Presented','Completed'].includes(m.status);
+      blocks+=`<div class="cal-session${isPresented?' cal-session-presented':''}"
+        style="top:${top}px;height:${height}px;background:${bgColor};border-left-color:${color}"
+        data-id="${m.id}"
+        onclick="calCardClick(event,'${m.id}')">
+        <div class="cal-drag-handle" onmousedown="calMouseDown(event,'${m.id}')">⠿</div>
+        <div class="cal-session-name" title="${e(m.module)}">${e(m.module)}</div>
+        ${height>36?`<div class="cal-session-time" style="color:${color}">${e(m.startTime||'')}${m.endTime?' – '+e(m.endTime):''}</div>`:''}
+        ${height>52?`<span class="cal-ch-tag" style="background:${color}22;color:${color}">${e(m.channel)}</span>`:''}
+      </div>`;
+    });
+
+    // Hour/half-hour lines
+    let lines='';
+    for(let h=TG_START;h<TG_END;h++){
+      lines+=`<div class="cal-hour-line" style="top:${minToY(h*60)}px"></div>`;
+      lines+=`<div class="cal-hour-line half" style="top:${minToY(h*60+30)}px"></div>`;
+    }
+    lines+=`<div class="cal-hour-line" style="top:${minToY(TG_END*60)}px"></div>`;
+
+    dayCols+=`<div class="cal-day-col" data-date="${dateStr}" data-week="${week}" data-day="${day}">
+      <div class="cal-day-col-header">
+        <div class="cal-day-col-name">${day}</div>
+        <div class="cal-day-col-date" style="color:${dateStr?'var(--text-primary)':'var(--text-tertiary)'}">${info.label||'--'}</div>
+      </div>
+      <div class="cal-tg-body" style="height:${GRID_H}px;position:relative">
+        ${lines}
+        <div class="cal-snap-highlight" id="snap-${day.toLowerCase()}"></div>
+        ${blocks}
+      </div>
+    </div>`;
   });
 
-  const hasDates = withDate.length > 0;
-  let html = `<div class="cal-grid">`;
-
-  if(hasDates){
-    DAYS.forEach(day => {
-      const mods = dayMap[day] || [];
-      const label = dayDateLabel[day] || '--';
-      const dateEntry = withDate.find(m => dateInfoMap[m.date] && dateInfoMap[m.date].dayName === day);
-      const colDateStr = dateEntry ? dateEntry.date : '';
-      let bodyContent = `<div class="cal-insert-line"></div>`;
-      if(mods.length){
-        mods.forEach(m=>{ bodyContent += calSessionCard(m)+`<div class="cal-insert-line"></div>`; });
-      } else {
-        bodyContent += `<div class="cal-empty">No sessions</div>`;
-      }
-      html += `<div class="cal-day">
-        <div class="cal-day-header">
-          <div class="cal-day-name">${day}</div>
-          <div class="cal-day-date" style="color:${label!=='--'?'var(--text-primary)':'var(--text-tertiary)'}">${label}</div>
-        </div>
-        <div class="cal-day-body" data-date="${colDateStr}" data-week="${week}" data-day="${day}">
-          ${bodyContent}
-        </div>
-      </div>`;
-    });
-  } else {
-    const perDay = Math.ceil(weekMods.length / 5) || 1;
-    DAYS.forEach((day, di) => {
-      const mods = weekMods.slice(di * perDay, (di+1) * perDay);
-      let bodyContent = `<div class="cal-insert-line"></div>`;
-      if(mods.length){
-        mods.forEach(m=>{ bodyContent += calSessionCard(m)+`<div class="cal-insert-line"></div>`; });
-      } else {
-        bodyContent += `<div class="cal-empty">--</div>`;
-      }
-      html += `<div class="cal-day">
-        <div class="cal-day-header">
-          <div class="cal-day-name">${day}</div>
-          <div class="cal-day-date" style="color:var(--text-tertiary)">No date set</div>
-        </div>
-        <div class="cal-day-body" data-date="" data-week="${week}" data-day="${day}">
-          ${bodyContent}
-        </div>
-      </div>`;
-    });
-  }
-
-  html += `</div>`;
-
-  if(hasDates && noDate.length){
-    html += `<div style="margin-top:16px"><div class="cal-no-date">
-      <div class="cal-no-date-title">No date assigned (${noDate.length} session${noDate.length!==1?'s':''})</div>
-      <div class="cal-unscheduled-list">${noDate.map(m=>`<div class="cal-session" style="min-width:200px;max-width:260px" onclick="openDetail('${m.id}')">${calSessionCard(m)}</div>`).join('')}</div>
-    </div></div>`;
-  }
-
-  document.getElementById('cal-grid').innerHTML = html;
-}
-
-function calSessionCard(m){
-  const isPresented = ['Presented','Completed'].includes(m.status);
-  const timeStr = m.startTime || (m.length ? `${m.length}h` : '');
-  const color = chColor(m.channel);
-  return `<div class="cal-session${isPresented?' cal-session-presented':''}"
-    style="border-left-color:${color}"
-    data-id="${m.id}"
-    onclick="calCardClick(event,'${m.id}')">
-    <div class="cal-drag-handle" title="Drag to move" onmousedown="calMouseDown(event,'${m.id}')">⠿</div>
-    <div class="cal-session-name" title="${e(m.module)}">${e(m.module)}</div>
-    <div class="cal-session-meta">
-      <span class="cal-ch-tag" style="background:${color}18;color:${color}">${e(m.channel)}</span>
-      ${timeStr?`<span class="cal-session-time">${timeStr}</span>`:''}
-    </div>
-    <div class="cal-session-meta" style="margin-top:3px">
-      <span class="cal-session-instructor">${e(m.instructor)}</span>
-      ${isPresented?`<span style="font-size:10px;color:var(--teal-text);font-weight:600">✓</span>`:''}
-    </div>
+  let html=`<div class="cal-tg-wrap">
+    <div class="cal-time-col" style="padding-top:49px;height:${GRID_H+49}px;position:relative">${timeRuler}</div>
+    <div class="cal-days-area" style="grid-template-columns:repeat(${DAYS.length},1fr)">${dayCols}</div>
   </div>`;
+
+  // Unscheduled pills
+  if(noDate.length){
+    html+=`<div class="cal-no-date">
+      <div class="cal-no-date-title">Unscheduled this week (${noDate.length})</div>
+      <div class="cal-unscheduled-list">${noDate.map(m=>`<div class="cal-unsched-pill" onclick="openDetail('${m.id}')">${e(m.module)}</div>`).join('')}</div>
+    </div>`;
+  }
+
+  document.getElementById('cal-grid').innerHTML=html;
 }
 
-// ─── MOUSE-BASED DRAG AND DROP ────────────────────────────────────────────────
-const DND = {
-  active: false,
-  id: null,
-  ghost: null,
-  sourceEl: null,
-  startX: 0, startY: 0,
-  moved: false,
-  currentBody: null,
-  currentDateStr: null,
-  currentWeek: null,
-  currentDay: null,
-  insertBeforeId: null
-};
+function calSessionCard(m){ return ''; } // not used in time-grid mode
 
-function calCardClick(ev, id){
-  if(DND.moved) return; // was a drag, not a click
-  openDetail(id);
-}
+// ─── MOUSE DnD ────────────────────────────────────────────────────────────────
+const DND={active:false,id:null,ghost:null,sourceEl:null,startX:0,startY:0,moved:false,snapMin:null,targetCol:null};
 
-function calMouseDown(ev, id){
-  ev.preventDefault();
-  ev.stopPropagation();
-  DND.id = id;
-  DND.startX = ev.clientX;
-  DND.startY = ev.clientY;
-  DND.moved = false;
-  DND.active = false;
-  DND.sourceEl = ev.target.closest('.cal-session');
+function calCardClick(ev,id){ if(DND.moved)return; openDetail(id); }
+
+function calMouseDown(ev,id){
+  ev.preventDefault(); ev.stopPropagation();
+  DND.id=id; DND.startX=ev.clientX; DND.startY=ev.clientY;
+  DND.moved=false; DND.active=false; DND.sourceEl=ev.target.closest('.cal-session');
 
   function onMove(e){
-    const dx = e.clientX - DND.startX, dy = e.clientY - DND.startY;
-    if(!DND.active && Math.sqrt(dx*dx+dy*dy) > 6){
-      // start drag
-      DND.active = true;
-      DND.moved = true;
+    const dx=e.clientX-DND.startX,dy=e.clientY-DND.startY;
+    if(!DND.active&&Math.sqrt(dx*dx+dy*dy)>5){
+      DND.active=true; DND.moved=true;
       if(DND.sourceEl) DND.sourceEl.classList.add('is-dragging');
-      // create ghost
-      const ghost = document.createElement('div');
-      ghost.className = 'cal-ghost';
-      const m = MODULES.find(x=>x.id===id);
-      ghost.textContent = m ? m.module : id;
-      document.body.appendChild(ghost);
-      DND.ghost = ghost;
-      // show week drop row
-      const row = document.getElementById('cal-week-drop-row');
-      row.style.display = 'flex';
-      row.innerHTML = WEEKS.map((w,i)=>
-        `<span class="week-drop-zone" data-week="${w}" data-idx="${i}">${w}</span>`
-      ).join('');
+      // ghost
+      const ghost=document.createElement('div');
+      ghost.className='cal-ghost';
+      const m=MODULES.find(x=>x.id===id);
+      ghost.textContent=m?m.module:id;
+      document.body.appendChild(ghost); DND.ghost=ghost;
+      // week drop row
+      const row=document.getElementById('cal-week-drop-row');
+      row.style.display='flex';
+      row.innerHTML=WEEKS.map((w,i)=>`<span class="week-drop-zone" data-week="${w}" data-idx="${i}">${w}</span>`).join('');
+      document.getElementById('cal-snap-tip').style.display='block';
     }
-    if(!DND.active) return;
-    // move ghost
-    DND.ghost.style.left = (e.clientX + 14) + 'px';
-    DND.ghost.style.top  = (e.clientY - 10) + 'px';
-    // hit-test week zones
+    if(!DND.active)return;
+    // ghost follows cursor
+    DND.ghost.style.left=(e.clientX+14)+'px';
+    DND.ghost.style.top=(e.clientY-8)+'px';
+    // week zone highlight
     document.querySelectorAll('.week-drop-zone').forEach(wz=>{
-      const r = wz.getBoundingClientRect();
+      const r=wz.getBoundingClientRect();
+      wz.classList.toggle('wdz-hover',e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom);
+    });
+    // find target day column
+    DND.targetCol=null; DND.snapMin=null;
+    document.querySelectorAll('.cal-day-col').forEach(col=>{
+      const body=col.querySelector('.cal-tg-body');
+      if(!body)return;
+      const r=body.getBoundingClientRect();
       if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){
-        wz.classList.add('wdz-hover');
+        DND.targetCol=col;
+        const relY=e.clientY-r.top;
+        DND.snapMin=Math.min(Math.max(snapMin(TG_START*60+relY/TG_PX_PER_MIN), TG_START*60), TG_END*60-30);
+        // snap highlight
+        const highlight=body.querySelector('.cal-snap-highlight');
+        if(highlight){
+          const m=MODULES.find(x=>x.id===id);
+          const dur=m?(timeToMin(m.endTime)&&timeToMin(m.startTime)?timeToMin(m.endTime)-timeToMin(m.startTime):m.length*60):60;
+          highlight.style.display='block';
+          highlight.style.top=minToY(DND.snapMin)+'px';
+          highlight.style.height=Math.max(dur*TG_PX_PER_MIN,24)+'px';
+        }
+        // snap tip
+        const tip=document.getElementById('cal-snap-tip');
+        tip.textContent=minToTime(DND.snapMin);
+        tip.style.left=(e.clientX+18)+'px';
+        tip.style.top=(e.clientY-28)+'px';
       } else {
-        wz.classList.remove('wdz-hover');
+        const highlight=body.querySelector('.cal-snap-highlight');
+        if(highlight)highlight.style.display='none';
       }
     });
-    // hit-test day bodies
-    DND.currentBody = null;
-    DND.currentDateStr = null;
-    DND.currentWeek = null;
-    DND.currentDay = null;
-    document.querySelectorAll('.cal-day-body').forEach(body=>{
-      const r = body.getBoundingClientRect();
-      if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){
-        body.classList.add('drop-target');
-        DND.currentBody = body;
-        DND.currentDateStr = body.dataset.date||'';
-        DND.currentWeek   = body.dataset.week||'';
-        DND.currentDay    = body.dataset.day||'';
-        // insert line
-        body.querySelectorAll('.cal-insert-line').forEach(l=>l.classList.remove('visible'));
-        DND.insertBeforeId = null;
-        const cards = [...body.querySelectorAll('.cal-session')].filter(c=>c.dataset.id!==id);
-        let placed=false;
-        for(let i=0;i<cards.length;i++){
-          const cr=cards[i].getBoundingClientRect();
-          if(e.clientY < cr.top+cr.height*0.5){
-            const line=cards[i].previousElementSibling;
-            if(line&&line.classList.contains('cal-insert-line')) line.classList.add('visible');
-            DND.insertBeforeId=cards[i].dataset.id;
-            placed=true; break;
-          }
-        }
-        if(!placed){
-          const lines=[...body.querySelectorAll('.cal-insert-line')];
-          if(lines.length) lines[lines.length-1].classList.add('visible');
-        }
-      } else {
-        body.classList.remove('drop-target');
-        body.querySelectorAll('.cal-insert-line').forEach(l=>l.classList.remove('visible'));
-      }
-    });
+    if(!DND.targetCol){
+      const tip=document.getElementById('cal-snap-tip');
+      tip.style.display='none';
+    }
   }
 
   function onUp(e){
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
-    if(!DND.active){ DND.moved=false; return; }
-    // cleanup
-    if(DND.ghost){ DND.ghost.remove(); DND.ghost=null; }
-    if(DND.sourceEl) DND.sourceEl.classList.remove('is-dragging');
-    document.querySelectorAll('.cal-day-body.drop-target').forEach(b=>b.classList.remove('drop-target'));
-    document.querySelectorAll('.cal-insert-line.visible').forEach(l=>l.classList.remove('visible'));
+    document.removeEventListener('mousemove',onMove);
+    document.removeEventListener('mouseup',onUp);
+    document.getElementById('cal-snap-tip').style.display='none';
+    if(!DND.active){DND.moved=false;return;}
+    if(DND.ghost){DND.ghost.remove();DND.ghost=null;}
+    if(DND.sourceEl)DND.sourceEl.classList.remove('is-dragging');
+    document.querySelectorAll('.cal-snap-highlight').forEach(h=>h.style.display='none');
     document.querySelectorAll('.week-drop-zone.wdz-hover').forEach(w=>w.classList.remove('wdz-hover'));
+    const row=document.getElementById('cal-week-drop-row');
+    if(row)row.style.display='none';
+    DND.active=false;
+    const m=MODULES.find(x=>x.id===DND.id);
+    if(!m){setTimeout(()=>{DND.moved=false;},50);return;}
+    const oldDate=m.date,oldWeek=m.week,oldStart=m.startTime,oldEnd=m.endTime;
     // check week drop
-    let droppedWeek=null, droppedWeekIdx=-1;
+    let droppedWeek=null,droppedWeekIdx=-1;
     document.querySelectorAll('.week-drop-zone').forEach(wz=>{
       const r=wz.getBoundingClientRect();
       if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){
-        droppedWeek=wz.dataset.week;
-        droppedWeekIdx=parseInt(wz.dataset.idx);
+        droppedWeek=wz.dataset.week; droppedWeekIdx=parseInt(wz.dataset.idx);
       }
     });
-    const row=document.getElementById('cal-week-drop-row');
-    if(row) row.style.display='none';
-    DND.active=false;
-    const m=MODULES.find(x=>x.id===DND.id);
-    if(!m) return;
-    const oldDate=m.date,oldWeek=m.week,oldStart=m.startTime,oldEnd=m.endTime;
-    if(droppedWeek && droppedWeek!==m.week){
-      // cross-week drop
+    if(droppedWeek&&droppedWeek!==m.week){
       m.week=droppedWeek; m.date=''; m.startTime=''; m.endTime='';
       persist(); calWeekIdx=droppedWeekIdx;
-      toastWithUndo(`Moved to ${droppedWeek}`, ()=>{
-        m.week=oldWeek;m.date=oldDate;m.startTime=oldStart;m.endTime=oldEnd;
-        persist();renderCalendar();initOvTable();initWeekGrid();initKPIs();
-      });
+      toastWithUndo(`Moved to ${droppedWeek}`,()=>{m.week=oldWeek;m.date=oldDate;m.startTime=oldStart;m.endTime=oldEnd;persist();renderCalendar();initOvTable();initWeekGrid();initKPIs();});
       renderCalendar();initOvTable();initWeekGrid();initKPIs();
-    } else if(DND.currentBody){
-      // day drop
-      const insertBefore=DND.insertBeforeId;
-      m.date=DND.currentDateStr; m.week=DND.currentWeek;
-      if(DND.currentDateStr!==oldDate){m.startTime='';m.endTime='';}
-      const fromIdx=MODULES.findIndex(x=>x.id===DND.id);
-      if(fromIdx>=0) MODULES.splice(fromIdx,1);
-      if(insertBefore){
-        const toIdx=MODULES.findIndex(x=>x.id===insertBefore);
-        if(toIdx>=0) MODULES.splice(toIdx,0,m); else MODULES.push(m);
-      } else MODULES.push(m);
+    } else if(DND.targetCol&&DND.snapMin!==null){
+      const newDate=DND.targetCol.dataset.date;
+      const newWeek=DND.targetCol.dataset.week;
+      const newStart=minToTime(DND.snapMin);
+      const oldDur=timeToMin(m.endTime)&&timeToMin(m.startTime)?timeToMin(m.endTime)-timeToMin(m.startTime):m.length*60;
+      const newEnd=minToTime(DND.snapMin+oldDur);
+      m.date=newDate; m.week=newWeek; m.startTime=newStart; m.endTime=newEnd;
       persist();
-      const label=DND.currentDateStr?`${DND.currentDay} · ${DND.currentDateStr}`:DND.currentWeek;
-      toastWithUndo(`Moved to ${label}`, ()=>{
-        m.date=oldDate;m.week=oldWeek;m.startTime=oldStart;m.endTime=oldEnd;
-        persist();renderCalendar();initOvTable();initWeekGrid();initKPIs();
-      });
+      const label=`${DND.targetCol.dataset.day} ${newStart}`;
+      toastWithUndo(`Moved to ${label}`,()=>{m.date=oldDate;m.week=oldWeek;m.startTime=oldStart;m.endTime=oldEnd;persist();renderCalendar();initOvTable();initWeekGrid();initKPIs();});
       renderCalendar();initOvTable();initWeekGrid();initKPIs();
     }
     setTimeout(()=>{DND.moved=false;},50);
   }
-
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup', onUp);
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
 }
 
-function toastWithUndo(msg, undoFn){
-  const t = document.getElementById('toast');
-  const safe = msg.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  t.innerHTML = `${safe} <span onclick="(${undoFn.toString()})();this.parentElement.classList.remove('show')" style="margin-left:10px;text-decoration:underline;cursor:pointer;font-weight:700">Undo</span>`;
+function toastWithUndo(msg,undoFn){
+  const t=document.getElementById('toast');
+  const safe=msg.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  t.innerHTML=`${safe} <span onclick="(${undoFn.toString()})();this.parentElement.classList.remove('show')" style="margin-left:10px;text-decoration:underline;cursor:pointer;font-weight:700">Undo</span>`;
   t.classList.add('show');
   clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 4000);
-}
-function toastWithUndo(msg, undoFn){
-  const t = document.getElementById('toast');
-  const safe = msg.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  t.innerHTML = `${safe} <span onclick="(${undoFn.toString()})();this.parentElement.classList.remove('show')" style="margin-left:10px;text-decoration:underline;cursor:pointer;font-weight:700">Undo</span>`;
-  t.classList.add('show');
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 4000);
+  window._toastTimer=setTimeout(()=>t.classList.remove('show'),4000);
 }
 function nav(page,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
