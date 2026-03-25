@@ -277,7 +277,7 @@ tbody tr:hover .ra{display:flex}
 .cal-week-tab.active{background:#C85A00;color:#fff;border-color:#C85A00}
 /* TIME-GRID CALENDAR */
 .cal-week-header{display:grid;gap:0;margin-bottom:0}
-.cal-tg-wrap{display:flex;overflow-y:auto;max-height:calc(100vh - 260px);border:.5px solid var(--border-light);border-radius:var(--radius-lg);background:var(--bg-primary)}
+.cal-tg-wrap{display:flex;overflow:hidden;border:.5px solid var(--border-light);border-radius:var(--radius-lg);background:var(--bg-primary)}
 .cal-time-col{width:52px;flex-shrink:0;border-right:.5px solid var(--border-light);position:relative}
 .cal-time-label{position:absolute;right:8px;font-size:10px;color:var(--text-tertiary);font-weight:500;transform:translateY(-50%);white-space:nowrap}
 .cal-days-area{flex:1;display:grid;min-width:0}
@@ -1494,9 +1494,9 @@ function renderCalWeekTabs(){
 
 // ─── TIME-GRID CALENDAR ───────────────────────────────────────────────────────
 const TG_START = 8;    // 8:00 AM
-const TG_END   = 20;   // 8:00 PM
+const TG_END   = 19;   // 7:00 PM
 const TG_SNAP  = 10;   // 10-minute snap
-const TG_PX_PER_MIN = 2; // 2px per minute → 1 hour = 120px
+const TG_PX_PER_MIN = 1.5; // 1.5px per minute → 1 hour = 90px
 
 function timeToMin(t){
   if(!t) return null;
