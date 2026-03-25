@@ -1577,7 +1577,7 @@ function renderCalendar(){
       const startMin=timeToMin(m.startTime);
       const endMin=timeToMin(m.endTime);
       const dur=endMin&&startMin&&endMin>startMin?endMin-startMin:Math.max(m.length*60,30);
-      const height=Math.max(dur*TG_PX_PER_MIN,28);
+      const height=dur*TG_PX_PER_MIN;
       const color=chColor(m.channel);
       const bgColor=chColorLight(m.channel);
       const isPresented=['Presented','Completed'].includes(m.status);
@@ -1609,7 +1609,7 @@ function renderCalendar(){
         onclick="calCardClick(event,'${m.id}')">
         <div class="cal-drag-handle" onmousedown="calMouseDown(event,'${m.id}')">⠿</div>
         <div class="cal-session-name" title="${e(m.module)}">${e(m.module)}</div>
-        ${height>36?`<div style="display:flex;align-items:center;gap:4px;margin-top:2px;flex-wrap:wrap">
+        ${height>30?`<div style="display:flex;align-items:center;gap:4px;margin-top:2px;flex-wrap:wrap">
           <span class="cal-status-tag" style="background:${statusCfg.bg};color:${statusCfg.col}">${statusCfg.label}</span>
           ${m.startTime?`<span class="cal-session-time" style="color:${color}">${e(m.startTime)}${m.endTime?' – '+e(m.endTime):''}</span>`:''}
         </div>`:''}
@@ -1708,7 +1708,7 @@ function calMouseDown(ev,id){
           const dur=m?(timeToMin(m.endTime)&&timeToMin(m.startTime)?timeToMin(m.endTime)-timeToMin(m.startTime):m.length*60):60;
           highlight.style.display='block';
           highlight.style.top=minToY(DND.snapMin)+'px';
-          highlight.style.height=Math.max(dur*TG_PX_PER_MIN,24)+'px';
+          highlight.style.height=dur*TG_PX_PER_MIN+'px';
         }
         // snap tip
         const tip=document.getElementById('cal-snap-tip');
