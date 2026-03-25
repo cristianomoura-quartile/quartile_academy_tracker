@@ -817,9 +817,9 @@ const SEED=[
 ];
 
 // ─── STORAGE KEYS ────────────────────────────────────────────────────────────
-const LS_MODULES   = 'qa_modules_v6';
-const LS_INSTS     = 'qa_insts_v6';
-const LS_STUDENTS  = 'qa_students_v6';
+const LS_MODULES   = 'qa_modules_v7';
+const LS_INSTS     = 'qa_insts_v7';
+const LS_STUDENTS  = 'qa_students_v7';
 
 const SEED_STUDENTS = QA006_RECORD.students.map(s=>({
   name:s.name, cohort:"Academy 10", role:"New Hire CSM", email:"", channel:"", bio:"",
@@ -842,7 +842,7 @@ function persist(){
 
 function loadState(){
   // Wipe stale keys from old versions
-  ['v1','v2','v3','v4','v5'].forEach(v=>{
+  ['v1','v2','v3','v4','v5','v6'].forEach(v=>{
     ['qa_modules_','qa_insts_','qa_students_'].forEach(k=>{
       try{localStorage.removeItem(k+v);}catch(ex){}
     });
@@ -1558,7 +1558,7 @@ function renderCalendar(){
   // Build time ruler (left col)
   let timeRuler='';
   for(let h=TG_START;h<=TG_END;h++){
-    const y=minToY(h*60);
+    const y=minToY(h*60)+49;  // +49 to align with cal-tg-body (which starts after the 49px day header)
     const label=h===12?'12 PM':h<12?`${h} AM`:h===24?'12 AM':`${h-12} PM`;
     timeRuler+=`<div class="cal-time-label" style="top:${y}px">${label}</div>`;
   }
