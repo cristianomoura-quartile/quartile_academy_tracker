@@ -1093,15 +1093,17 @@ async function boot(){
     if (res.ok) {
       const payload = await res.json();
       if (payload && payload.modules && payload.modules.length) {
-        // Merge remote into local: update schedule fields, preserve operational edits
+        // Merge remote into local: update schedule + analysis fields, preserve operational edits
         payload.modules.forEach(remote => {
           const local = MODULES.find(m => m.id === remote.id);
           if (local) {
-            ['week','date','day','startTime','length','format','channel','module','instructor','obj'].forEach(k => {
+            ['week','date','day','startTime','length','format','channel','module','instructor','obj',
+             'status','analyzed','contentMatchScore','instructorsActual','attendees','interactionCount',
+             'topicsCovered','topicsMissed','qaLog','insights','sessionSummary','followUps','analyzedAt'].forEach(k => {
               if (remote[k] !== undefined) local[k] = remote[k];
             });
           } else {
-            MODULES.push({...remote, status:'Scheduled', notes:'', recording:'', ppt:'', analyzed:false});
+            MODULES.push({...remote});
           }
         });
         if (payload.students && payload.students.length) {
