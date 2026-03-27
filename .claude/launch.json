@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Quartile Academy Tracker (Static)",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "3000", "--directory", "C:/Users/CristianoMouraQuarti/AppData/Local/Temp/quartile_academy_tracker"],
+      "port": 3000
+    }
+  ]
+}
