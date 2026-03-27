@@ -4,7 +4,7 @@
     {
       "name": "Quartile Academy Tracker (Static)",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "3000", "--directory", "C:/Users/CristianoMouraQuarti/AppData/Local/Temp/quartile_academy_tracker"],
+      "runtimeArgs": ["C:/Users/CristianoMouraQuarti/AppData/Local/Temp/quartile_academy_tracker/server.py"],
       "port": 3000
     }
   ]

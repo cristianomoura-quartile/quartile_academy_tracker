@@ -1029,6 +1029,22 @@ function persist(){
     localStorage.setItem(LS_INSTS,    JSON.stringify(EXTRA_INSTS));
     localStorage.setItem(LS_STUDENTS, JSON.stringify(STUDENTS));
   } catch(err){ console.warn('localStorage save failed', err); }
+  persistRemote();
+}
+
+function persistRemote(){
+  const payload = {
+    version: '2.0',
+    lastUpdated: new Date().toISOString().slice(0,10),
+    cohort: 'Academy 10',
+    modules: MODULES,
+    students: STUDENTS
+  };
+  fetch('/save', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  }).catch(()=>{}); // silent if server not running
 }
 
 function loadState(){
