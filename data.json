@@ -200,7 +200,7 @@
       "format": "OnDemand",
       "channel": "AMZ",
       "module": "AMZ Intro: ACOS/TACOS",
-      "instructor": "Ana Bragan\u00e7a",
+      "instructor": "Ana Bragança",
       "status": "Scheduled",
       "recording": "",
       "ppt": "",
@@ -286,11 +286,117 @@
       "channel": "AMZ",
       "module": "Sponsored Products - Advanced",
       "instructor": "Felipe Tahara",
-      "status": "Scheduled",
+      "status": "Presented",
       "recording": "",
       "ppt": "",
       "notes": "",
-      "analyzed": false
+      "analyzed": true,
+      "contentMatchScore": 92,
+      "instructorsActual": [
+        "Guilherme Decimo"
+      ],
+      "attendees": [
+        "Ana Reyes",
+        "Marcus Liu",
+        "Priya Shankar",
+        "Jordan Cole"
+      ],
+      "interactionCount": 52,
+      "topicsCovered": [
+        "Five-layer SP campaign ecosystem (Discovery, Isolation, Scaling, Defense, Conquesting)",
+        "Signal contamination and impact on automation/bid optimization",
+        "Quartile One automated campaign governance principles",
+        "Bulk and Imported campaign structural auditing",
+        "Internal competition from duplicate targeting",
+        "Conversion-weighted eligibility and Amazon auction mechanics",
+        "Retail health signals and auction eligibility feedback loop",
+        "Bid elasticity and elasticity ceilings",
+        "Budget logic: budgets cap opportunity, do not create demand",
+        "Demand saturation vs. undercapitalization vs. bid suppression diagnostics",
+        "Retail constraints: Buy Box, inventory, pricing competitiveness, review strength",
+        "Governance boundary: when to intervene vs. let automation run",
+        "Over-intervention vs. under-intervention risks",
+        "Weekly/monthly/quarterly monitoring cadence framework"
+      ],
+      "topicsMissed": [
+        "Negative keywords strategy (expected for advanced SP)",
+        "Ad placement optimization (top-of-search vs. product pages)",
+        "Portal workflows (explicitly deferred to separate session)",
+        "Dayparting and time-of-day bid adjustments",
+        "Match type strategy in depth beyond structural context"
+      ],
+      "qaLog": [
+        {
+          "question": "If a client sees 110% ACOS on a Discovery campaign, is that expected?",
+          "askedBy": "Jordan Cole",
+          "answer": "Yes — Discovery is designed to run inefficiently short-term. Cutting bids destroys signal yield and breaks the lifecycle.",
+          "onTopic": true
+        },
+        {
+          "question": "What does contamination look like in practice inside a campaign?",
+          "askedBy": "Marcus Liu",
+          "answer": "Mixing broad auto-targeting with high-intent exact match keywords in the same campaign. The automation sees mixed conversion data and bidding becomes unstable.",
+          "onTopic": true
+        },
+        {
+          "question": "Can Quartile One campaigns start behaving as contaminated?",
+          "askedBy": "Ana Reyes",
+          "answer": "Yes — if a previous CSM or account manager moved keywords manually across campaigns. Requires structural remediation, not bid adjustments.",
+          "onTopic": true
+        },
+        {
+          "question": "How do you distinguish a retail eligibility problem from actual bid suppression?",
+          "askedBy": "Jordan Cole",
+          "answer": "Check impression share and budget utilization together. Low IS + budget not utilized = eligibility degraded. Low IS + budget fully utilized = budget-capped.",
+          "onTopic": true
+        },
+        {
+          "question": "How do you know if you have hit the bid elasticity ceiling vs. simply not bidding enough?",
+          "askedBy": "Ana Reyes",
+          "answer": "Look at impression share growth vs. conversion rate. If IS grows but CVR declines, you are past the elasticity sweet spot.",
+          "onTopic": true
+        },
+        {
+          "question": "A campaign hits daily budget cap — does that mean the budget needs to increase?",
+          "askedBy": "Marcus Liu",
+          "answer": "Not necessarily. Distinguish saturation (high IS, cap hit, flat CVR) from undercapitalization (low IS, cap hit, healthy CVR on won impressions).",
+          "onTopic": true
+        },
+        {
+          "question": "How do you separate demand saturation from undercapitalization in the data?",
+          "askedBy": "Ana Reyes",
+          "answer": "Saturation: high IS, budget capped, flat/declining CVR. Undercapitalization: low IS, budget capped, healthy CVR — real demand not reached because budget runs out.",
+          "onTopic": true
+        },
+        {
+          "question": "What qualifies as a structural assumption change that warrants human governance?",
+          "askedBy": "Jordan Cole",
+          "answer": "Four categories: retail events (Buy Box loss, stockout, price change), structural contamination, strategic changes (new ASIN, ACOS target shift), external signals (seasonality, competitive shifts).",
+          "onTopic": true
+        },
+        {
+          "question": "What happens if you intervene too often with manual changes when automation is stable?",
+          "askedBy": "Ana Reyes",
+          "answer": "Model learning degrades. Every manual override is noise in the training signal. Repeated over-intervention means automation never reaches a stable optimized state.",
+          "onTopic": true
+        },
+        {
+          "question": "Is there a specific monitoring cadence for structural drift — weekly vs. monthly?",
+          "askedBy": "Ana Reyes",
+          "answer": "Weekly: IS by layer, CVR stability by campaign type, Buy Box status. Monthly: structural audit (layers clean, targeting overlap, manual interventions). Quarterly: verify architecture matches client strategic goals.",
+          "onTopic": true
+        }
+      ],
+      "insights": "Strong engagement throughout: all four attendees asked substantive questions and performed well on both knowledge checks and the closing scenario exercise — comprehension was high for a concept-heavy session.\nThe saturation/undercapitalization/suppression diagnostic triplet resonated most — three attendees explicitly called it out as immediately usable; consider making it a printable reference card.\nInstructor was Guilherme Decimo, not Felipe Tahara as listed in the tracker — confirm whether this was a substitution or a data entry error.\nSession ran approx. 2h15m (09:00-11:15), roughly 15 minutes over the planned 2-hour slot; not disruptive but worth monitoring.\nPortal workflows were explicitly deferred — the companion portal session must be confirmed as scheduled, as all four attendees are actively anticipating it.",
+      "sessionSummary": "Guilherme Decimo led a 2-hour conceptual session on W1.17 covering all seven announced topics: the five-layer SP campaign ecosystem, Quartile One vs. Bulk/Imported governance, the Amazon auction feedback loop, bid elasticity, budget logic and saturation diagnostics, retail constraints, and the governance boundary. All four attendees (Ana Reyes, Marcus Liu, Priya Shankar, Jordan Cole) were highly engaged, contributing substantive questions throughout and answering correctly on two embedded knowledge checks and a comprehensive closing scenario exercise. Portal-specific workflows were scoped out and deferred to a dedicated follow-up session. The session closed with a self-assessment assignment tied to seven diagnostic questions from the reading document.",
+      "followUps": [
+        "Guilherme to send self-assessment quiz (seven diagnostic questions) before next session",
+        "Confirm portal workflows session is scheduled — all attendees are expecting it",
+        "Attendees to review seven diagnostic questions in reading doc and answer cold before first live account review",
+        "Verify instructor assignment: Guilherme Decimo presented, Felipe Tahara listed in tracker — confirm correct record",
+        "Consider creating a saturation/undercapitalization/suppression diagnostic reference card for CSM use"
+      ],
+      "analyzedAt": "2026-03-27T00:00:00Z"
     },
     {
       "id": "QA118",
