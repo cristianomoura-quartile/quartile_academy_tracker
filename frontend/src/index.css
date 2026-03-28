@@ -67,10 +67,3 @@ code {
 @layer base {
   * { @apply border-[#EBE5DB]; }
 }
-<<<<<<< Updated upstream
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
-=======
->>>>>>> Stashed changes
