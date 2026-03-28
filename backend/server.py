@@ -481,14 +481,22 @@ async def deliver_assessment(module_id: str, file: UploadFile = File(...), reque
     text = await read_uploaded_file(file)
 
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        from openai import AsyncOpenAI as _OpenAI
         api_key = os.environ.get("EMERGENT_LLM_KEY")
         system_prompt = """You are an assessment evaluator for Quartile Academy. Grade the student's assessment submission. Return ONLY valid JSON:
 {"student_name":"Name","overall_score":85,"knowledge":{"score":8,"feedback":"detail"},"data_clarity":{"score":7,"feedback":"detail"},"communication":{"score":9,"feedback":"detail"},"soft_skills":{"score":8,"feedback":"detail"},"critical_thinking":{"score":7,"feedback":"detail"},"problem_solving":{"score":8,"feedback":"detail"},"technical_accuracy":{"score":9,"feedback":"detail"},"time_management":{"score":7,"feedback":"detail"},"strategic_thinking":{"score":8,"feedback":"detail"},"overall_feedback":"2-3 sentence summary","strengths":["s1","s2"],"areas_for_improvement":["a1","a2"]}
 Score each skill 1-10. Be thorough and fair."""
 
-        chat = LlmChat(api_key=api_key, session_id=f"assess-{module_id}-{uuid.uuid4().hex[:8]}", system_message=system_prompt).with_model("openai", "gpt-4.1-mini")
-        resp = await chat.send_message(UserMessage(text=f"Assessment for {module.get('module', '')} ({module.get('channel', '')}):\n\n{text[:15000]}"))
+        _client = _OpenAI(api_key=api_key)
+        user_text = f"Assessment for {module.get('module', '')} ({module.get('channel', '')}):\n\n{text[:15000]}"
+        _completion = await _client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_text}
+            ]
+        )
+        resp = _completion.choices[0].message.content
         resp_text = resp.strip()
         start, end = resp_text.find("{"), resp_text.rfind("}")
         if start != -1 and end != -1:
@@ -522,14 +530,22 @@ async def review_role_play(module_id: str, file: UploadFile = File(...), request
     channel = module.get("channel", "AMZ")
 
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        from openai import AsyncOpenAI as _OpenAI
         api_key = os.environ.get("EMERGENT_LLM_KEY")
         system_prompt = f"""You are a role play evaluator for Quartile Academy. Evaluate this {channel} role play / QBR presentation. Return ONLY valid JSON:
 {{"student_name":"Name","overall_score":85,"channel_knowledge":{{"score":8,"feedback":"How well they demonstrated {channel} platform knowledge"}},"data_clarity":{{"score":7,"feedback":"detail"}},"storytelling":{{"score":8,"feedback":"detail"}},"analytical_thinking":{{"score":7,"feedback":"detail"}},"communication":{{"score":9,"feedback":"detail"}},"soft_skills":{{"score":8,"feedback":"detail"}},"presentation_design":{{"score":7,"feedback":"detail"}},"optimization_opportunities":{{"score":8,"feedback":"detail"}},"upsell_opportunities":{{"score":7,"feedback":"detail"}},"negotiation":{{"score":8,"feedback":"detail"}},"objection_handling":{{"score":7,"feedback":"detail"}},"asking_questions":{{"score":8,"feedback":"detail"}},"presentation_pacing":{{"score":7,"feedback":"detail"}},"presentation_time":{{"score":8,"feedback":"Appropriate length and time management"}},"overall_feedback":"2-3 sentence summary","strengths":["s1","s2"],"areas_for_improvement":["a1","a2"]}}
 Score each dimension 1-10. Be thorough."""
 
-        chat = LlmChat(api_key=api_key, session_id=f"roleplay-{module_id}-{uuid.uuid4().hex[:8]}", system_message=system_prompt).with_model("openai", "gpt-4.1-mini")
-        resp = await chat.send_message(UserMessage(text=f"Role Play for {module.get('module', '')} ({channel}):\n\n{text[:15000]}"))
+        _client = _OpenAI(api_key=api_key)
+        user_text = f"Role Play for {module.get('module', '')} ({channel}):\n\n{text[:15000]}"
+        _completion = await _client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_text}
+            ]
+        )
+        resp = _completion.choices[0].message.content
         resp_text = resp.strip()
         start, end = resp_text.find("{"), resp_text.rfind("}")
         if start != -1 and end != -1:
@@ -773,7 +789,7 @@ async def ingest_transcript(module_id: str, file: UploadFile = File(...)):
 
     # AI Analysis
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        from openai import AsyncOpenAI as _OpenAI
         api_key = os.environ.get("EMERGENT_LLM_KEY")
         if not api_key:
             raise HTTPException(status_code=500, detail="LLM API key not configured")
@@ -802,20 +818,22 @@ CRITICAL: For content_match_score, score STRICTLY based on how well the transcri
 {"learning_objective":"1-2 sentence summary","content_match_score":9,"content_match_summary":"3-4 sentence assessment","topics_covered":["topic1","topic2"],"topics_missed":["topic1"],"terminology_drifts":[{"id":"Correction #01","severity":"CRITICAL","issue":"desc","recommendation":"fix"}],"tips_shared":["tip1","tip2"],"follow_up_items":["item1"],"qa_log":[{"student":"Name","question":"q","answer":"a","section":"Section"}],"student_performance":[{"name":"Name","interactions":10,"score":8,"strengths":"desc","areas_for_improvement":"desc","skills":{"objection_handling":7,"negotiation":6,"data_analysis":8,"communication":9,"presentation":7,"analytical_thinking":8,"campaign_management":7,"client_management":6}}],"overall_score":9,"avg_satisfaction":4.5,"session_sections":[{"title":"Title","start_time":"09:00","end_time":"09:15","summary":"Brief"}],"instructor_name":"Full Name","actual_duration":"2h 05m","participants":["Name1","Name2"]}
 For each student in student_performance, rate ALL 8 skills from 0-10 based on their demonstrated ability in the transcript. If a skill wasn't demonstrated, estimate based on their overall engagement. Extract ALL Q&A interactions, tips, student performance. Be thorough."""
 
-        chat = LlmChat(
-            api_key=api_key,
-            session_id=f"ingest-{module_id}-{uuid.uuid4().hex[:8]}",
-            system_message=system_prompt
-        ).with_model("openai", "gpt-4.1-mini")
-
         # Trim transcript to ~15k chars to reduce token cost
         trimmed = transcript_text[:15000]
         if len(transcript_text) > 15000:
             # Also grab the last 3k chars for closing sections
             trimmed += "\n...[MIDDLE SECTIONS TRIMMED]...\n" + transcript_text[-3000:]
 
-        user_msg = UserMessage(text=f"Analyze this module transcript for module {module_id} - {module.get('module', '')}:\n\n{trimmed}")
-        response = await chat.send_message(user_msg)
+        _client = _OpenAI(api_key=api_key)
+        user_text = f"Analyze this module transcript for module {module_id} - {module.get('module', '')}:\n\n{trimmed}"
+        _completion = await _client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_text}
+            ]
+        )
+        response = _completion.choices[0].message.content
 
         # Parse JSON from response
         response_text = response.strip()
