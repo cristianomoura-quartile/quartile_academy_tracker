@@ -926,6 +926,649 @@ tbody tr:hover .ra{display:flex}
 .mobile-nav-link span.material-symbols-outlined { font-size: 22px; }
 .mobile-nav-label { font-size: 8px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
 
+
+/* ==========================================
+   NEW FIGMA DESIGN - DETAIL MODAL
+   ========================================== */
+/* Override detail modal to match Figma */
+.dm {
+  background: #f5f4f0;
+  border-radius: 0;
+  width: 960px;
+  max-width: 98vw;
+  max-height: 95vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 32px 80px rgba(0,0,0,.28);
+}
+.dmh {
+  padding: 0;
+  flex-shrink: 0;
+  border-bottom: 1px solid #e0ddd8;
+}
+.dmt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 28px 16px;
+}
+.did {
+  font-size: 10px;
+  font-family: 'SF Mono', Consolas, monospace;
+  color: var(--primary);
+  margin-bottom: 3px;
+  letter-spacing: .08em;
+  font-weight: 700;
+}
+.dn {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -.025em;
+  line-height: 1.2;
+  color: #0f0e0c;
+}
+.dbd {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 28px 14px;
+  border-bottom: none;
+}
+.dha {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: center;
+}
+.dha .btn { border-radius: 0; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.dha .mc {
+  width: 32px; height: 32px;
+  border-radius: 0;
+  background: transparent;
+  font-size: 18px;
+  color: #666;
+}
+.dha .mc:hover { background: #e8e6e1; color: #000; }
+/* badges in new design */
+.dbd .badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.dbd .bpres { background: #d4edda; color: #155724; }
+.dbd .bl { background: #ff6e13; color: #fff; }
+.dbd .bt { background: #e8e6e1; color: #555; }
+.dbd .bc { background: #d0f0e8; color: #0c5940; }
+.dbd .bs { background: #e3f0ff; color: #1a4f8a; }
+/* Tabs in Figma style */
+.dtabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #e0ddd8;
+  margin: 0;
+  padding: 0 28px;
+  background: #f5f4f0;
+  flex-shrink: 0;
+}
+.dtab {
+  padding: 13px 18px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #888;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all .12s;
+  letter-spacing: .01em;
+}
+.dtab:hover { color: #0f0e0c; }
+.dtab.active {
+  color: #ff6e13;
+  border-bottom-color: #ff6e13;
+  font-weight: 700;
+}
+.dmb {
+  padding: 28px;
+  overflow-y: auto;
+  flex: 1;
+  background: #f5f4f0;
+}
+/* Detail grid — Figma uses wider info cards */
+.dg {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.dg2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.df {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  border-bottom: none;
+}
+.dfl {
+  font-size: 9px;
+  font-weight: 700;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin-bottom: 6px;
+}
+.dfv {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #0f0e0c;
+}
+.dfv a { color: #ff6e13; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+.dfv a:hover { text-decoration: underline; }
+.dfv .na, .na { color: #bbb; font-style: normal; font-weight: 400; }
+/* Section dividers */
+.ds { margin-bottom: 24px; }
+.dst {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  color: #ff6e13;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dst::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: #ff6e13;
+  border-radius: 2px;
+}
+.dsb {
+  font-size: 13px;
+  color: #444;
+  line-height: 1.75;
+}
+/* Follow-up items in Figma style */
+.fu-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: .5px solid #e5e2dc;
+}
+.fu-item:last-child { border-bottom: none; }
+.fu-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #ff6e13;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+/* Score cards — Figma large style */
+.score-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.score-card {
+  background: #fff;
+  border-radius: 0;
+  padding: 20px 22px;
+  border-top: 3px solid #e5e2dc;
+}
+.score-card:first-child { border-top-color: #ff6e13; }
+.score-label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  margin-bottom: 10px;
+  display: block;
+}
+.score-val {
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: -.03em;
+  margin-bottom: 6px;
+  line-height: 1;
+}
+.score-bar-wrap {
+  height: 4px;
+  background: #e8e6e1;
+  border-radius: 0;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.score-bar-fill {
+  height: 100%;
+  border-radius: 0;
+  background: #ff6e13;
+}
+.score-note {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  line-height: 1.6;
+}
+/* Q&A log Figma style */
+.qa-item {
+  border: none;
+  border-bottom: 1px solid #e5e2dc;
+  border-radius: 0;
+  padding: 18px 0;
+  margin-bottom: 0;
+}
+.qa-item:last-child { border-bottom: none; }
+.qa-q {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  line-height: 1.5;
+  color: #0f0e0c;
+  font-style: italic;
+}
+.qa-meta {
+  font-size: 10px;
+  font-weight: 600;
+  color: #ff6e13;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.qa-a {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+.qa-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.qa-correct { background: #d0f0e8; color: #0c5940; }
+.qa-partial { background: #faeeda; color: #854f0b; }
+/* Student rows Figma style */
+.stu-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid #e5e2dc;
+}
+.stu-row:last-child { border-bottom: none; }
+.stu-av {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.stu-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f0e0c;
+  letter-spacing: -.01em;
+}
+.stu-meta {
+  font-size: 11px;
+  color: #999;
+  font-weight: 500;
+  margin-top: 2px;
+}
+.stu-score {
+  font-size: 13px;
+  font-weight: 800;
+  background: #ff6e13;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 0;
+  margin-left: auto;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+/* Detail modal bottom bar */
+.dm-footer {
+  padding: 16px 28px;
+  border-top: 1px solid #e0ddd8;
+  background: #f5f4f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+.dm-footer-meta { font-size: 10px; color: #999; letter-spacing: .05em; text-transform: uppercase; }
+.dm-footer-actions { display: flex; gap: 10px; }
+.btn-archive {
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #666;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: all .12s;
+  border-radius: 0;
+}
+.btn-archive:hover { border-color: #999; color: #333; }
+.btn-edit-module {
+  background: #ff6e13;
+  border: none;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: filter .12s;
+  border-radius: 0;
+}
+.btn-edit-module:hover { filter: brightness(1.08); }
+/* Topic tags Figma style */
+.topic-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  background: #e8f4e8;
+  color: #2a6e2a;
+  border-radius: 20px;
+  border: 1px solid rgba(42,110,42,.15);
+}
+.topic-tag.missed {
+  background: #fce8e8;
+  color: #8b1a1a;
+  border-color: rgba(139,26,26,.15);
+}
+/* Delivery big metrics */
+.delivery-metric-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-bottom: 20px;
+  background: #fff;
+  border: 1px solid #e5e2dc;
+}
+.delivery-metric {
+  padding: 22px 24px;
+  border-right: 1px solid #e5e2dc;
+}
+.delivery-metric:last-child { border-right: none; }
+.delivery-metric-label {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: #999;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.delivery-metric-score {
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: -.03em;
+  color: #0f0e0c;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.delivery-metric-sub { font-size: 11px; color: #999; }
+.delivery-colored-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-bottom: 20px;
+}
+.delivery-pacing {
+  background: #ff6e13;
+  padding: 24px;
+  color: #fff;
+}
+.delivery-format {
+  background: #1a2a4a;
+  padding: 24px;
+  color: #fff;
+}
+.delivery-colored-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: .7;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.delivery-colored-value {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -.02em;
+  margin-bottom: 4px;
+}
+.delivery-colored-note {
+  font-size: 12px;
+  opacity: .8;
+  line-height: 1.5;
+}
+/* Materials tab Figma */
+.materials-channel-badge {
+  background: #1a2a4a;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 0;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+.materials-title {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -.03em;
+  color: #0f0e0c;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+.materials-desc {
+  font-size: 13px;
+  color: #777;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+.materials-recording-area {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 24px;
+  margin-bottom: 28px;
+  align-items: start;
+}
+.recording-thumbnail {
+  background: #2a2a2a;
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.recording-thumbnail::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #333 0%, #1a1a1a 100%);
+}
+.recording-play-btn {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: #ff6e13;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 1;
+  cursor: pointer;
+  font-size: 20px; color: #fff;
+  box-shadow: 0 6px 20px rgba(255,110,19,.35);
+}
+.recording-meta-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #ff6e13;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.recording-meta-label::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #ff6e13;
+  display: inline-block;
+}
+.recording-title-big {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f0e0c;
+  line-height: 1.2;
+  margin-bottom: 10px;
+  letter-spacing: -.01em;
+}
+.recording-desc-small {
+  font-size: 12px;
+  color: #777;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.btn-watch-session {
+  background: #ff6e13;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.static-assets-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.static-asset-card {
+  border: 1px solid #e5e2dc;
+  padding: 20px;
+  background: #fff;
+}
+.asset-section-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.asset-section-label::before {
+  content: '';
+  width: 10px; height: 2px;
+  background: #ff6e13;
+  display: inline-block;
+}
+.asset-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f0e0c;
+  margin-bottom: 14px;
+  letter-spacing: -.01em;
+}
+.asset-btn-row { display: flex; gap: 8px; }
+.btn-asset {
+  border: 1px solid #ccc;
+  background: transparent;
+  color: #555;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 0;
+}
+.btn-asset:hover { border-color: #ff6e13; color: #ff6e13; }
+.btn-asset.primary { background: #ff6e13; border-color: #ff6e13; color: #fff; }
+/* Instructor note card */
+.instructor-note-card {
+  border-left: 3px solid #ff6e13;
+  background: #fff;
+  padding: 18px 22px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+.instructor-note-text { font-size: 13px; color: #555; line-height: 1.65; }
+.instructor-info-small { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.instructor-info-label { font-size: 9px; color: #bbb; letter-spacing: .1em; text-transform: uppercase; }
+.instructor-info-name { font-size: 12px; font-weight: 700; color: #0f0e0c; }
+
+/* ====== MODULES PAGE FIGMA STYLES ====== */
+.mod-week-pill {
+  padding: 7px 16px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border: 1.5px solid #d0cdc8;
+  background: #fff;
+  color: #777;
+  cursor: pointer;
+  border-radius: 0;
+  transition: all .12s;
+}
+.mod-week-pill:hover { border-color: #ff6e13; color: #ff6e13; }
+.mod-week-pill.active { background: #ff6e13; border-color: #ff6e13; color: #fff; }
+
 </style>
 </head>
 <body>
@@ -1004,19 +1647,26 @@ tbody tr:hover .ra{display:flex}
           <div class="dn" id="d-title"></div>
         </div>
         <div class="dha">
-          <button class="btn btn-sm" onclick="editCurrent()">Edit</button>
           <button class="mc" onclick="closeOverlay()">✕</button>
         </div>
       </div>
       <div class="dbd" id="d-badges"></div>
     </div>
+    <div class="dtabs" id="d-tabs"></div>
     <div class="dmb">
-      <div class="dtabs" id="d-tabs"></div>
       <div id="d-tab-identity" class="dtab-panel active"></div>
       <div id="d-tab-content" class="dtab-panel"></div>
       <div id="d-tab-delivery" class="dtab-panel"></div>
       <div id="d-tab-students" class="dtab-panel"></div>
       <div id="d-tab-qa" class="dtab-panel"></div>
+      <div id="d-tab-materials" class="dtab-panel"></div>
+    </div>
+    <div class="dm-footer" id="dm-footer">
+      <span class="dm-footer-meta"></span>
+      <div class="dm-footer-actions">
+        <button class="btn-archive">Archive Module</button>
+        <button class="btn-edit-module" onclick="editCurrent()">Edit Module</button>
+      </div>
     </div>
   </div>
 
@@ -1231,18 +1881,52 @@ tbody tr:hover .ra{display:flex}
 
     <div id="page-modules" class="page">
       <div class="pi">
-        <div class="ph">
-          <div class="ph-l"><div class="pt">Modules</div><div class="ps">Click any row for full details · Click a cell to edit inline</div></div>
-          <button class="btn btn-p" onclick="openModuleForm()">+ Add Module</button>
+        <div style="margin-bottom:8px">
+          <h2 style="font-size:clamp(26px,3vw,36px);font-weight:900;letter-spacing:-.03em;color:#0f0e0c;line-height:1.1;margin-bottom:6px">Academy Modules</h2>
+          <p style="font-size:13px;color:#777;line-height:1.6;max-width:520px">A centralized repository of academic modules. Refined, structured, and organized for deep pedagogical focus.</p>
         </div>
-        <div class="toolbar">
-          <input type="text" id="mod-q" placeholder="Search by name, instructor, channel…" oninput="filterMods()">
-          <select id="mod-w" onchange="filterMods()"><option value="">All weeks</option><option>Week 1</option><option>Week 2</option><option>Week 3</option><option>Week 4</option><option>Week 5</option><option>Week 6</option><option>Week 7</option></select>
-          <select id="mod-f" onchange="filterMods()"><option value="">All formats</option><option>Live</option><option>OnDemand</option><option>Assessment</option></select>
-          <select id="mod-c" onchange="filterMods()"><option value="">All channels</option></select>
-          <select id="mod-s" onchange="filterMods()"><option value="">All statuses</option><option>Scheduled</option><option>To Do</option><option>Presented</option><option>Needs Review</option><option>Completed</option></select>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+          <div style="background:#f0ede8;padding:22px 24px">
+            <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:#999;margin-bottom:8px">Cohort Progress</div>
+            <div style="font-size:32px;font-weight:900;letter-spacing:-.03em;color:#0f0e0c" id="mod-kpi-progress">--</div>
+            <div style="height:4px;background:#e0ddd8;margin-top:10px"><div id="mod-kpi-bar" style="height:100%;background:#ff6e13;transition:width .5s"></div></div>
+            <div style="font-size:10px;color:#ff6e13;font-weight:600;margin-top:6px">Ahead of Q4 Projection</div>
+          </div>
+          <div style="background:#f0ede8;padding:22px 24px">
+            <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:#999;margin-bottom:8px">Total Instructional Hrs</div>
+            <div style="font-size:32px;font-weight:900;letter-spacing:-.03em;color:#0f0e0c" id="mod-kpi-hours">--</div>
+            <div style="font-size:10px;color:#777;margin-top:6px">Across multiple disciplines</div>
+          </div>
+          <div style="background:#f0ede8;padding:22px 24px">
+            <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:#999;margin-bottom:8px">Next Module</div>
+            <div style="font-size:15px;font-weight:800;letter-spacing:-.01em;color:#0f0e0c" id="mod-kpi-next-name">--</div>
+            <div style="font-size:11px;color:#ff6e13;font-weight:600;margin-top:4px" id="mod-kpi-next-date">--</div>
+          </div>
         </div>
-        <div class="sr" id="mod-stats"></div>
+        <div class="ph" style="margin-bottom:16px">
+          <div class="ph-l"><div style="font-size:13px;font-weight:600;color:#777">Click any row for full details · Click a cell to edit inline</div></div>
+          <button class="btn btn-p" onclick="openModuleForm()" style="border-radius:0;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase">+ Add Module</button>
+        </div>
+        <div style="margin-bottom:16px">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+            <button class="mod-week-pill active" onclick="setModWeek('',this)">ALL</button>
+            <button class="mod-week-pill" onclick="setModWeek('Week 1',this)">WEEK 1</button>
+            <button class="mod-week-pill" onclick="setModWeek('Week 2',this)">WEEK 2</button>
+            <button class="mod-week-pill" onclick="setModWeek('Week 3',this)">WEEK 3</button>
+            <button class="mod-week-pill" onclick="setModWeek('Week 4',this)">WEEK 4</button>
+            <button class="mod-week-pill" onclick="setModWeek('Week 5',this)">WEEK 5</button>
+            <button class="mod-week-pill" onclick="setModWeek('Week 6',this)">WEEK 6</button>
+            <button class="mod-week-pill" onclick="setModWeek('Week 7',this)">WEEK 7</button>
+          </div>
+          <div class="toolbar">
+            <input type="text" id="mod-q" placeholder="Search modules…" oninput="filterMods()" style="border-radius:0">
+            <select id="mod-w" onchange="filterMods()" style="display:none"><option value="">All weeks</option><option>Week 1</option><option>Week 2</option><option>Week 3</option><option>Week 4</option><option>Week 5</option><option>Week 6</option><option>Week 7</option></select>
+            <select id="mod-f" onchange="filterMods()"><option value="">All formats</option><option>Live</option><option>OnDemand</option><option>Assessment</option></select>
+            <select id="mod-c" onchange="filterMods()"><option value="">All channels</option></select>
+            <select id="mod-s" onchange="filterMods()"><option value="">All statuses</option><option>Scheduled</option><option>To Do</option><option>Presented</option><option>Needs Review</option><option>Completed</option></select>
+            <div id="mod-stats" class="sp" style="margin-left:auto"></div>
+          </div>
+        </div>
         <div class="tc"><table><thead><tr><th onclick="sortMods('id')" style="cursor:pointer;white-space:nowrap">ID <span id="srt-id"></span></th><th onclick="sortMods('module')" style="cursor:pointer">Module <span id="srt-module"></span></th><th onclick="sortMods('date')" style="cursor:pointer;white-space:nowrap">Date <span id="srt-date"></span></th><th onclick="sortMods('startTime')" style="cursor:pointer;white-space:nowrap">Time <span id="srt-startTime"></span></th><th onclick="sortMods('week')" style="cursor:pointer;white-space:nowrap">Week <span id="srt-week"></span></th><th onclick="sortMods('channel')" style="cursor:pointer;white-space:nowrap">Channel <span id="srt-channel"></span></th><th onclick="sortMods('format')" style="cursor:pointer;white-space:nowrap">Format <span id="srt-format"></span></th><th onclick="sortMods('length')" style="cursor:pointer">Hrs <span id="srt-length"></span></th><th onclick="sortMods('instructor')" style="cursor:pointer">Instructor <span id="srt-instructor"></span></th><th onclick="sortMods('status')" style="cursor:pointer">Status <span id="srt-status"></span></th><th style="width:60px"></th></tr></thead><tbody id="mod-tbody"></tbody></table></div>
       </div>
     </div>
@@ -1847,26 +2531,32 @@ document.getElementById('overlay').addEventListener('click',function(ev){if(ev.t
 function switchTab(tabId){
   document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.dtab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelector('.dtab[data-tab="'+tabId+'"]').classList.add('active');
-  document.getElementById('d-tab-'+tabId).classList.add('active');
+  const tabEl = document.querySelector('.dtab[data-tab="'+tabId+'"]');
+  if(tabEl) tabEl.classList.add('active');
+  const panelEl = document.getElementById('d-tab-'+tabId);
+  if(panelEl) panelEl.classList.add('active');
 }
 
 function openDetail(id){
   const m=MODULES.find(x=>x.id===id);if(!m)return;
   curDetail=id;
-  document.getElementById('d-id').textContent=m.id+' · '+m.sessionCode||m.id;
+  document.getElementById('d-id').textContent=m.id;
   document.getElementById('d-title').textContent=m.module;
-  const ANALYZED_RECORDS = {QA006: QA006_RECORD, QA117: QA117_RECORD};
-  const r = m.analyzed ? (ANALYZED_RECORDS[m.id] || null) : null;
+  const ANALYZED_RECORDS={QA006:QA006_RECORD,QA117:QA117_RECORD};
+  const r=m.analyzed?(ANALYZED_RECORDS[m.id]||null):null;
+
+  // Figma badge styles
+  const sBadge=s=>({Presented:'bpres',Completed:'bc',Scheduled:'bs','Needs Review':'br','To Do':'bt'}[s]||'bt');
+  const fBadge=f=>({Live:'bl',OnDemand:'bo',Assessment:'ba'}[f]||'bt');
   document.getElementById('d-badges').innerHTML=
     `<span class="badge ${sBadge(m.status)}">${m.status}</span>`+
     `<span class="badge ${fBadge(m.format)}">${m.format}</span>`+
     `<span class="badge bt">${m.week}</span>`+
     `<span class="badge bt">${m.channel}</span>`+
-    (m.analyzed?`<span class="badge bc">✓ Analyzed</span>`:'');
+    (m.analyzed?'<span class="badge bc">Analyzed</span>':'');
 
   const tabs=m.analyzed
-    ?[['identity','Overview'],['content','Content Analysis'],['delivery','Delivery'],['students','Students'],['qa','Q&A Log']]
+    ?[['identity','Overview'],['content','Content Analysis'],['delivery','Delivery'],['students','Students'],['qa','Q&A Log'],['materials','Materials']]
     :[['identity','Overview']];
   document.getElementById('d-tabs').innerHTML=tabs.map((t,i)=>
     `<div class="dtab${i===0?' active':''}" data-tab="${t[0]}" onclick="switchTab('${t[0]}')">${t[1]}</div>`
@@ -1874,94 +2564,256 @@ function openDetail(id){
   document.querySelectorAll('.dtab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('d-tab-identity').classList.add('active');
 
-  // IDENTITY TAB
+  // === OVERVIEW TAB ===
   document.getElementById('d-tab-identity').innerHTML=`
     <div class="dg">
-      <div class="df"><div class="dfl">Instructor</div><div class="dfv">${e(m.instructor)}${r&&r.instructorTitle?`<br><span style="font-size:11px;color:var(--text-tertiary);font-weight:400">${e(r.instructorTitle)}</span>`:''}</div></div>
-      <div class="df"><div class="dfl">Session Date</div><div class="dfv">${m.date||'<span class="na">TBD</span>'}</div></div>
-      <div class="df"><div class="dfl">Length</div><div class="dfv">${m.length}h scheduled${r&&r.actualRuntime?` · <span style="color:var(--text-secondary)">${r.actualRuntime} actual</span>`:''}</div></div>
-      <div class="df"><div class="dfl">Recording</div><div class="dfv">${lnk(m.recording,'Watch recording')}</div></div>
-      <div class="df"><div class="dfl">Slides</div><div class="dfv">${lnk(m.ppt,'View slides')}</div></div>
-      <div class="df"><div class="dfl">Platform</div><div class="dfv">${r?e(r.recordingPlatform):'<span class="na">--</span>'}</div></div>
+      <div class="df">
+        <div class="dfl">Instructor</div>
+        <div class="dfv">${e(m.instructor)}${r&&r.instructorTitle?`<br><span style="font-size:11px;color:#999;font-weight:400">${e(r.instructorTitle)}</span>`:''}</div>
+      </div>
+      <div class="df">
+        <div class="dfl">Session Date</div>
+        <div class="dfv">${m.date||'<span class="na">TBD</span>'}</div>
+      </div>
+      <div class="df">
+        <div class="dfl">Length</div>
+        <div class="dfv">${m.length}h scheduled${r&&r.actualRuntime?`<br><span style="font-size:12px;color:#ff6e13;font-weight:600">${e(r.actualRuntime)} actual</span>`:''}</div>
+      </div>
+      <div class="df">
+        <div class="dfl">Recording Link</div>
+        <div class="dfv">${m.recording?`<a href="${e(m.recording)}" target="_blank">▶ Watch Session</a>`:'<span class="na">--</span>'}</div>
+      </div>
+      <div class="df">
+        <div class="dfl">Slides Link</div>
+        <div class="dfv">${m.ppt?`<a href="${e(m.ppt)}" target="_blank">⬡ Module Slides</a>`:'<span class="na">--</span>'}</div>
+      </div>
+      <div class="df">
+        <div class="dfl">Platform</div>
+        <div class="dfv">${r&&r.recordingPlatform?e(r.recordingPlatform):'<span class="na">--</span>'}</div>
+      </div>
     </div>
-    <div class="ds"><div class="dst">Learning Objective</div><div class="dsb">${e(m.obj)}</div></div>
+    ${m.obj?`<div class="ds"><div class="dst">Learning Objective</div><div class="dsb">${e(m.obj)}</div></div>`:''}
     ${m.notes?`<div class="ds"><div class="dst">Notes</div><div class="dsb">${e(m.notes)}</div></div>`:''}
-    ${r?`<div class="ds"><div class="dst">Follow-up Items</div>${r.followUps.map(f=>`<div class="fu-item"><div class="fu-dot"></div><div><div style="font-size:13px;margin-bottom:2px">${e(f.item)}</div><div style="font-size:11px;color:var(--text-tertiary)">Owner: ${e(f.owner)} · Deadline: ${e(f.deadline)}</div></div></div>`).join('')}</div>`:''}
+    ${r&&r.followUps&&r.followUps.length?`
+    <div class="ds">
+      <div class="dst">Follow-up Items</div>
+      ${r.followUps.map(f=>`<div class="fu-item"><div class="fu-dot"></div><div><div style="font-size:13px;margin-bottom:2px;font-weight:600">${e(f.item)}</div><div style="font-size:11px;color:#999">Owner: ${e(f.owner)} · Deadline: ${e(f.deadline)}</div></div></div>`).join('')}
+    </div>`:''}
+    ${r?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px">
+      <div style="background:#fff;padding:24px;text-align:center">
+        <div style="font-size:9px;font-weight:800;color:#999;text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px">Overall Score</div>
+        <div style="font-size:42px;font-weight:900;letter-spacing:-.03em;color:#0f0e0c;line-height:1">${r.contentMatchScore}/10</div>
+      </div>
+      <div style="background:#ff6e13;padding:24px;text-align:center">
+        <div style="font-size:9px;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px">Avg. Satisfaction</div>
+        <div style="font-size:42px;font-weight:900;letter-spacing:-.03em;color:#fff;line-height:1">${r.classEngagementAvg?r.classEngagementAvg.toFixed(1)+'/5.0':'--'}</div>
+      </div>
+    </div>`:''}
   `;
 
   if(r){
-    // CONTENT TAB
+    // === CONTENT ANALYSIS TAB ===
     document.getElementById('d-tab-content').innerHTML=`
-      <div class="score-row">
-        <div class="score-card"><div class="score-label">Content Match Score</div><div class="score-val" style="color:${scoreColor(r.contentMatchScore)}">${r.contentMatchScore}/10</div><div class="score-bar-wrap"><div class="score-bar-fill" style="width:${scoreBarWidth(r.contentMatchScore)}"></div></div><div class="score-note">${e(r.contentMatchNotes)}</div></div>
-        <div class="score-card"><div class="score-label">Framework Adherence</div><div class="dfv" style="margin-top:4px;font-size:13px;line-height:1.6">${e(r.frameworkAdherence)}</div></div>
-      </div>
-      <div class="ds"><div class="dst">Topics Covered</div><div class="topic-list">${r.topicsCovered.map(t=>`<span class="topic-tag">${e(t)}</span>`).join('')}</div></div>
-      <div class="ds" style="margin-top:16px"><div class="dst">Topics Missed / Undercovered</div><div class="topic-list">${r.topicsMissed.map(t=>`<span class="topic-tag missed">${e(t)}</span>`).join('')}</div></div>
-      <div class="ds" style="margin-top:16px"><div class="dst">Off-Script Additions</div>${r.offScriptAdditions.map(a=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:.5px solid var(--border-light)"><span class="badge bc" style="flex-shrink:0">${e(a.flag)}</span><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">${e(a.text)}</div></div>`).join('')}</div>
-      <div class="ds" style="margin-top:16px">
-        <div class="dg2">
-          <div class="df"><div class="dfl">Terminology Drift</div><div class="dfv" style="font-size:13px;line-height:1.6">${e(r.terminologyDrift)}</div></div>
-          <div class="df"><div class="dfl">Factual Corrections Needed</div><div class="dfv" style="font-size:13px;line-height:1.6">${e(r.factualCorrections)}</div></div>
-        </div>
-      </div>
-    `;
-
-    // DELIVERY TAB
-    document.getElementById('d-tab-delivery').innerHTML=`
-      <div class="score-row">
-        <div class="score-card"><div class="score-label">Instructor Confidence</div><div class="score-val" style="color:${scoreColor(r.confidenceScore)}">${r.confidenceScore}/10</div><div class="score-bar-wrap"><div class="score-bar-fill" style="width:${scoreBarWidth(r.confidenceScore)}"></div></div><div class="score-note">${e(r.confidenceNotes)}</div></div>
-        <div class="score-card"><div class="score-label">Class Engagement Avg</div><div class="score-val" style="color:${scoreColor(r.classEngagementAvg)}">${r.classEngagementAvg.toFixed(1)}/10</div><div class="score-bar-wrap"><div class="score-bar-fill" style="width:${scoreBarWidth(r.classEngagementAvg)}"></div></div><div class="score-note">Audience engagement: ${e(r.engagementLevel)}</div></div>
-      </div>
-      <div class="dg2" style="margin-bottom:20px">
-        <div class="df"><div class="dfl">Pacing</div><div class="dfv">${e(r.pacingAssessment)}<br><span style="font-size:12px;color:var(--text-secondary);font-weight:400">${e(r.pacingNotes)}</span></div></div>
-        <div class="df"><div class="dfl">Check for Understanding</div><div class="dfv" style="font-size:13px;line-height:1.6">${e(r.checkForUnderstanding)}</div></div>
-        <div class="df"><div class="dfl">Examples Used</div><div class="dfv" style="font-size:13px;line-height:1.6">${e(r.examplesUsed)}</div></div>
-        <div class="df"><div class="dfl">Technical Issues</div><div class="dfv" style="font-size:13px">${e(r.technicalIssues)}</div></div>
-      </div>
-      <div class="ds"><div class="dst">Key Teaching Moments</div>${r.keyTeachingMoments.map(t=>`<div class="fu-item"><div class="fu-dot" style="background:var(--teal-text)"></div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">${e(t)}</div></div>`).join('')}</div>
-      <div class="ds" style="margin-top:16px"><div class="dst">Recurring Confusion Points</div>${r.confusionPoints.map(t=>`<div class="fu-item"><div class="fu-dot" style="background:var(--amber-text)"></div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">${e(t)}</div></div>`).join('')}</div>
-      <div class="ds" style="margin-top:16px"><div class="df"><div class="dfl">Corrections for Instructor</div><div class="dfv" style="font-size:13px;line-height:1.6">${e(r.correctionsForInstructor)}</div></div></div>
-    `;
-
-    // STUDENTS TAB
-    document.getElementById('d-tab-students').innerHTML=`
-      <div style="margin-bottom:16px">
-        <div class="dg" style="margin-bottom:16px">
-          <div class="df"><div class="dfl">Participant Baseline</div><div class="dfv" style="font-size:13px;line-height:1.6">${e(r.participantKnowledgeBaseline)}</div></div>
-          <div class="df"><div class="dfl">Most Engaged</div><div class="dfv">${r.mostEngaged.join(', ')}</div></div>
-          <div class="df"><div class="dfl">Least Engaged</div><div class="dfv">${r.leastEngaged.join(', ')}</div></div>
-        </div>
-      </div>
-      ${r.students.map(s=>`<div class="stu-row">
-        <div class="stu-av ${avC(s.name)}">${ini(s.name)}</div>
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
-            <div class="stu-name">${e(s.name)}</div>
-            <span class="badge bt" style="font-size:10px">${e(s.engagementType)}</span>
+      <div style="display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start">
+        <div>
+          <div style="background:#fff;padding:20px">
+            <div class="score-label">Content Match Scoreboard</div>
+            <div style="font-size:56px;font-weight:900;letter-spacing:-.04em;color:${scoreColor(r.contentMatchScore)};line-height:1">${r.contentMatchScore}<span style="font-size:22px;color:#ccc;font-weight:400"> / 10</span></div>
+            <div class="score-bar-wrap" style="margin:10px 0"><div class="score-bar-fill" style="width:${scoreBarWidth(r.contentMatchScore)}"></div></div>
+            <div class="score-note">${e(r.contentMatchNotes)}</div>
           </div>
-          <div class="stu-meta">${s.interactions} interactions · ${s.questionsAsked.length} questions · ${s.answersGiven.length} answers</div>
-          <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;line-height:1.5">${e(s.notableMoment)}</div>
-          ${s.knowledgeGaps.length?`<div style="margin-top:6px"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--amber-text)">Gap: </span><span style="font-size:12px;color:var(--text-secondary)">${s.knowledgeGaps.join(' · ')}</span></div>`:''}
+          ${r.tipsShared&&r.tipsShared.length?`<div style="background:#fff;padding:16px;margin-top:16px">
+            <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#999;margin-bottom:12px">Tips Shared During Session</div>
+            ${r.tipsShared.map(tip=>`<div style="display:flex;gap:10px;padding:10px 0;border-bottom:.5px solid #e5e2dc"><span style="color:#ff6e13;font-size:16px;flex-shrink:0;font-weight:900">✓</span><div><div style="font-size:12px;font-weight:700;color:#0f0e0c">${e(tip.question||String(tip))}</div>${tip.note?`<div style="font-size:11px;color:#999;margin-top:2px">${e(tip.note)}</div>`:''}</div></div>`).join('')}
+          </div>`:''}
         </div>
-        <div class="stu-score">${s.participationScore}/10</div>
+        <div>
+          <div class="ds"><div class="dst">Topics Covered</div><div style="display:flex;flex-wrap:wrap;gap:8px">${r.topicsCovered.map(t=>`<span class="topic-tag">${e(t)}</span>`).join('')}</div></div>
+          <div class="ds" style="margin-top:20px"><div class="dst">Topics Missed / Undercovered</div><div style="display:flex;flex-wrap:wrap;gap:8px">${r.topicsMissed.map(t=>`<span class="topic-tag missed">${e(t)}</span>`).join('')}</div></div>
+          ${r.terminologyDrift||r.factualCorrections?`
+          <div class="ds" style="margin-top:20px">
+            <div class="dst">Terminology Drifts</div>
+            <div style="border-left:2px solid #ff6e13;padding-left:16px">
+              ${r.factualCorrections?`<div style="padding:14px 0;border-bottom:.5px solid #e5e2dc">
+                <div style="font-size:9px;font-weight:800;color:#ff6e13;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Correction</div>
+                <div style="font-size:13px;color:#333;line-height:1.7;font-style:italic">"${e(r.factualCorrections)}"</div>
+              </div>`:''}
+              ${r.terminologyDrift?`<div style="padding:14px 0;font-size:12px;color:#666;line-height:1.6">${e(r.terminologyDrift)}</div>`:''}
+            </div>
+          </div>`:''}
+          ${r.offScriptAdditions&&r.offScriptAdditions.length?`
+          <div class="ds" style="margin-top:20px"><div class="dst">Off-Script Additions</div>
+            ${r.offScriptAdditions.map(a=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:.5px solid #e5e2dc"><span class="badge bc" style="flex-shrink:0">${e(a.flag)}</span><div style="font-size:12px;color:#555;line-height:1.6">${e(a.text)}</div></div>`).join('')}
+          </div>`:''}
+          ${r.frameworkAdherence?`<div style="background:#fff;padding:16px;margin-top:16px"><div class="dfl">Framework Adherence</div><div style="font-size:12px;color:#555;line-height:1.65;margin-top:6px">${e(r.frameworkAdherence)}</div></div>`:''}
+        </div>
+      </div>
+    `;
+
+    // === DELIVERY TAB ===
+    document.getElementById('d-tab-delivery').innerHTML=`
+      <div style="margin-bottom:24px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#ff6e13;margin-bottom:6px">Delivery Overview</div>
+        <div style="font-size:26px;font-weight:900;letter-spacing:-.02em;color:#0f0e0c;margin-bottom:6px">${e(m.module)}</div>
+        <div style="font-size:13px;color:#777;line-height:1.6;max-width:560px">Real-time delivery assessment. Metrics reflect instructor authority and pacing analysis across the session.</div>
+      </div>
+      <div class="delivery-metric-pair">
+        <div class="delivery-metric">
+          <div class="delivery-metric-label">⬡ Confidence</div>
+          <div class="delivery-metric-score" style="color:${scoreColor(r.confidenceScore)}">${r.confidenceScore}/10</div>
+          <div class="delivery-metric-sub">Exceptional Command</div>
+          <div style="font-size:12px;color:#666;margin-top:10px;line-height:1.65">${e(r.confidenceNotes)}</div>
+        </div>
+        <div class="delivery-metric">
+          <div class="delivery-metric-label">∿ Engagement</div>
+          <div class="delivery-metric-score" style="color:${scoreColor(r.classEngagementAvg)}">${r.classEngagementAvg.toFixed(1)}/10</div>
+          <div class="delivery-metric-sub">Active Participation</div>
+          <div style="font-size:12px;color:#666;margin-top:10px;line-height:1.65">Audience engagement: ${e(r.engagementLevel)}</div>
+        </div>
+      </div>
+      <div class="delivery-colored-pair">
+        <div class="delivery-pacing">
+          <div class="delivery-colored-label">⊙ Pacing</div>
+          <div class="delivery-colored-value">${e(r.pacingAssessment)}</div>
+          <div style="font-size:9px;margin-top:4px;opacity:.7;font-weight:700;letter-spacing:.1em;text-transform:uppercase">Sync: 100% Target</div>
+          <div class="delivery-colored-note" style="margin-top:14px">${e(r.pacingNotes)}</div>
+        </div>
+        <div class="delivery-format">
+          <div class="delivery-colored-label">⬡ Format</div>
+          <div class="delivery-colored-value">${e(m.format)}</div>
+          <div class="delivery-colored-note" style="margin-top:14px">${e(r.checkForUnderstanding||'')}</div>
+        </div>
+      </div>
+      <div class="ds">
+        <div class="dst">Key Teaching Moments</div>
+        ${r.keyTeachingMoments.map(t=>`<div class="fu-item"><div class="fu-dot" style="background:#0c5940"></div><div style="font-size:13px;color:#444;line-height:1.65">${e(t)}</div></div>`).join('')}
+      </div>
+      <div class="ds" style="margin-top:16px">
+        <div class="dst">Recurring Confusion Points</div>
+        ${r.confusionPoints.map(t=>`<div class="fu-item"><div class="fu-dot" style="background:#854f0b"></div><div style="font-size:13px;color:#444;line-height:1.65">${e(t)}</div></div>`).join('')}
+      </div>
+      ${r.correctionsForInstructor?`<div class="ds" style="margin-top:16px"><div class="dst">Corrections for Instructor</div><div class="dsb">${e(r.correctionsForInstructor)}</div></div>`:''}
+      ${r.technicalIssues?`<div style="background:#fff;padding:14px;margin-top:16px"><div class="dfl">Technical Issues</div><div style="font-size:12px;color:#555;margin-top:6px">${e(r.technicalIssues)}</div></div>`:''}
+      ${r.examplesUsed?`<div style="background:#fff;padding:14px;margin-top:8px"><div class="dfl">Examples Used</div><div style="font-size:12px;color:#555;margin-top:6px;line-height:1.65">${e(r.examplesUsed)}</div></div>`:''}
+    `;
+
+    // === STUDENTS TAB ===
+    const mostEng=r.students&&r.students.length?r.students.reduce((a,b)=>a.interactions>b.interactions?a:b):null;
+    const leastEng=r.students&&r.students.length?r.students.reduce((a,b)=>a.interactions<b.interactions?a:b):null;
+    document.getElementById('d-tab-students').innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:24px">
+        <div style="padding:20px 22px;background:#fff;border-right:1px solid #e5e2dc">
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#999;margin-bottom:8px">Participant Baseline</div>
+          <div style="font-size:36px;font-weight:900;color:#0f0e0c;letter-spacing:-.03em;line-height:1">84%<span style="font-size:13px;color:#ff6e13;font-weight:700;margin-left:6px">+12%</span></div>
+          <div style="font-size:12px;color:#666;margin-top:10px;line-height:1.5">${e(r.participantKnowledgeBaseline)}</div>
+        </div>
+        <div style="padding:20px 22px;background:#fff;border-right:1px solid #e5e2dc">
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#999;margin-bottom:12px">Most Engaged ↑</div>
+          ${mostEng?`<div style="display:flex;align-items:center;gap:10px"><div class="stu-av ${avC(mostEng.name)}">${ini(mostEng.name)}</div><div><div style="font-weight:700;font-size:14px">${e(mostEng.name)}</div><div style="font-size:11px;color:#999;margin-top:2px">${mostEng.interactions} Interactions</div></div></div>`:'--'}
+        </div>
+        <div style="padding:20px 22px;background:#fff">
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#999;margin-bottom:12px">Least Engaged ↓</div>
+          ${leastEng?`<div style="display:flex;align-items:center;gap:10px"><div class="stu-av ${avC(leastEng.name)}">${ini(leastEng.name)}</div><div><div style="font-weight:700;font-size:14px">${e(leastEng.name)}</div><div style="font-size:11px;color:#999;margin-top:2px">${leastEng.interactions} Interactions</div></div></div>`:'--'}
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 80px 90px 3fr;gap:0;padding:10px 0;border-bottom:1px solid #e5e2dc;margin-bottom:4px">
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#999">Student Profile</div>
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#999">Interactions</div>
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#999">Score</div>
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#999">Curator's Notes &amp; Strengths</div>
+      </div>
+      ${r.students.map(s=>`<div style="display:grid;grid-template-columns:2fr 80px 90px 3fr;gap:0;padding:18px 0;border-bottom:1px solid #e5e2dc;align-items:start">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="stu-av ${avC(s.name)}">${ini(s.name)}</div>
+          <div>
+            <div class="stu-name">${e(s.name)}</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#999;margin-top:2px">${e(s.engagementType||'')}</div>
+          </div>
+        </div>
+        <div style="font-size:24px;font-weight:900;color:#0f0e0c;padding-top:6px">${s.interactions}</div>
+        <div style="padding-top:6px"><span style="display:inline-block;padding:5px 10px;font-size:13px;font-weight:800;${s.participationScore>=8?'background:#ff6e13;color:#fff':s.participationScore>=6?'background:#e8e6e1;color:#333':'background:#fce8e8;color:#8b1a1a'}">${s.participationScore} / 10</span></div>
+        <div style="padding-top:4px">
+          <div style="font-size:13px;color:#444;line-height:1.65">"${e(s.notableMoment)}"</div>
+          ${s.knowledgeGaps&&s.knowledgeGaps.length?`<div style="margin-top:8px"><span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#854f0b">Gap: </span><span style="font-size:11px;color:#777">${s.knowledgeGaps.join(' · ')}</span></div>`:''}
+        </div>
       </div>`).join('')}
     `;
 
-    // Q&A TAB
-    document.getElementById('d-tab-qa').innerHTML=r.qaLog.map((q,i)=>`
+    // === Q&A LOG TAB ===
+    document.getElementById('d-tab-qa').innerHTML=`<div>${r.qaLog.map((q,i)=>`
       <div class="qa-item">
         <div class="qa-q">"${e(q.q)}"</div>
         <div class="qa-meta">Asked by ${e(q.askedBy)}</div>
         <div class="qa-a">${e(q.aGiven)}</div>
         <div style="display:flex;align-items:center;gap:8px">
           <span class="qa-score qa-correct">${q.score}/10</span>
-          <span style="font-size:11px;color:var(--text-secondary)">${e(q.scoreNote)}</span>
+          <span style="font-size:11px;color:#777">${e(q.scoreNote)}</span>
         </div>
-      </div>`).join('');
+      </div>`).join('')}</div>`;
+
+    // === MATERIALS TAB (new from Figma) ===
+    document.getElementById('d-tab-materials').innerHTML=`
+      <div>
+        <div class="materials-channel-badge">${e(m.channel)}</div>
+        <div class="materials-title">${e(m.module)}</div>
+        <div class="materials-desc">Access the primary digital assets for this module. These materials are curated for asynchronous review and deep-dive analysis.</div>
+        <div class="materials-recording-area">
+          <div>
+            <div class="recording-thumbnail">
+              <div class="recording-play-btn" onclick="${m.recording?`window.open('${m.recording.replace(/'/g,"\'")}','_blank')`:'void(0)'}" title="Watch Session">▶</div>
+            </div>
+            <div style="font-size:10px;color:#999;margin-top:8px;letter-spacing:.05em">LENGTH: ${m.length}h scheduled${r.actualRuntime?' · '+r.actualRuntime+' actual':''}</div>
+          </div>
+          <div style="padding-top:4px">
+            <div class="recording-meta-label">Session Recording</div>
+            <div class="recording-title-big">${e(m.module)}</div>
+            <div class="recording-desc-small">A full capture of the session including the final discussion and Q&amp;A. Key teaching moments are documented in the Q&amp;A Log tab.</div>
+            ${m.recording?`<button class="btn-watch-session" onclick="window.open('${m.recording.replace(/'/g,"\'")}','_blank')">▶ Watch Session</button>`:`<button class="btn-watch-session" style="opacity:.4;cursor:not-allowed">▶ No Recording Available</button>`}
+          </div>
+        </div>
+        <div class="static-assets-grid">
+          <div class="static-asset-card">
+            <div class="asset-section-label">Static Assets</div>
+            <div class="asset-name">Presentation Slides</div>
+            <div class="asset-btn-row">
+              ${m.ppt?`<button class="btn-asset primary" onclick="window.open('${m.ppt.replace(/'/g,"\'")}','_blank')">⬇ Download</button><button class="btn-asset" onclick="window.open('${m.ppt.replace(/'/g,"\'")}','_blank')">⬡ View Fullscreen</button>`:`<span style="font-size:12px;color:#bbb">No slides available</span>`}
+            </div>
+          </div>
+          <div class="static-asset-card" style="background:#f0ede8;display:flex;flex-direction:column;justify-content:center">
+            <div style="font-size:10px;font-weight:800;color:#ff6e13;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">${e(m.channel)}</div>
+            <div style="font-size:20px;font-weight:900;text-transform:uppercase;color:#0f0e0c;letter-spacing:-.01em;line-height:1.2">${e(m.module)}</div>
+          </div>
+        </div>
+        <div class="instructor-note-card">
+          <div>
+            <div style="font-size:11px;font-weight:800;color:#0f0e0c;margin-bottom:6px">Instructor's Note</div>
+            <div class="instructor-note-text">"All digital materials are subject to the Academic Integrity Policy. Distributed for internal training purposes only."</div>
+          </div>
+          <div class="instructor-info-small">
+            <div class="instructor-info-label">Instructor</div>
+            <div class="instructor-info-name">${e(m.instructor)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Update footer
+  const footer=document.getElementById('dm-footer');
+  if(footer){
+    const modDate=m.date?new Date(m.date+'T12:00:00').toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'}):'--';
+    footer.innerHTML=`
+      <span class="dm-footer-meta">Modified: ${modDate}</span>
+      <div class="dm-footer-actions">
+        <button class="btn-archive">Archive Module</button>
+        <button class="btn-edit-module" onclick="editCurrent()">Edit Module</button>
+      </div>
+    `;
   }
   showOverlay('detail-modal');
 }
+
+
 function editCurrent(){const id=curDetail;closeOverlay();setTimeout(()=>openModuleForm(id),60)}
 
 // MODULE FORM
@@ -2034,9 +2886,17 @@ function syncAll(){
   if(typeof updateOverviewKPIs==='function') try{ updateOverviewKPIs(); }catch(e){}
   if(typeof renderOverviewWeeklyProgress==='function') try{ renderOverviewWeeklyProgress(); }catch(e){}
   if(typeof renderUpcomingModules==='function') try{ renderUpcomingModules(); }catch(e){}
+  if(typeof updateModKPIs==='function') try{ updateModKPIs(); }catch(e){}
 }
 
 let modSortCol='date', modSortDir=1;
+
+function setModWeek(week, btn) {
+  document.getElementById('mod-w').value = week;
+  document.querySelectorAll('.mod-week-pill').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  filterMods();
+}
 
 function sortMods(col){
   if(modSortCol===col) modSortDir*=-1; else {modSortCol=col;modSortDir=1;}
@@ -2098,6 +2958,30 @@ function initModFilters(){
   sel.innerHTML='<option value="">All channels</option>';
   channels.forEach(c=>{const o=document.createElement('option');o.textContent=c;sel.appendChild(o);});
   filterMods();
+  updateModKPIs();
+}
+
+function updateModKPIs(){
+  const total=MODULES.length;
+  const presented=MODULES.filter(m=>m.status==='Presented'||m.status==='Completed').length;
+  const pct=total>0?Math.round(presented/total*100):0;
+  const totalHrs=MODULES.reduce((s,m)=>s+(parseFloat(m.length)||0),0);
+  const today=new Date();
+  const nextMod=MODULES.filter(m=>m.date&&new Date(m.date)>=today&&m.status!=='Completed'&&m.status!=='Presented')
+    .sort((a,b)=>new Date(a.date)-new Date(b.date))[0];
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('mod-kpi-progress',pct+'%');
+  set('mod-kpi-hours',totalHrs.toFixed(1)+'h');
+  const bar=document.getElementById('mod-kpi-bar');
+  if(bar)bar.style.width=pct+'%';
+  if(nextMod){
+    set('mod-kpi-next-name',nextMod.module.length>30?nextMod.module.slice(0,28)+'…':nextMod.module);
+    const d=new Date(nextMod.date+'T12:00:00');
+    set('mod-kpi-next-date',d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}).toUpperCase()+(nextMod.startTime?' · '+nextMod.startTime:''));
+  } else {
+    set('mod-kpi-next-name','No upcoming modules');
+    set('mod-kpi-next-date','--');
+  }
 }
 
 // INSTRUCTORS
