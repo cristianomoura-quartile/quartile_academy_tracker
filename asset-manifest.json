@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/quartile_academy_tracker/static/css/main.46e46d06.css",
+    "main.js": "/quartile_academy_tracker/static/js/main.d0502695.js",
+    "index.html": "/quartile_academy_tracker/index.html",
+    "main.46e46d06.css.map": "/quartile_academy_tracker/static/css/main.46e46d06.css.map",
+    "main.d0502695.js.map": "/quartile_academy_tracker/static/js/main.d0502695.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.46e46d06.css",
+    "static/js/main.d0502695.js"
+  ]
+}
