@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: quartile-academy-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGO_URL
+        sync: false
+      - key: DB_NAME
+        value: quartile_academy
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://cristianomoura-quartile.github.io
+      - key: ADMIN_EMAIL
+        value: admin@quartile.com
+      - key: ADMIN_PASSWORD
+        value: admin123
+      - key: EMERGENT_LLM_KEY
+        sync: false
