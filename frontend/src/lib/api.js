@@ -3,6 +3,7 @@ import axios from "axios";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+<<<<<<< Updated upstream
 // Attach token to every request
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
@@ -10,6 +11,8 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
+=======
+>>>>>>> Stashed changes
 export const api = {
   // Auth
   login: (email, password) => axios.post(`${API}/auth/login`, { email, password }).then(r => r.data),

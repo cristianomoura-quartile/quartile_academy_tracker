@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 .App {
   text-align: center;
 }
@@ -36,3 +37,6 @@
     transform: rotate(360deg);
   }
 }
+=======
+/* Keep minimal - using Tailwind for everything */
+>>>>>>> Stashed changes

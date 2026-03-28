@@ -1,190 +1,142 @@
 import React, { useEffect, useState } from "react";
 import { api } from "@/lib/api";
-
-const SKILLS = [
-  "objection_handling", "negotiation", "data_analysis", "communication",
-  "presentation", "analytical_thinking", "campaign_management", "client_management"
-];
-
-function SkillBar({ label, value }) {
-  const pct = (value / 10) * 100;
-  const color = value >= 8 ? "#2E7D32" : value >= 5 ? "#FF6E13" : "#C62828";
-  return (
-    <div>
-      <div className="flex justify-between text-xs mb-0.5">
-        <span className="text-text-muted capitalize">{label.replace(/_/g, " ")}</span>
-        <span className="font-bold" style={{ color }}>{value}</span>
-      </div>
-      <div className="h-1.5 bg-surface-2 rounded-full overflow-hidden">
-        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
-      </div>
-    </div>
-  );
-}
-
-function StudentCard({ student }) {
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <div className="bg-white rounded-2xl border border-border overflow-hidden">
-      <div
-        className="p-5 cursor-pointer hover:bg-surface-2/50 transition"
-        onClick={() => setExpanded(e => !e)}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0">
-              <span className="text-white font-bold text-sm">{student.name?.charAt(0)}</span>
-            </div>
-            <div>
-              <p className="font-semibold text-text-main text-sm">{student.name}</p>
-              <p className="text-xs text-text-muted">{student.role} · {student.country}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="text-right">
-              <p className="text-lg font-bold font-cabinet text-primary">{student.overall_score || 0}</p>
-              <p className="text-xs text-text-muted">score</p>
-            </div>
-            <span className="text-text-muted text-sm">{expanded ? "▲" : "▼"}</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-3 mt-4">
-          <div className="text-center">
-            <p className="text-sm font-bold text-text-main">{student.academic_progress || 0}%</p>
-            <p className="text-xs text-text-muted">Progress</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm font-bold text-text-main">{student.sessions || 0}</p>
-            <p className="text-xs text-text-muted">Sessions</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm font-bold text-text-main">{student.total_hours || 0}h</p>
-            <p className="text-xs text-text-muted">Hours</p>
-          </div>
-        </div>
-
-        <div className="mt-3 h-1.5 bg-surface-2 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-primary rounded-full transition-all"
-            style={{ width: `${student.academic_progress || 0}%` }}
-          />
-        </div>
-      </div>
-
-      {expanded && (
-        <div className="border-t border-border p-5 bg-surface-2/30 animate-fade-in">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Skills */}
-            <div>
-              <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-3">Skills</p>
-              <div className="space-y-2.5">
-                {SKILLS.map(k => (
-                  <SkillBar key={k} label={k} value={student.skills?.[k] || 0} />
-                ))}
-              </div>
-            </div>
-
-            {/* Modules attended */}
-            <div>
-              <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-3">
-                Recent Modules ({(student.modules_attended || []).length})
-              </p>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {(student.modules_attended || []).slice(-5).reverse().map((m, i) => (
-                  <div key={i} className="rounded-xl bg-white border border-border p-3">
-                    <div className="flex justify-between items-start gap-2">
-                      <p className="text-xs font-medium text-text-main truncate">{m.module}</p>
-                      <span className="text-xs font-bold text-primary shrink-0">{m.score}/10</span>
-                    </div>
-                    <p className="text-xs text-text-muted mt-0.5">{m.channel} · {m.date}</p>
-                  </div>
-                ))}
-                {(student.modules_attended || []).length === 0 && (
-                  <p className="text-xs text-text-muted">No modules attended yet.</p>
-                )}
-              </div>
-
-              {/* Assessments */}
-              {(student.assessment_scores || []).length > 0 && (
-                <div className="mt-4">
-                  <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">Assessments</p>
-                  <div className="space-y-1.5">
-                    {student.assessment_scores.map((a, i) => (
-                      <div key={i} className="flex justify-between text-xs">
-                        <span className="text-text-muted truncate">{a.title}</span>
-                        <span className="font-bold text-primary ml-2">{a.score}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Strengths/Improvement */}
-          {(student.strengths_summary || student.improvement_areas) && (
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {student.strengths_summary && (
-                <div className="rounded-xl bg-green-50 border border-green-200 p-3">
-                  <p className="text-xs font-semibold text-success uppercase tracking-wide mb-1">Strengths</p>
-                  <p className="text-xs text-text-main">{Array.isArray(student.strengths_summary) ? student.strengths_summary.join(", ") : student.strengths_summary}</p>
-                </div>
-              )}
-              {student.improvement_areas && (
-                <div className="rounded-xl bg-orange-50 border border-orange-200 p-3">
-                  <p className="text-xs font-semibold text-warning uppercase tracking-wide mb-1">Areas for Improvement</p>
-                  <p className="text-xs text-text-main">{Array.isArray(student.improvement_areas) ? student.improvement_areas.join(", ") : student.improvement_areas}</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
+import { MagnifyingGlass, GraduationCap, ChartLineUp, ArrowRight } from "@phosphor-icons/react";
+import StudentDetailModal from "@/components/StudentDetailModal";
 
 export default function Students() {
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   useEffect(() => {
-    api.getStudents().then(setStudents).finally(() => setLoading(false));
-  }, []);
+    const params = search ? { search } : {};
+    api.getStudents(params).then(d => { setStudents(d); setLoading(false); }).catch(() => setLoading(false));
+  }, [search]);
 
-  const filtered = students.filter(s =>
-    s.name?.toLowerCase().includes(search.toLowerCase()) ||
-    s.role?.toLowerCase().includes(search.toLowerCase())
-  );
+  const avgProgress = students.length > 0 ? Math.round(students.reduce((s, st) => s + (st.academic_progress || 0), 0) / students.length) : 0;
+  const totalSessions = students.reduce((s, st) => s + (st.sessions || 0), 0);
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold text-text-main font-cabinet">Students</h1>
-        <p className="text-text-muted text-sm mt-0.5">{students.length} students enrolled</p>
+    <div className="p-8 max-w-[1400px]" data-testid="students-page">
+      <div className="mb-6 animate-fade-in">
+        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#FF6E13] mb-1">Cohort</p>
+        <h1 className="text-3xl font-bold text-[#2D241E]" style={{ fontFamily: 'Cabinet Grotesk' }}>Students</h1>
+        <p className="text-[#7A6F69] mt-1">Tracking progress across the Q2 cohort. Click any student to view detailed KPIs.</p>
       </div>
 
-      <input
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        placeholder="Search students..."
-        className="w-full max-w-sm px-4 py-2 rounded-xl border border-border bg-white text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
-      />
+      {/* Summary + Search */}
+      <div className="flex flex-wrap items-center gap-4 mb-6">
+        <div className="bg-white border border-[#EBE5DB] rounded-xl px-5 py-3 flex items-center gap-3">
+          <GraduationCap size={22} weight="duotone" className="text-[#FF6E13]" />
+          <div>
+            <p className="text-2xl font-bold text-[#2D241E]" style={{ fontFamily: 'Cabinet Grotesk' }}>{students.length}</p>
+            <p className="text-xs text-[#7A6F69]">Active Students</p>
+          </div>
+        </div>
+        <div className="bg-white border border-[#EBE5DB] rounded-xl px-5 py-3 flex items-center gap-3">
+          <ChartLineUp size={22} weight="duotone" className="text-[#2E7D32]" />
+          <div>
+            <p className="text-2xl font-bold text-[#2D241E]" style={{ fontFamily: 'Cabinet Grotesk' }}>{avgProgress}%</p>
+            <p className="text-xs text-[#7A6F69]">Avg. Progress</p>
+          </div>
+        </div>
+        <div className="flex-1 max-w-sm flex items-center gap-2 bg-white border border-[#EBE5DB] rounded-xl px-4 py-2.5">
+          <MagnifyingGlass size={18} className="text-[#7A6F69]" />
+          <input
+            data-testid="student-search"
+            type="text"
+            placeholder="Search students..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="bg-transparent text-sm text-[#2D241E] placeholder-[#7A6F69] outline-none w-full"
+          />
+        </div>
+      </div>
 
+      {/* Student Grid */}
       {loading ? (
-        <div className="flex items-center justify-center h-40">
-          <div className="w-7 h-7 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
+        <div className="flex justify-center py-16"><div className="w-8 h-8 border-2 border-[#FF6E13] border-t-transparent rounded-full animate-spin" /></div>
       ) : (
-        <div className="space-y-4">
-          {filtered.map(s => <StudentCard key={s.student_id || s.name} student={s} />)}
-          {filtered.length === 0 && (
-            <div className="text-center py-10 text-text-muted text-sm">No students found.</div>
-          )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
+          {students.map((s, i) => (
+            <div
+              key={i}
+              data-testid={`student-card-${i}`}
+              onClick={() => setSelectedStudent(s.student_id)}
+              className="bg-white border border-[#EBE5DB] rounded-xl p-6 hover:shadow-md hover:border-[#FF6E13]/30 transition-all cursor-pointer group"
+            >
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-14 h-14 rounded-xl bg-[#FFF0E6] flex items-center justify-center text-[#FF6E13] font-bold text-xl shrink-0" style={{ fontFamily: 'Cabinet Grotesk' }}>
+                  {s.name?.charAt(0)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-mono text-[#7A6F69]">ID: {s.student_id}</p>
+                  <h3 className="text-base font-bold text-[#2D241E] mt-0.5" style={{ fontFamily: 'Cabinet Grotesk' }}>{s.name}</h3>
+                  <p className="text-xs text-[#7A6F69]">{s.role}</p>
+                  <p className="text-xs font-medium text-[#FF6E13] mt-0.5">{s.country}</p>
+                </div>
+                <ArrowRight size={16} className="text-[#7A6F69] opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
+              </div>
+
+              <div className="space-y-3">
+                {/* Academic Progress */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-semibold text-[#7A6F69] uppercase tracking-wider">Attendance</span>
+                    <span className="text-sm font-bold text-[#2D241E]">{s.academic_progress || 0}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-[#FFECE0] rounded-full">
+                    <div className="h-full bg-[#FF6E13] rounded-full transition-all" style={{ width: `${s.academic_progress || 0}%` }} />
+                  </div>
+                </div>
+
+                {/* Quick Stats */}
+                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#EBE5DB]">
+                  <div className="text-center">
+                    <p className="text-sm font-bold text-[#2D241E]">{s.sessions || 0}</p>
+                    <p className="text-[9px] text-[#7A6F69] uppercase font-semibold">Sessions</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-bold text-[#2D241E]">{(s.total_hours || 0).toFixed(1)}h</p>
+                    <p className="text-[9px] text-[#7A6F69] uppercase font-semibold">Hours</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-bold text-[#FF6E13]">{s.overall_score || 0}/10</p>
+                    <p className="text-[9px] text-[#7A6F69] uppercase font-semibold">Score</p>
+                  </div>
+                </div>
+
+                {/* Skill mini-bars (top 3 if available) */}
+                {s.skills && Object.values(s.skills).some(v => v > 0) && (
+                  <div className="pt-2 border-t border-[#EBE5DB] space-y-1.5">
+                    {Object.entries(s.skills)
+                      .filter(([_, v]) => v > 0)
+                      .sort((a, b) => b[1] - a[1])
+                      .slice(0, 3)
+                      .map(([key, val]) => (
+                        <div key={key} className="flex items-center gap-2">
+                          <span className="text-[9px] text-[#7A6F69] uppercase w-20 truncate">{key.replace(/_/g, ' ')}</span>
+                          <div className="flex-1 h-1.5 bg-[#F5F2EB] rounded-full">
+                            <div className="h-full bg-[#FF6E13] rounded-full" style={{ width: `${val * 10}%` }} />
+                          </div>
+                          <span className="text-[9px] font-bold text-[#2D241E]">{val}</span>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
+      )}
+
+      {/* Student Detail Modal */}
+      {selectedStudent && (
+        <StudentDetailModal
+          studentId={selectedStudent}
+          onClose={() => setSelectedStudent(null)}
+        />
       )}
     </div>
   );
