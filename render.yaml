@@ -15,7 +15,7 @@ services:
       - key: CORS_ORIGINS
         value: https://cristianomoura-quartile.github.io
       - key: ADMIN_EMAIL
-        value: admin@quartile.com
+        value: cristiano.moura@quartile.com
       - key: ADMIN_PASSWORD
         value: admin123
       - key: EMERGENT_LLM_KEY
