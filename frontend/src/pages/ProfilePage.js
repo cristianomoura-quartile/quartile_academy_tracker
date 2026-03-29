@@ -166,6 +166,7 @@ export default function ProfilePage() {
                 onChange={e => setName(e.target.value)}
                 className="w-full px-4 py-2.5 bg-[#F5F2EB] border border-[#EBE5DB] rounded-xl text-sm text-[#2D241E] outline-none focus:border-[#FF6E13] focus:ring-1 focus:ring-[#FF6E13]/20 transition-all"
                 placeholder="Your full name"
+                autoComplete="off"
               />
             </div>
             <div>
@@ -175,6 +176,7 @@ export default function ProfilePage() {
                 onChange={e => setTitle(e.target.value)}
                 className="w-full px-4 py-2.5 bg-[#F5F2EB] border border-[#EBE5DB] rounded-xl text-sm text-[#2D241E] outline-none focus:border-[#FF6E13] focus:ring-1 focus:ring-[#FF6E13]/20 transition-all"
                 placeholder="e.g. COE Specialist"
+                autoComplete="off"
               />
             </div>
           </div>
