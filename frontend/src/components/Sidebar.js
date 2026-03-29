@@ -1,13 +1,14 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   House, Books, Chalkboard, Users, CalendarBlank, SignOut,
-  CaretLeft, CaretRight, GearSix, UserCircle
+  CaretLeft, CaretRight, GearSix
 } from "@phosphor-icons/react";
 
 export default function Sidebar({ open, onToggle }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout, isAdmin } = useAuth();
 
   const navItems = [
@@ -27,6 +28,7 @@ export default function Sidebar({ open, onToggle }) {
       className={`fixed top-0 left-0 h-screen bg-[#F5F2EB] border-r border-[#EBE5DB] flex flex-col transition-all duration-300 z-40
         ${open ? "w-[240px]" : "w-[72px]"}`}
     >
+      {/* Logo */}
       <div className="p-6 pb-2 flex items-center gap-3">
         <div className="w-8 h-8 rounded-lg bg-[#FF6E13] flex items-center justify-center shrink-0">
           <span className="text-white font-bold text-sm" style={{ fontFamily: 'Cabinet Grotesk' }}>Q</span>
@@ -39,22 +41,35 @@ export default function Sidebar({ open, onToggle }) {
         )}
       </div>
 
-      {/* User badge */}
-      {open && user && (
-        <div className="mx-3 mt-4 mb-2 px-3 py-2.5 bg-white/60 rounded-xl">
+      {/* User badge — click to go to profile page */}
+      {user && (
+        <button
+          onClick={() => navigate("/profile")}
+          data-testid="profile-btn"
+          className={`mx-3 mt-4 mb-2 px-3 py-2.5 rounded-xl transition-all text-left
+            ${location.pathname === "/profile"
+              ? "bg-white shadow-sm ring-1 ring-[#FF6E13]/20"
+              : "bg-white/60 hover:bg-white/90"}`}
+        >
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0" style={{ backgroundColor: roleColor }}>
+            <div
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0"
+              style={{ backgroundColor: roleColor }}
+            >
               {user.name?.charAt(0)}
             </div>
-            <div className="min-w-0">
-              <p className="text-xs font-semibold text-[#2D241E] truncate">{user.name}</p>
-              <p className="text-[10px] capitalize font-medium" style={{ color: roleColor }}>{user.role}</p>
-            </div>
+            {open && (
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-[#2D241E] truncate">{user.name}</p>
+                <p className="text-[10px] capitalize font-medium" style={{ color: roleColor }}>{user.role}</p>
+              </div>
+            )}
           </div>
-        </div>
+        </button>
       )}
 
-      <nav className="flex-1 px-3 mt-4 space-y-1">
+      {/* Nav links */}
+      <nav className="flex-1 px-3 mt-2 space-y-1">
         {navItems.map(({ path, label, icon: Icon }) => {
           const isActive = location.pathname === path;
           return (
@@ -62,11 +77,10 @@ export default function Sidebar({ open, onToggle }) {
               key={path}
               to={path}
               data-testid={`nav-${label.toLowerCase()}`}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
                 ${isActive
                   ? "bg-white text-[#FF6E13] shadow-sm border-l-2 border-[#FF6E13]"
-                  : "text-[#7A6F69] hover:bg-white/60 hover:text-[#2D241E]"
-                }`}
+                  : "text-[#7A6F69] hover:bg-white/60 hover:text-[#2D241E]"}`}
             >
               <Icon size={20} weight={isActive ? "duotone" : "regular"} className="shrink-0" />
               {open && <span className={`text-sm ${isActive ? "font-semibold" : "font-medium"}`}>{label}</span>}
@@ -75,6 +89,7 @@ export default function Sidebar({ open, onToggle }) {
         })}
       </nav>
 
+      {/* Bottom: collapse + sign out */}
       <div className="px-3 pb-4 space-y-1">
         <button
           onClick={onToggle}

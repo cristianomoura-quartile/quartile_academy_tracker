@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/quartile_academy_tracker/static/css/main.46e46d06.css",
-    "main.js": "/quartile_academy_tracker/static/js/main.c97a3940.js",
+    "main.css": "/quartile_academy_tracker/static/css/main.a38b935b.css",
+    "main.js": "/quartile_academy_tracker/static/js/main.293e22ce.js",
     "index.html": "/quartile_academy_tracker/index.html",
-    "main.46e46d06.css.map": "/quartile_academy_tracker/static/css/main.46e46d06.css.map",
-    "main.c97a3940.js.map": "/quartile_academy_tracker/static/js/main.c97a3940.js.map"
+    "main.a38b935b.css.map": "/quartile_academy_tracker/static/css/main.a38b935b.css.map",
+    "main.293e22ce.js.map": "/quartile_academy_tracker/static/js/main.293e22ce.js.map"
   },
   "entrypoints": [
-    "static/css/main.46e46d06.css",
-    "static/js/main.c97a3940.js"
+    "static/css/main.a38b935b.css",
+    "static/js/main.293e22ce.js"
   ]
 }

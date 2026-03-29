@@ -66,6 +66,16 @@ export const api = {
   adminDeleteModule: (id) => axios.delete(`${API}/admin/modules/${id}`).then(r => r.data),
   adminModuleVersions: (id) => axios.get(`${API}/admin/modules/${id}/versions`).then(r => r.data),
   adminRestoreModule: (id, idx) => axios.post(`${API}/admin/modules/${id}/restore/${idx}`).then(r => r.data),
+  adminResetModule: (id) => axios.post(`${API}/admin/modules/${id}/reset`).then(r => r.data),
+  adminResetModulesBulk: (ids) => axios.post(`${API}/admin/modules/reset-bulk`, { module_ids: ids }).then(r => r.data),
+
+  // Profile
+  getProfile: () => axios.get(`${API}/profile`).then(r => r.data),
+  updateProfile: (data) => axios.put(`${API}/profile`, data).then(r => r.data),
+  changePassword: (current_password, new_password) => axios.post(`${API}/profile/change-password`, { current_password, new_password }).then(r => r.data),
+
+  // Seed instructors
+  seedInstructors: () => axios.post(`${API}/admin/seed-instructors`).then(r => r.data),
 
   adminCreateStudent: (data) => axios.post(`${API}/admin/students`, data).then(r => r.data),
   adminUpdateStudent: (id, data) => axios.put(`${API}/admin/students/${id}`, data).then(r => r.data),

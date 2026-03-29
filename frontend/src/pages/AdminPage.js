@@ -438,6 +438,24 @@ function UsersCRUD() {
           <button onClick={handleReset} data-testid="admin-reset-password" className="px-4 py-2 bg-[#FF6E13] text-white text-xs font-semibold rounded-lg hover:bg-[#E65C0A] transition-all">Reset</button>
         </div>
       </div>
+
+      {/* Seed Instructors */}
+      <div className="bg-white border border-[#EBE5DB] rounded-xl p-5">
+        <p className="text-xs font-bold text-[#FF6E13] uppercase tracking-wider mb-1">Seed Instructor Accounts</p>
+        <p className="text-xs text-[#7A6F69] mb-3">Creates login accounts for all 57 Quartile instructors with default password <code className="bg-[#F5F2EB] px-1 rounded">quartile2025</code>. Skips existing accounts.</p>
+        <button
+          onClick={async () => {
+            try {
+              const result = await api.seedInstructors();
+              loadUsers();
+              alert(`Done! Created ${result.created} accounts, skipped ${result.skipped} existing.`);
+            } catch (e) { alert(e.response?.data?.detail || "Error seeding instructors"); }
+          }}
+          className="flex items-center gap-2 px-4 py-2 bg-[#2D241E] text-white text-xs font-semibold rounded-lg hover:bg-[#3d322b] transition-all"
+        >
+          Seed 57 Instructor Accounts
+        </button>
+      </div>
     </div>
   );
 }

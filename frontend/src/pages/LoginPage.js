@@ -111,7 +111,7 @@ export default function LoginPage() {
             <p className="text-[10px] font-semibold text-[#7A6F69] uppercase tracking-wider mb-3">Quick Access</p>
             <div className="grid grid-cols-3 gap-2">
               {[
-                { label: "Admin", email: "admin@quartile.com", pw: "admin123", color: "#FF6E13" },
+                { label: "Admin", email: "cristiano.moura@quartile.com", pw: "admin123", color: "#FF6E13" },
                 { label: "Instructor", email: "instructor@quartile.com", pw: "instructor123", color: "#2E7D32" },
                 { label: "Student", email: "student@quartile.com", pw: "student123", color: "#1565C0" },
               ].map(d => (

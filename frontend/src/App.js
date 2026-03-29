@@ -10,6 +10,7 @@ import Instructors from "@/pages/Instructors";
 import Students from "@/pages/Students";
 import Calendar from "@/pages/Calendar";
 import AdminPage from "@/pages/AdminPage";
+import ProfilePage from "@/pages/ProfilePage";
 
 function AppRoutes() {
   const { user, loading, isAdmin } = useAuth();
@@ -42,6 +43,7 @@ function AppRoutes() {
           <Route path="/students" element={<Students />} />
           <Route path="/calendar" element={<Calendar />} />
           {isAdmin && <Route path="/admin" element={<AdminPage />} />}
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

@@ -325,6 +325,214 @@ async def admin_restore_module(module_id: str, version_idx: int, request: Reques
     await db.modules.update_one({"id": module_id}, {"$set": old_data})
     return {"status": "restored", "id": module_id}
 
+@api_router.post("/admin/modules/{module_id}/reset")
+async def admin_reset_module(module_id: str, request: Request):
+    """Reset a module: save version, clear all AI/content data, set status=Scheduled.
+    Preserves: id, week, date, day, start_time, shift, length_hrs, format, channel, module (name), instructor.
+    Clears: analysis, module_content, assessments, roleplay_reviews. Sets analyzed=False, status=Scheduled.
+    """
+    await require_admin(request)
+    module = await db.modules.find_one({"id": module_id})
+    if not module:
+        raise HTTPException(status_code=404, detail="Module not found")
+
+    # Save current state as a version before resetting
+    await db.module_versions.insert_one({
+        "module_id": module_id,
+        "data": {k: v for k, v in module.items() if k != "_id"},
+        "saved_at": datetime.now(timezone.utc).isoformat(),
+        "reset_snapshot": True,
+    })
+
+    # Delete related AI data collections
+    await db.analyses.delete_one({"module_id": module_id})
+    await db.module_content.delete_one({"module_id": module_id})
+    await db.assessments.delete_one({"module_id": module_id})
+    await db.roleplay_reviews.delete_one({"module_id": module_id})
+
+    # Reset module flags while preserving schedule fields
+    preserve = ["id", "week", "date", "day", "start_time", "shift", "length_hrs", "format", "channel", "module", "instructor"]
+    reset_fields = {
+        "status": "Scheduled",
+        "analyzed": False,
+        "has_content": False,
+    }
+    # Remove any extra fields added by analysis (keep only core fields)
+    update = {"$set": reset_fields, "$unset": {"content": "", "analysis": ""}}
+    await db.modules.update_one({"id": module_id}, update)
+
+    logger.info(f"Reset module {module_id} — version saved, AI data cleared, status=Scheduled")
+    return {"status": "reset", "id": module_id, "message": "Module reset to Scheduled. Version saved."}
+
+@api_router.post("/admin/modules/reset-bulk")
+async def admin_reset_modules_bulk(request: Request):
+    """Reset multiple modules by ID list."""
+    await require_admin(request)
+    body = await request.json()
+    module_ids = body.get("module_ids", [])
+    if not module_ids:
+        raise HTTPException(status_code=400, detail="No module_ids provided")
+    results = []
+    for mid in module_ids:
+        module = await db.modules.find_one({"id": mid})
+        if not module:
+            results.append({"id": mid, "status": "not_found"})
+            continue
+        await db.module_versions.insert_one({
+            "module_id": mid,
+            "data": {k: v for k, v in module.items() if k != "_id"},
+            "saved_at": datetime.now(timezone.utc).isoformat(),
+            "reset_snapshot": True,
+        })
+        await db.analyses.delete_one({"module_id": mid})
+        await db.module_content.delete_one({"module_id": mid})
+        await db.assessments.delete_one({"module_id": mid})
+        await db.roleplay_reviews.delete_one({"module_id": mid})
+        await db.modules.update_one({"id": mid}, {"$set": {"status": "Scheduled", "analyzed": False, "has_content": False}})
+        results.append({"id": mid, "status": "reset"})
+    return {"results": results}
+
+# ─── PROFILE ENDPOINTS ───────────────────────────────────────────────────────
+
+TEAMS = ["COE", "Mid-Market", "DTC", "SMB", "Customer Growth", "Marketing", "Product", "Tech", "HR", "Finance", "Operations"]
+CHANNELS = ["AMZ", "Google", "Google Ads", "Walmart", "Meta", "TikTok", "Bing", "Portal", "DTC", "Soft Skills", "Tech", "Sciene", "Excel", "Multichannel"]
+
+class ProfileUpdateBody(BaseModel):
+    name: Optional[str] = None
+    title: Optional[str] = None
+    team: Optional[str] = None
+    channels: Optional[List[str]] = None
+
+@api_router.get("/profile")
+async def get_profile(request: Request):
+    user = await get_current_user(request, db)
+    return user
+
+@api_router.put("/profile")
+async def update_profile(body: ProfileUpdateBody, request: Request):
+    user = await get_current_user(request, db)
+    uid = user["_id"]
+    update_data = {}
+    if body.name is not None:
+        update_data["name"] = body.name
+    if body.title is not None:
+        update_data["title"] = body.title
+    if body.team is not None:
+        update_data["team"] = body.team
+    if body.channels is not None:
+        update_data["channels"] = body.channels
+    if update_data:
+        from bson import ObjectId as ObjId
+        await db.users.update_one({"_id": ObjId(uid)}, {"$set": update_data})
+    updated = await db.users.find_one({"_id": ObjId(uid)}, {"password_hash": 0})
+    updated["_id"] = str(updated["_id"])
+    return updated
+
+class ChangePasswordBody(BaseModel):
+    current_password: str
+    new_password: str
+
+@api_router.post("/profile/change-password")
+async def change_password(body: ChangePasswordBody, request: Request):
+    user = await get_current_user(request, db)
+    from bson import ObjectId as ObjId
+    db_user = await db.users.find_one({"_id": ObjId(user["_id"])})
+    if not verify_password(body.current_password, db_user.get("password_hash", "")):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    await db.users.update_one(
+        {"_id": ObjId(user["_id"])},
+        {"$set": {"password_hash": hash_password(body.new_password)}}
+    )
+    return {"status": "password_changed"}
+
+# ─── SEED INSTRUCTORS ────────────────────────────────────────────────────────
+
+INSTRUCTOR_USERS = [
+    {"name": "Alberto Romero", "email": "alberto.romero@quartile.com"},
+    {"name": "Amanda Gomez", "email": "amanda.gomez@quartile.com"},
+    {"name": "Ana Braccialli", "email": "ana.braccialli@quartile.com"},
+    {"name": "Ana Braganca", "email": "ana.braganca@quartile.com"},
+    {"name": "Ana Lacroix", "email": "ana.lacroix@quartile.com"},
+    {"name": "Ana Maiczuk", "email": "ana.maiczuk@quartile.com"},
+    {"name": "Augusto Senna", "email": "augusto.senna@quartile.com"},
+    {"name": "Brenda Mentz", "email": "brenda.mentz@quartile.com"},
+    {"name": "Brian White", "email": "brian.white@quartile.com"},
+    {"name": "Bruno Matumoto", "email": "bruno.matumoto@quartile.com"},
+    {"name": "Camila Malacarne", "email": "camila.malacarne@quartile.com"},
+    {"name": "Carlos Braz", "email": "carlos.braz@quartile.com"},
+    {"name": "Carolina Collares", "email": "carolina.collares@quartile.com"},
+    {"name": "Chris Corbet", "email": "ccorbet@quartile.com"},
+    {"name": "Cristiano Moura", "email": "cristiano.moura@quartile.com"},
+    {"name": "Daniel Alves", "email": "daniel.alves@quartile.com"},
+    {"name": "Daniela Caporali", "email": "daniela.caporali@quartile.com"},
+    {"name": "Felipe Tahara", "email": "felipe.tahara@quartile.com"},
+    {"name": "Fernando Gamba", "email": "fernando.gamba@quartile.com"},
+    {"name": "Frank Savena", "email": "frank.savena@quartile.com"},
+    {"name": "Frederico Cappellato", "email": "frederico.cappellato@quartile.com"},
+    {"name": "Guilherme", "email": "guilherme@quartile.com"},
+    {"name": "Iago Gomes", "email": "iago@quartile.com"},
+    {"name": "Jake Damico", "email": "jdamico@quartile.com"},
+    {"name": "Janaina Zen", "email": "janaina.zen@quartile.com"},
+    {"name": "Joao Barboza", "email": "joao.barboza@quartile.com"},
+    {"name": "Jose Adorno", "email": "jose.adorno@quartile.com"},
+    {"name": "Julia Baldo", "email": "julia.baldo@quartile.com"},
+    {"name": "Julia Fortino", "email": "jfortino@quartile.com"},
+    {"name": "Juliet Hoyt", "email": "juliet@quartile.com"},
+    {"name": "Kerianne Kistner", "email": "kerianne.kistner@quartile.com"},
+    {"name": "Luca Dias", "email": "luca.dias@quartile.com"},
+    {"name": "Luciana", "email": "luciana@quartile.com"},
+    {"name": "Luciano Ferrareze", "email": "luciano.ferrareze@quartile.com"},
+    {"name": "Luis Saicali", "email": "luis.saicali@quartile.com"},
+    {"name": "Luisa Conti", "email": "luisa.conti@quartile.com"},
+    {"name": "Marcelle Pessey", "email": "marcelle.pessey@quartile.com"},
+    {"name": "Mariana Chagas", "email": "mariana.chagas@quartile.com"},
+    {"name": "Matheus Cardoso", "email": "matheus.cardoso@quartile.com"},
+    {"name": "Mickaela Pulcherio", "email": "mickaela.pulcherio@quartile.com"},
+    {"name": "Mivena Panteqi", "email": "mivena.panteqi@quartile.com"},
+    {"name": "Monique Castro", "email": "monique.castro@quartile.com"},
+    {"name": "Patrick Bradley", "email": "patrick@quartile.com"},
+    {"name": "Paulo Junqueira", "email": "paulo.junqueira@quartile.com"},
+    {"name": "Pedro Estrada", "email": "pedro.estrada@quartile.com"},
+    {"name": "Phil Turicik", "email": "phil@quartile.com"},
+    {"name": "Rebecca Rush", "email": "rrush@quartile.com"},
+    {"name": "Regina Reker", "email": "regina.reker@quartile.com"},
+    {"name": "Roberto M. Eckersdorff", "email": "roberto@quartile.com"},
+    {"name": "Sabrina Morais", "email": "sabrina.morais@quartile.com"},
+    {"name": "Stefane Toaldo", "email": "stefane.toaldo@quartile.com"},
+    {"name": "Suriane Silva", "email": "suriane.silva@quartile.com"},
+    {"name": "Thiago Castro", "email": "thiago.castro@quartile.com"},
+    {"name": "Thomas Schmidt", "email": "thomas.schmidt@quartile.com"},
+    {"name": "Tiago Machado", "email": "tiago.machado@quartile.com"},
+    {"name": "Victor", "email": "victor@quartile.com"},
+    {"name": "Vithória Duarte", "email": "vithoria.duarte@quartile.com"},
+    {"name": "Vitor Caires", "email": "vitor.caires@quartile.com"},
+]
+
+@api_router.post("/admin/seed-instructors")
+async def seed_instructor_accounts(request: Request):
+    """Seed all instructor user accounts with default password = quartile2025"""
+    await require_admin(request)
+    default_password = "quartile2025"
+    created = []
+    skipped = []
+    for inst in INSTRUCTOR_USERS:
+        existing = await db.users.find_one({"email": inst["email"]})
+        if existing:
+            skipped.append(inst["email"])
+            continue
+        await db.users.insert_one({
+            "email": inst["email"],
+            "password_hash": hash_password(default_password),
+            "name": inst["name"],
+            "role": "instructor",
+            "title": "COE Specialist",
+            "team": "COE",
+            "channels": [],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
+        created.append(inst["email"])
+    return {"created": len(created), "skipped": len(skipped), "accounts": created}
+
 # ADMIN: Student CRUD
 class StudentBody(BaseModel):
     name: str

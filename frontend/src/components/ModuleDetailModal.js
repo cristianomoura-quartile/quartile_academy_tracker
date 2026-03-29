@@ -107,6 +107,24 @@ export default function ModuleDetailModal({ moduleId, onClose, onIngested }) {
           {canEdit && (
             <div className="flex items-center gap-3">
               <input ref={fileRef} type="file" accept=".docx,.txt" className="hidden" onChange={handleIngest} data-testid="transcript-file-input" />
+              <button
+                data-testid="reset-module-btn"
+                onClick={async () => {
+                  if (!window.confirm(`Reset module "${module.module}"?\n\nThis will:\n• Clear all AI analysis, transcripts, assessments, and role play data\n• Set status back to Scheduled\n• Save a version snapshot before resetting\n\nSchedule fields (date, time, instructor, channel) will be preserved.`)) return;
+                  try {
+                    await api.adminResetModule(moduleId);
+                    const fresh = await api.getModule(moduleId);
+                    setModule(fresh);
+                    setActiveTab("Overview");
+                    if (onIngested) onIngested();
+                  } catch (err) {
+                    alert("Reset failed: " + (err?.response?.data?.detail || err.message));
+                  }
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-[#EBE5DB] text-[#B34700] text-xs font-semibold rounded-full hover:bg-red-50 hover:border-red-200 transition-all"
+              >
+                <ArrowsClockwise size={14} /> Reset Module
+              </button>
               <button data-testid="ingest-transcript-btn" onClick={() => fileRef.current?.click()} disabled={ingesting}
                 className="flex items-center gap-2 px-4 py-2 bg-[#FF6E13] text-white text-xs font-semibold rounded-full hover:bg-[#E65C0A] transition-all disabled:opacity-50">
                 {ingesting ? <><ArrowsClockwise size={14} className="animate-spin" /> Analyzing...</> : <><Upload size={14} /> Ingest Transcript</>}
